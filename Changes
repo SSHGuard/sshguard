@@ -1,0 +1,72 @@
+* 1.4rc4    Apr 2009
+    - various fixes to blacklisting module
+    - provide default for blacklisting threshold in command line option
+    - man page revisions
+    - parser accepts "-" and "_" chars in process names
+    - correctly handle abuse threshold = 1 (thanks K. Tipping)
+    - some fixes to SimCList
+
+* 1.4rc3    Jan 2009
+    - sshguard ignores interrupted fgets() and reloads more seldom (thanks Keven Tipping)
+    - support non-POSIX libCs that require getopt.h (thanks Nobuhiro Iwamatsu)
+    - modify iptables insertion policy to comply with further filtering rules (thanks Sebastien Koechlin)
+    - update to simclist 1.4.1 which defines EPROTO for OSes that lacks it (eg OpenBSD)
+    - fix detection of some ProFTPd and pure-ftp messages
+    - fix detection of hostnames in ProFTPd message
+    - fix a possible infinite loop on blacklisted addresses
+
+* 1.4rc2    Dec 2008
+    - fix compiler flags for new version of simclist
+    - move list_find() -> list_locate() according to API changes in simclist
+
+* 1.4rc1    Dec 2008
+    - add touchiness: block repeated abusers for longer
+    - *EXPERIMENTAL* add blacklisting: store frequent abusers for permanent blocking
+
+* 1.3       Oct 2008
+    - fix autoconf problem
+    - automatically detect when ipfw supports IPv6 (thanks David Horn)
+    - be sensitive to proftpd messages to auth facility, not daemon (thanks Andy Berkvam)
+    - add sshd pattern for "Bad protocol" and "Did not receive identif string"
+
+* 1.2       Sep 2008
+    - support for Cyrus IMAP
+    - support for SSH "possible break-in attempt" messages
+    - updated support for dovecot to include logging format of new versions
+    - (thanks Michael Maynard) fix of IPF backend causing sshguard not to
+          update /etc/ipf.rules (disallow IPv6)
+    - fix detection of password when sshd doesn't log anything more than PAM
+
+* 1.1       Jul 2008 (midway releases from Jul 2007 to Jun 2008)
+    - support suspension
+    - support debug mode at runtime (-d) for helping users in problem solving
+    - support for metalog logging format
+    - fix parser bug when recognizing certain IPv6 addresses
+    - fix segfault when the pipe to sshguard is closed unexpectedly
+    - support for ipfilter as blocking backend (thanks Hellmuth Michaelis for feedback)
+    - support for log messages authentication
+    - support for AIX genfilt firewall (thanks Gabor Szittner)
+    - fix "hosts" backend bug not discarding temporary files
+    - add monitoring support for new services:
+        @ dovecot imap
+        @ UWimap imap and pop
+        @ FreeBSD's ftpd
+        @ Proftpd
+        @ pure-ftpd
+
+* 1.0       May 2007
+    - address whitelisting for protecting friend addressess
+    - support for IPv6
+    - support for service multiplexing (behave differently for different services)
+    - more powerful parsing (context-free): support multilog, autotranslate
+        hostnames and easily extends to a lot of services
+    - new blocking backend: "hosts" for /etc/hosts.deny
+    - paths autodetected and adjustable from ./configure
+    - script for trivially generating new custom backends
+
+* 0.91      Mar 2007
+    - run away from scons and use autotools as building system
+
+* 0.9       Feb 2007
+    - first public release
+

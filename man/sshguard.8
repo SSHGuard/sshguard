@@ -1,0 +1,323 @@
+.Dd Dec 7, 2008
+.Dt SSHGUARD 8
+.Sh NAME
+.Nm sshguard
+.Nd monitors daemon activity 
+.\"
+.\"
+.Sh SYNOPSIS
+.Nm
+.Op Fl b Ar thr:filename
+.Op Fl a Ar abuse_tresh
+.Op Fl p Ar pardon_min_interval
+.Op Fl s Ar stale_tresh
+.Op Fl w Ar addr/host/block/file
+.Op Fl d
+.Op Fl f Ar srv:pidfile
+.\"
+.\"
+.Sh DESCRIPTION
+.Nm
+monitors logging activity and reacts to attacks by blocking their source addresses.
+.Pp
+.Nm
+has born for protecting SSH servers from the today's widespread brute force
+attacks, and evolved to an extensible log supervisor for blocking attacks to
+applications in real-time.
+.Pp
+.Nm
+is given log messages in its standard input. By means of a parser, it decides
+whether an entry is normal activity or attack; in the latter case, it remarks
+the author's address. After a number of attacks, the address is distinguished
+as an
+.Ar abuser ,
+and blocked with the firewall.
+.Pp
+.Nm
+supports the following firewalls:
+.Bl -tag -width
+.It AIX native firewall
+for IBM AIX operating systems
+.It netfilter/iptables
+for Linux-based operating systems
+.It Packet Filter (PF)
+for BSD operating systems (Open, Free, Net, DragonFly -BSD)
+.It IPFirewall (IPFW)
+for FreeBSD and Mac OS X
+.It IP Filter (IPFILTER)
+for FreeBSD, NetBSD and Solaris
+.It tcpd's hosts_access (/etc/hosts.allow)
+portable across UNIX
+.It null
+portable do-nothing backend for applying detection but not prevention
+.El
+.\"
+.\"
+.Sh USAGE
+.Nm
+is given log entries to scan in its standard input. It can interpret logs with
+the following formats:
+.Bl -bullet -compact -offset indent
+.It
+syslog
+.It
+syslog-ng
+.It
+metalog
+.It
+multilog
+.It
+raw messages
+.El
+.Pp
+.Nm
+can interface with the following blocking systems to block attackers:
+.Bl -bullet -compact -offset indent
+.It
+IBM AIX firewall
+.It
+PF
+.It
+netfilter/iptables
+.It
+IPFW
+.It
+IP Filter
+.It
+/etc/hosts.allow
+.It
+null firewall
+.El
+.Pp
+Depending on the way chosen for giving logs to sshguard, and depending on the
+chosen blocking system, some setup may be needed. Instructions are documented
+at http://sshguard.sourceforge.net/doc/setup/setup.html .
+.Pp
+.Nm
+does not make use of any configuration file. Instead, a combination of optional
+arguments can be passed to its process on the command line, for modifying its
+default behaviour:
+.Bl -tag -width -indent
+.It Fl b Ar [num:]filename
+enable blacklisting: blacklist after
+.Ar num
+(or 3) blocked abuses, and hold the permanent blacklist in
+.Ar filename .
+See TOUCHINESS & BLACKLISTING below.
+.It Fl d
+run in debug mode: all logging is done to standard error, not syslog. Debug
+messages are included.
+.It Fl a Ar num
+block an address after
+.Ar num
+attack attempts have been detected. (Default: 4)
+.It Fl p Ar secs
+release a blocked address not sooner than
+.Ar secs
+seconds after being blocked.
+.Nm
+will release the address between X and 3/2 * X seconds. (Default: 7*60)
+.It Fl s Ar secs
+forget about an address after
+.Ar secs
+seconds. If host A issues one attack every this many seconds, it will never be
+blocked.  (Default: 20*60)
+.It Fl w Ar addr/host/block/file
+see the WHITELISTING section.
+.It Fl f Ar servicecode:pidfile
+see the LOG MESSAGE AUTHENTICATION section.
+.El
+.Pp
+When
+.Nm
+is signalled with SIGTSTP, it suspends activity. When
+.Nm
+is signalled with SIGCONT, it resumes monitoring. During suspension, log
+entries are discarded without being analyzed.
+.\"
+.\"
+.Sh WHITELISTING
+.Nm
+supports address whitelisting. Whitelisted addresses are not blocked even if
+they appear to generate attacks. This is useful for protecting lame LAN users
+(or external friendly users) from being incidentally blocked.
+.Pp
+Whitelist addresses are controlled through the
+.Fl w
+command-line option. This option can add explicit addresses, host names and
+address blocks:
+.Bl -tag -width
+.It addresses
+specify the address directly, like:
+.Dl -w 192.168.1.10
+or in multiple occurrences:
+.Dl -w 192.168.1.10 -w 192.168.1.11 -w 192.168.1.12
+.It host names
+specify the host name directly, like:
+.Dl -w friendhost.enterprise.com
+or in multiple occurrences:
+.Dl -w friendhost.enterprise.com -w friend2.enterprise.com
+When hosts resolve to multiple addresses, all of them are whitelisted.
+Hosts are resolved to addresses once, when sshguard starts up.
+.It address blocks
+specify the address block in the usual CIDR notation:
+.Dl -w 192.168.0.0/24
+or in multiple occurrences:
+.Dl -w 192.168.0.0/24 -w 1.2.3.128/26
+.It file
+When longer lists are needed for whitelisting, they can be wrapped into a plain
+text file, one address/hostname/block per line, with the same syntax given
+above.
+.Pp
+.Nm
+can take whitelists from files when the
+.Fl w
+option argument begins with a `.' (dot) or `/' (slash).
+.Pp
+This is a sample whitelist file (say /etc/friends):
+.Bd -literal -offset indent
+# comment line (a '#' as very first character)
+#   a single ip address
+1.2.3.4
+#   address blocks in CIDR notation
+127.0.0.0/8
+10.11.128.0/17
+192.168.0.0/24
+#   hostnames
+rome-fw.enterprise.com
+hosts.friends.com
+.Ed
+.Pp
+And this is how
+.Nm
+is told to make a whitelist up from the /etc/friends file:
+.Dl sshguard -w /etc/friends
+.El
+.Pp
+The
+.Fl w
+option can be used only once for files. For addresses, host names and address blocks
+it can be used with any multiplicity, even with mixes of them.
+.\"
+.\"
+.Sh LOG MESSAGE AUTHENTICATION
+Syslog and syslog-ng typically insert a PID of the generating process in every
+log line. This can be checked for authenticating the source of the message and
+avoid false attacks to be detected because malicious local users inject crafted
+log lines. This way
+.Nm
+can be safely used even on hosts where this assumption does not hold.
+.Pp
+Log message authentication is only needed when
+.Nm
+is fed log messages from syslog or from syslog-ng. When a process logs directly
+to a raw file and sshguard is configured for polling logs directly from it,
+you only need to adjust the log file permissions so that only root can write
+on it.
+.Pp
+For enabling log message authentication on a given service the
+.Fl f
+option is used as follows:
+.Dl -f 10:/var/run/sshd.pid
+which associates the given pidfile to the ssh service (code 10). A list of well-known
+service codes is available at
+.Ar http://sshguard.sourceforge.net/doc/servicecodes.html .
+.Pp
+The
+.Fl f
+option can be used multiple times for associating different services with their pidfile:
+.Dl sshguard -f 10:/var/run/sshd.pid -f 123:/var/run/mydaemon.pid
+.Pp
+Services that are not configured for log message authentication follow a default-allow
+policy (all of their log messages are accepted by default).
+.Pp
+PIDs are checked with the following policy:
+.Bl -enum -width
+.It
+the logging service is searched in the list of services configured for
+authentication. If not found, the entry is accepted.
+.It
+the logged PID is compared with the pidfile. If it matches, the entry is accepted
+.It
+the PID is checked for being a direct child of the authoritative process. If it
+is, the entry is accepted.
+.It
+the entry is ignored.
+.El
+Low I/O load is committed to the operating system because of an internal caching
+mechanism. Changes in the pidfile value are handled transparently.
+.\"
+.\"
+.Sh TOUCHINESS & BLACKLISTING
+In many cases, attacks against services are performed in bulk in an automated
+form. For example, the attacker goes trough a dictionary of 150
+username/password pairs and sequentially tries to violate the SSH service with
+any of them, continuing blindly while blocked, and re-appearing once the block
+expires.
+.Pp
+To counteract these cases,
+.Nm
+by default behaves with
+.Ar touchiness .
+Besides observing abuses from the log activity, it monitors also the overall
+behavior of attackers. The decision on when and how to block is thus made
+respective to the entire history of the attacker as well. For example, if
+address A attacks repeatedly and the base blocking time is 420 seconds, A will
+be blocked for 420 seconds (7 mins) at the first abuse, 2*420 (14 mins) the
+second, 2*2*420 (28 mins) the third ... and 2^(n-1)*420 the n-th time.
+.Pp
+Touchiness has two major benefits: to legitimate users, it grants forgiving
+blockings on failed logins; to real attackers, it effectively renders
+large scale attacks infeasible, because the time to perform it explodes with
+the number of attempts.
+.Pp
+Touchiness can be augmented with
+.Ar blacklisting
+(-b). With this option, after a number of abuses, the address is added to a
+list of attackers to be blocked permanently. The list is intended to be
+loaded at each startup, and maintained/extended with new entries during
+operation.
+.Nm
+inserts a new address after it exceeded a threshold of abuses. This threshold
+is configurable within the 
+.Fl b
+option argument. Blacklisted addresses are never scheduled for releasing.
+.Pp
+The
+.Fl b
+command line option enables blacklisting and requires the filename to use
+for permanent storage of the blacklist. Optionally, a custom blacklist
+threshold can be prefixed to this path, separated by ':'. For example,
+.Dl -b 5:/var/db/sshguard/blacklist.db
+requires to blacklist addresses after the 5th abuse, and store the blacklist
+in file /var/db/sshguard/blacklist.db. Although the blacklist file is not
+meant to be in human-readable format, the
+.Xr strings 1
+command can be used to peek in it for listing the blacklisted addresses.
+.\"
+.\"
+.Sh EXTENSIONS
+.Nm
+can be easily extended to support both more backends (systems blocking
+addresses, like firewalls) and to recognize more attack patterns.
+.Pp
+Adding backends is extremely easy when the blocking and releasing operations
+can be controlled with system commands.
+.Nm
+provides a shell script for generating such extensions in few steps:
+.Ar sshguard_backendgen.sh .
+.Pp
+Adding more attack patterns needs some expertise with bison, as
+.Nm
+uses a grammar-based context-free parser for powerfulness. Thus, there is one
+tracker for user-proposed patterns at
+.Ar http://sshguard.sourceforge.net/newattackpatt.php .
+.\"
+.\"
+.Sh SEE ALSO
+.Xr syslog 1 ,
+.Xr syslog.conf 5
+.Pp
+.Nm
+website at:
+.Ar http://sshguard.sourceforge.net/
