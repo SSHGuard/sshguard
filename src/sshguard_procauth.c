@@ -75,7 +75,16 @@ int procauth_fin() {
 int procauth_addprocess(char *conf) {
     procpid pp;
     int srvcode;
-    char pidfilename[300];
+    char pidfilename[FILENAME_MAX], *p;
+
+    /* ensure the filename length is within system limit */ 
+    if ((p = memchr(conf, ':', FILENAME_MAX)) == NULL)
+	return -1;
+
+    if (strnlen(p, FILENAME_MAX) == FILENAME_MAX) {
+	sshguard_log(LOG_ERR, "supplied path and/or filename exceeds system length limit");
+	return -1;
+    }
 
     /* conf format:     service_code:pid_filename   */
     if (sscanf(conf, "%d:%s", &srvcode, pidfilename) != 2)
