@@ -85,8 +85,6 @@ list_t offenders;
 
 /* fill an attacker_t structure for usage */
 static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
-/* dumps usage message to standard error */
-static void usage(void);
 /* comparison operator for sorting offenders list */
 static int lastAttackComparator(const void *a, const void *b);
 
@@ -142,7 +140,6 @@ int main(int argc, char *argv[]) {
 
     /* parsing the command line */
     if (get_options_cmdline(argc, argv) != 0) {
-        usage();
         exit(1);
     }
 
@@ -480,18 +477,6 @@ void sigstpcont_handler(int signo) {
             sshguard_log(LOG_NOTICE, "Got CONTINUE signal, resuming activity.");
             break;
     }
-}
-
-static void usage(void) {
-    fprintf(stderr, "Usage:\nsshguard [-d] [-b <thr:file>] [-a num] [-p sec] [-w <whlst>]{0,n} [-s sec] [-l c] [-f srv:pidfile]{0,n}\n");
-    fprintf(stderr, "\t-d\tDebugging mode: don't fork to background, and dump activity to stderr.\n");
-    fprintf(stderr, "\t-b\tBlacklist: thr = number of abuses before blacklisting, file = blacklist filename.\n");
-    fprintf(stderr, "\t-a\tNumber of hits after which blocking an address (%d)\n", DEFAULT_ABUSE_THRESHOLD);
-    fprintf(stderr, "\t-p\tSeconds after which unblocking a blocked address (%d)\n", DEFAULT_PARDON_THRESHOLD);
-    fprintf(stderr, "\t-w\tWhitelisting of addr/host/block, or take from file if starts with \"/\" or \".\" (repeatable)\n");
-    fprintf(stderr, "\t-s\tSeconds after which forgetting about a cracker candidate (%d)\n", DEFAULT_STALE_THRESHOLD);
-    fprintf(stderr, "\t-f\t\"authenticate\" service's logs through its process pid, as in pidfile\n");
-    fprintf(stderr, "\t-d\tRun in debug mode, log everything to standard error (not syslog)\n");
 }
 
 static int lastAttackComparator(const void *a, const void *b) {

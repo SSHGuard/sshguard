@@ -23,7 +23,6 @@
 
 #include "sshguard_addresskind.h"
 
-
 /* these may be changed with runtime options! */
 
 /* default: minimum seconds after which unblocking a blocked IP. Max is (min*3/2) */

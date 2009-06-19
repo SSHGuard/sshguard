@@ -34,6 +34,11 @@ typedef struct {
 
 extern sshg_opts opts;
 
+/* version information */
+#define MAJOR_VERSION 1
+#define MINOR_VERSION 4
+#define BUILD_VERSION 4
+
 /**
  * Parses user options from the command line, environment, config file or
  * whatever.
