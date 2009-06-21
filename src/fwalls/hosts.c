@@ -196,8 +196,8 @@ int hosts_updatelist() {
             /* block lines differ depending on IP Version */
             if (curr->addrkind == ADDRKIND_IPv4)
                 fprintf(tmp, " %s : DENY\n", curr->addr);
-                else fprintf(tmp, " [%s] : DENY\n", curr->addr);
-            }
+            else fprintf(tmp, " [%s] : DENY\n", curr->addr);
+        }
     }    
     fprintf(tmp, HOSTS_SSHGUARD_SUFFIX);
 
