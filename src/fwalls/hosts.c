@@ -22,7 +22,7 @@
 typedef struct {
     char addr[ADDRLEN];
     int addrkind;
-   	int service;
+    int service;
 } addr_service_t;
 
 int hosts_updatelist();
@@ -90,14 +90,14 @@ int fw_fin() {
 }
 
 int fw_block(char *addr, int addrkind, int service) {
-	addr_service_t ads;
+    addr_service_t ads;
 		
-	strcpy(ads.addr, addr);
-	ads.service = service;
-	ads.addrkind = addrkind;
-	list_append(&hosts_blockedaddrs, &ads);
+    strcpy(ads.addr, addr);
+    ads.service = service;
+    ads.addrkind = addrkind;
+    list_append(&hosts_blockedaddrs, &ads);
 
-	return hosts_updatelist();
+    return hosts_updatelist();
 }
 
 int fw_release(char *addr, int addrkind, int services) {
@@ -156,49 +156,49 @@ int hosts_updatelist() {
 
     if (list_size(& hosts_blockedaddrs) > 0) {
         unsigned int cnt;
-		addr_service_t *curr;
+        addr_service_t *curr;
 
         for (cnt = 0; cnt < (int)list_size(&hosts_blockedaddrs); cnt++) {
-			curr = (addr_service_t *)list_get_at(&hosts_blockedaddrs, cnt);
+            curr = (addr_service_t *)list_get_at(&hosts_blockedaddrs, cnt);
 			
-			/* block based on service */
-			switch (curr->service) {
-    	        case SERVICES_SSH:
-			        fprintf(tmp, "sshd :");
-        	    	break;
-				case SERVICES_UWIMAP:
-					fprintf(tmp, "imapd :");
-					break;
-				case SERVICES_DOVECOT:
-					fprintf(tmp, "imap-login, pop3-login :");
-					break;
-				case SERVICES_CYRUSIMAP:
-					fprintf(tmp, "imapd, pop3d :");
-					break;
-				case SERVICES_FREEBSDFTPD:
-					fprintf(tmp, "ftpd :");
-					break;
-				case SERVICES_PROFTPD:
-					fprintf(tmp, "proftpd :");
-					break;
-				case SERVICES_PUREFTPD:
-					fprintf(tmp, "pure-ftpd :");
-					break;
-				default:
-					sshguard_log(LOG_ERR, "Attempting to block unknown service: %d", curr->service);
-        			fclose(deny);
-        			fclose(tmp);
-        			close(fd);
-        			unlink(tempflname);
-        			return FWALL_ERR;        	
-			}
+            /* block based on service */
+            switch (curr->service) {
+                case SERVICES_SSH:
+                    fprintf(tmp, "sshd :");
+                    break;
+                case SERVICES_UWIMAP:
+                    fprintf(tmp, "imapd :");
+                    break;
+                case SERVICES_DOVECOT:
+                    fprintf(tmp, "imap-login, pop3-login :");
+                    break;
+                case SERVICES_CYRUSIMAP:
+                    fprintf(tmp, "imapd, pop3d :");
+                    break;
+                case SERVICES_FREEBSDFTPD:
+                    fprintf(tmp, "ftpd :");
+                    break;
+                case SERVICES_PROFTPD:
+                    fprintf(tmp, "proftpd :");
+                    break;
+                case SERVICES_PUREFTPD:
+                    fprintf(tmp, "pure-ftpd :");
+                    break;
+                default:
+                    sshguard_log(LOG_ERR, "Attempting to block unknown service: %d", curr->service);
+                    fclose(deny);
+                    fclose(tmp);
+                    close(fd);
+                    unlink(tempflname);
+                    return FWALL_ERR;        	
+            }
 			
-			/* block lines differ depending on IP Version */
-			if (curr->addrkind == ADDRKIND_IPv4)
-				fprintf(tmp, " %s : DENY\n", curr->addr);
-			else fprintf(tmp, " [%s] : DENY\n", curr->addr);
-		}
-    }
+            /* block lines differ depending on IP Version */
+            if (curr->addrkind == ADDRKIND_IPv4)
+                fprintf(tmp, " %s : DENY\n", curr->addr);
+                else fprintf(tmp, " [%s] : DENY\n", curr->addr);
+            }
+    }    
     fprintf(tmp, HOSTS_SSHGUARD_SUFFIX);
 
     /* getting to the end of the original block */
