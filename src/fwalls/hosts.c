@@ -103,7 +103,6 @@ int fw_block(char *addr, int addrkind, int service) {
 int fw_release(char *addr, int addrkind, int services) {
     int pos;
 
-    if (addrkind != ADDRKIND_IPv4) return FWALL_UNSUPP;
     if ((pos = list_locate(&hosts_blockedaddrs, addr)) < 0) {
         return FWALL_ERR;
     }
@@ -193,8 +192,12 @@ int hosts_updatelist() {
         			unlink(tempflname);
         			return FWALL_ERR;        	
 			}
-			fprintf(tmp, " %s : DENY\n", curr->addr);
-        }
+			
+			/* block lines differ depending on IP Version */
+			if (curr->addrkind == ADDRKIND_IPv4)
+				fprintf(tmp, " %s : DENY\n", curr->addr);
+			else fprintf(tmp, " [%s] : DENY\n", curr->addr);
+		}
     }
     fprintf(tmp, HOSTS_SSHGUARD_SUFFIX);
 
