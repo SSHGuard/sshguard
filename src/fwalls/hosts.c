@@ -9,6 +9,7 @@
 #include "../config.h"
 #include "../sshguard_log.h"
 #include "../sshguard_fw.h"
+#include "../sshguard_services.h"
 
 #ifndef HOSTSFILE_PATH
 #   define HOSTSFILE_PATH     "/etc/hosts.allow"
@@ -18,12 +19,24 @@
 #define HOSTS_SSHGUARD_PREFIX "###sshguard###\n"
 #define HOSTS_SSHGUARD_SUFFIX "###sshguard###\n"
 
+typedef struct {
+    char addr[ADDRLEN];
+    int addrkind;
+   	int service;
+} addr_service_t;
 
 int hosts_updatelist();
 int hosts_clearsshguardblocks(void);
 
 list_t hosts_blockedaddrs;
 FILE *hosts_file;
+
+size_t addr_service_meter(const void *el) { return sizeof(addr_service_t); }
+int addr_service_comparator(const void *a, const void *b) {
+    addr_service_t *A = (addr_service_t *)a;
+    addr_service_t *B = (addr_service_t *)b;
+    return !((strcmp(A->addr, B->addr) == 0) && (A->addrkind == B->addrkind) && (A->service == B->service));
+}
 
 int fw_init() {
     char buf[HOSTS_MAXCMDLEN];
@@ -64,8 +77,8 @@ int fw_init() {
     unlink(tempflname);
 
     list_init(&hosts_blockedaddrs);
-    list_attributes_copy(&hosts_blockedaddrs, list_meter_string, 1);
-    list_attributes_comparator(&hosts_blockedaddrs, list_comparator_string);
+    list_attributes_copy(&hosts_blockedaddrs, addr_service_meter, 1);
+    list_attributes_comparator(&hosts_blockedaddrs, addr_service_comparator);
 
     return FWALL_OK;
 }
@@ -77,8 +90,14 @@ int fw_fin() {
 }
 
 int fw_block(char *addr, int addrkind, int service) {
-    list_append(&hosts_blockedaddrs, addr);
-    return hosts_updatelist();
+	addr_service_t ads;
+		
+	strcpy(ads.addr, addr);
+	ads.service = service;
+	ads.addrkind = addrkind;
+	list_append(&hosts_blockedaddrs, &ads);
+
+	return hosts_updatelist();
 }
 
 int fw_release(char *addr, int addrkind, int services) {
@@ -103,7 +122,6 @@ int hosts_updatelist() {
     char buf[HOSTS_MAXCMDLEN];
     char tempflname[30];
     FILE *tmp, *deny;
-
 
     /* open hosts.allow file */
     deny = fopen(HOSTSFILE_PATH, "r+");
@@ -138,21 +156,45 @@ int hosts_updatelist() {
     }
 
     if (list_size(& hosts_blockedaddrs) > 0) {
-        /* future use  */
-        /*
-        switch (service) {
-            case SERVICES_SSH:
-            fprintf(tmp, "\nsshd :");
-            break;
-        }
-        */
         unsigned int cnt;
-        fprintf(tmp, "sshd :");
+		addr_service_t *curr;
 
         for (cnt = 0; cnt < (int)list_size(&hosts_blockedaddrs); cnt++) {
-            fprintf(tmp, " %s", (char *)list_get_at(&hosts_blockedaddrs, cnt));
+			curr = (addr_service_t *)list_get_at(&hosts_blockedaddrs, cnt);
+			
+			/* block based on service */
+			switch (curr->service) {
+    	        case SERVICES_SSH:
+			        fprintf(tmp, "sshd :");
+        	    	break;
+				case SERVICES_UWIMAP:
+					fprintf(tmp, "imapd :");
+					break;
+				case SERVICES_DOVECOT:
+					fprintf(tmp, "imap-login, pop3-login :");
+					break;
+				case SERVICES_CYRUSIMAP:
+					fprintf(tmp, "imapd, pop3d :");
+					break;
+				case SERVICES_FREEBSDFTPD:
+					fprintf(tmp, "ftpd :");
+					break;
+				case SERVICES_PROFTPD:
+					fprintf(tmp, "proftpd :");
+					break;
+				case SERVICES_PUREFTPD:
+					fprintf(tmp, "pure-ftpd :");
+					break;
+				default:
+					sshguard_log(LOG_ERR, "Attempting to block unknown service: %d", curr->service);
+        			fclose(deny);
+        			fclose(tmp);
+        			close(fd);
+        			unlink(tempflname);
+        			return FWALL_ERR;        	
+			}
+			fprintf(tmp, " %s : DENY\n", curr->addr);
         }
-        fprintf(tmp, " : DENY\n");
     }
     fprintf(tmp, HOSTS_SSHGUARD_SUFFIX);
 
