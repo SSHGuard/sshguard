@@ -9,7 +9,6 @@
 #include "../config.h"
 #include "../sshguard_log.h"
 #include "../sshguard_fw.h"
-#include "../sshguard_services.h"
 
 #ifndef HOSTSFILE_PATH
 #   define HOSTSFILE_PATH     "/etc/hosts.allow"
@@ -91,7 +90,7 @@ int fw_fin() {
 
 int fw_block(char *addr, int addrkind, int service) {
     addr_service_t ads;
-		
+
     strcpy(ads.addr, addr);
     ads.service = service;
     ads.addrkind = addrkind;
@@ -158,46 +157,16 @@ int hosts_updatelist() {
         unsigned int cnt;
         addr_service_t *curr;
 
+        fprintf(tmp, "ALL :");
         for (cnt = 0; cnt < (int)list_size(&hosts_blockedaddrs); cnt++) {
             curr = (addr_service_t *)list_get_at(&hosts_blockedaddrs, cnt);
-			
-            /* block based on service */
-            switch (curr->service) {
-                case SERVICES_SSH:
-                    fprintf(tmp, "sshd :");
-                    break;
-                case SERVICES_UWIMAP:
-                    fprintf(tmp, "imapd :");
-                    break;
-                case SERVICES_DOVECOT:
-                    fprintf(tmp, "imap-login, pop3-login :");
-                    break;
-                case SERVICES_CYRUSIMAP:
-                    fprintf(tmp, "imapd, pop3d :");
-                    break;
-                case SERVICES_FREEBSDFTPD:
-                    fprintf(tmp, "ftpd :");
-                    break;
-                case SERVICES_PROFTPD:
-                    fprintf(tmp, "proftpd :");
-                    break;
-                case SERVICES_PUREFTPD:
-                    fprintf(tmp, "pure-ftpd :");
-                    break;
-                default:
-                    sshguard_log(LOG_ERR, "Attempting to block unknown service: %d", curr->service);
-                    fclose(deny);
-                    fclose(tmp);
-                    close(fd);
-                    unlink(tempflname);
-                    return FWALL_ERR;        	
-            }
-			
+
             /* block lines differ depending on IP Version */
             if (curr->addrkind == ADDRKIND_IPv4)
-                fprintf(tmp, " %s : DENY\n", curr->addr);
-            else fprintf(tmp, " [%s] : DENY\n", curr->addr);
+                fprintf(tmp, " %s", curr->addr);
+            else fprintf(tmp, " [%s]", curr->addr);
         }
+        fprintf(tmp, " : DENY\n");
     }    
     fprintf(tmp, HOSTS_SSHGUARD_SUFFIX);
 
