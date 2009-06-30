@@ -143,6 +143,12 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    /* whitelist localhost */
+    if (whitelist_add("127.0.0.1") != 0) {
+        fprintf(stderr, "Could not whitelist localhost. terminating...\n");
+        exit(1);
+    }
+
     whitelist_conf_fin();
 
     /* logging system */
