@@ -67,7 +67,9 @@ int fw_block(char *addr, int addrkind, int service) {
         case ADDRKIND_IPv4:
             /* use ipfw */
             sprintf(command, IPFW_PATH "/ipfw");
+            sprintf(args, "add %u drop ip from %s to me", ruleno, addr);
             break;
+
         case ADDRKIND_IPv6:
 #ifdef FWALL_HAS_IP6FW
             /* use ip6fw if found */
@@ -76,13 +78,13 @@ int fw_block(char *addr, int addrkind, int service) {
             /* use ipfw, assume it supports IPv6 rules as well */
 	    	sprintf(command, IPFW_PATH "/ipfw");
 #endif
+            sprintf(args, "add %u drop ipv6 from %s to any", ruleno, addr);
             break;
+
         default:
             return FWALL_UNSUPP;
     }
-    /* build command arguments */
-    sprintf(args, "add %u drop ip from %s to me", ruleno, addr);
-            
+
     /* run command */
     ret = ipfwmod_runcommand(command, args);
     if (ret != 0) {
@@ -155,7 +157,9 @@ int fw_release(char *addr, int addrkind, int service) {
 int fw_flush(void) {
     struct addr_ruleno_s *data;
     char command[MAXIPFWCMDLEN], args[MAXIPFWCMDLEN];
-    int ret;
+    int ret = 0;
+
+    if (list_empty(& addrrulenumbers)) return FWALL_OK;
 
     list_iterator_start(&addrrulenumbers);
     while (list_iterator_hasnext(&addrrulenumbers)) {

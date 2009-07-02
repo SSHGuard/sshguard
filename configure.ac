@@ -279,6 +279,8 @@ AC_DEFINE_UNQUOTED(IPFILTER_CONFFILE, "$ipfconf", [filename of the ipfilter conf
 AC_DEFINE_UNQUOTED(IPFW_PATH, "$ipfwpath", [path for the ipfw command])
 # define $ip6fwpath in config.h
 AC_DEFINE_UNQUOTED(IP6FW_PATH, "$ip6fwpath", [path for ip6fw command, use null if non-existent FreeBSD >=7])
+# define $hasip6fw in config.h
+AC_DEFINE_UNQUOTED(FWALL_HAS_IP6FW, "$hasip6fw", [determine usage of ip6fw vs ipfw for ipv6 addresses])
 # define $iptablespath in config.h
 AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$iptablespath", [path for the iptables command])
 # define $ipfpath in config.h

@@ -6784,6 +6784,12 @@ cat >>confdefs.h <<_ACEOF
 #define IP6FW_PATH "$ip6fwpath"
 _ACEOF
 
+# define $hasip6fw in config.h
+
+cat >>confdefs.h <<_ACEOF
+#define FWALL_HAS_IP6FW "$hasip6fw"
+_ACEOF
+
 # define $iptablespath in config.h
 
 cat >>confdefs.h <<_ACEOF
