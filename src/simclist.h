@@ -38,6 +38,7 @@ extern "C" {
  */
 typedef int32_t list_hash_t;
 
+#ifndef SIMCLIST_NO_DUMPRESTORE
 typedef struct {
     uint16_t version;       /* dump version */
     int64_t timestamp;      /* when the list has been dumped, microseconds from UNIX epoch */
@@ -47,6 +48,7 @@ typedef struct {
     uint32_t dumpsize;
     int consistent;         /* 1 if the dump is verified complete/consistent; 0 otherwise */
 } list_dump_info_t;
+#endif
 
 /**
  * a comparator of elements.
@@ -600,6 +602,7 @@ int list_iterator_stop(list_t *restrict l);
  */
 list_hash_t list_hash(const list_t *restrict l);
 
+#ifndef SIMCLIST_NO_DUMPRESTORE
 /**
  * get meta informations on a list dump on filedescriptor.
  *
@@ -728,6 +731,7 @@ int list_restore_filedescriptor(list_t *restrict l, int fd, size_t *restrict len
  * @return          0 if successful; -1 otherwise
  */
 int list_restore_file(list_t *restrict l, const char *restrict filename, size_t *len);
+#endif
 
 /* ready-made comparators, meters and hash computers */
                                 /* comparator functions */

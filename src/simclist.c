@@ -34,6 +34,8 @@
 #include <limits.h>
 #include <stdint.h>
 
+
+#ifndef SIMCLIST_NO_DUMPRESTORE
 /* convert 64bit integers from host to network format */
 #define hton64(x)       (\
         htons(1) == 1 ?                                         \
@@ -51,6 +53,7 @@
 
 /* convert 64bit integers from network to host format */
 #define ntoh64(x)       (hton64(x))
+#endif
 
 /* some OSes don't have EPROTO (eg OpenBSD) */
 #ifndef EPROTO
@@ -547,7 +550,7 @@ unsigned int list_size(const list_t *restrict l) {
 }
 
 int list_empty(const list_t *restrict l) {
-    return (l->numels == 0);
+    return (l->numels > 0);
 }
 
 int list_locate(const list_t *restrict l, const void *data) {
@@ -864,6 +867,7 @@ list_hash_t list_hash(const list_t *restrict l) {
     return hash;
 }
 
+#ifndef SIMCLIST_NO_DUMPRESTORE
 int list_dump_getinfo_filedescriptor(int fd, list_dump_info_t *restrict info) {
     int32_t terminator_head, terminator_tail;
     uint32_t elemlen;
@@ -1258,6 +1262,7 @@ int list_restore_file(list_t *restrict l, const char *restrict filename, size_t 
 
     return totdata;
 }
+#endif /* ifndef SIMCLIST_NO_DUMPRESTORE */
 
 
 static int list_drop_elem(list_t *restrict l, struct list_entry_s *tmp, unsigned int pos) {
