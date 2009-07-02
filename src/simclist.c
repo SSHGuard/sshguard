@@ -550,7 +550,7 @@ unsigned int list_size(const list_t *restrict l) {
 }
 
 int list_empty(const list_t *restrict l) {
-    return (l->numels > 0);
+    return (l->numels == 0);
 }
 
 int list_locate(const list_t *restrict l, const void *data) {

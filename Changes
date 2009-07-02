@@ -1,4 +1,5 @@
 * 1.4rc4    Apr 2009
+    - fix handling of IPv6 with IPFW under Mac OS X Leopard (thanks David Horn)
     - various fixes to blacklisting module
     - provide default for blacklisting threshold in command line option
     - man page revisions
