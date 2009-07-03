@@ -11,6 +11,7 @@
     - fix using services other than ssh in hosts.allow
     - changed hosts.allow to block adresses on ALL services
     - hardcode localhost into whitelist
+    - changed ipf to block on ALL services
 
 * 1.4rc3    Jan 2009
     - sshguard ignores interrupted fgets() and reloads more seldom (thanks Keven Tipping)
