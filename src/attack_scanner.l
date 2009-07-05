@@ -140,8 +140,11 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
 <freebsdftpd_loginerr>", ".+                                    { BEGIN(INITIAL); return FREEBSDFTPD_LOGINERR_SUFF; }
 
  /* ProFTPd */
-{HOSTADDR}" ("[^\[]+"["                                  { BEGIN(proftpd_loginerr); return PROFTPD_LOGINERR_PREF; }
-<proftpd_loginerr>"]) -".*" no such user found ".+              { BEGIN(INITIAL); return PROFTPD_LOGINERR_SUFF; }
+{HOSTADDR}" ("[^\[]+"["                                         { BEGIN(proftpd_loginerr); return PROFTPD_LOGINERR_PREF; }
+<proftpd_loginerr>"])".*" no such user "("found ")?.+           { BEGIN(INITIAL); return PROFTPD_LOGINERR_SUFF; }
+ /* another log entry from ProFTPd */
+{HOSTADDR}" ("[[]+"["                                           { BEGIN(proftpd_loginerr); return PROFTPD_LOGINERR_PREF; }
+"]) - USER "{WORD}" (Login failed): ".*                         { BEGIN(INITIAL); return PROFTPD_LOGINERR_SUFF; }
 
  /* Pure-FTPd */
 "("[^@]+"@"                                                     { BEGIN(pureftpd_loginerr); return PUREFTPD_LOGINERR_PREF; }

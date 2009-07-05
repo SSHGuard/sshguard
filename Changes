@@ -1,11 +1,11 @@
 * 1.4rc5    Jun 2009
     - fix handling of IPv6 with IPFW under Mac OS X Leopard (thanks David Horn)
-    - fix buffer overflow in procauth_addprocess
-    - fix ipv6 bug in hosts.allow
+    - fix cmdline argument BoF exploitable by local users when sshguard is setuid
+    - support blocking IPv6 addrs in hosts.allow backend
     - fix using services other than ssh in hosts.allow
-    - changed hosts.allow to block adresses on ALL services
-    - hardcode localhost into whitelist
-    - changed ipf to block on ALL services
+    - support log formats of new versions of ProFTPd
+    - changed firewall backends to block traffic from attacker to all services
+    - whitelist localhost a priori
 
 * 1.4rc4    Apr 2009
     - various fixes to blacklisting module
@@ -60,7 +60,7 @@
         @ dovecot imap
         @ UWimap imap and pop
         @ FreeBSD's ftpd
-        @ Proftpd
+        @ ProFTPd
         @ pure-ftpd
 
 * 1.0       May 2007
