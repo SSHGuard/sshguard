@@ -1,17 +1,19 @@
-* 1.4rc4    Apr 2009
+* 1.4rc5    Jun 2009
     - fix handling of IPv6 with IPFW under Mac OS X Leopard (thanks David Horn)
-    - various fixes to blacklisting module
-    - provide default for blacklisting threshold in command line option
-    - man page revisions
-    - parser accepts "-" and "_" chars in process names
-    - correctly handle abuse threshold = 1 (thanks K. Tipping)
-    - some fixes to SimCList
     - fix buffer overflow in procauth_addprocess
     - fix ipv6 bug in hosts.allow
     - fix using services other than ssh in hosts.allow
     - changed hosts.allow to block adresses on ALL services
     - hardcode localhost into whitelist
     - changed ipf to block on ALL services
+
+* 1.4rc4    Apr 2009
+    - various fixes to blacklisting module
+    - provide default for blacklisting threshold in command line option
+    - man page revisions
+    - parser accepts "-" and "_" chars in process names
+    - correctly handle abuse threshold = 1 (thanks K. Tipping)
+    - some fixes to SimCList
 
 * 1.4rc3    Jan 2009
     - sshguard ignores interrupted fgets() and reloads more seldom (thanks Keven Tipping)
