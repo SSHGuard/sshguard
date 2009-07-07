@@ -25,7 +25,8 @@
 #include <stdlib.h>
 
 #include "attack_parser.h"
-#include "parser.h"
+
+#include "../parser.h"
 
 
 YY_BUFFER_STATE bufstate;

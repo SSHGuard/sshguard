@@ -308,5 +308,5 @@ if test x$usepf = xtrue ; then
     AC_MSG_NOTICE([Using $pfctlpath as location for pfctl])
 fi
 
-AC_OUTPUT([Makefile man/Makefile src/Makefile src/fwalls/Makefile])
+AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile])
 

@@ -8,10 +8,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "sshguard_log.h"
-#include "sshguard_procauth.h"
+#include "../sshguard_log.h"
+#include "../sshguard_procauth.h"
 
-#include "parser.h"
+#include "../parser.h"
 
 void yyerror(char *msg);
 extern int yylex();
