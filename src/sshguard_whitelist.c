@@ -136,8 +136,8 @@ int whitelist_add(char *str) {
         sshguard_log(LOG_DEBUG, "whitelist: add '%s' as plain IPv4.", str);
         return whitelist_add_ipv4(str);
     } else if (regexec(&wl_ip6reg, str, 0, NULL, 0) == 0) {            /* plain IPv6 address */
-        sshguard_log(LOG_WARNING, "whitelist: IPv6 whitelisting not yet supported, skipping...");
-        return -1;
+        sshguard_log(LOG_DEBUG, "whitelist: add '%s' as plain IPv6.", str);
+        return whitelist_add_ipv6(str);
     } else if (regexec(&wl_hostreg, str, 0, NULL, 0) == 0) {        /* hostname to be resolved */
         sshguard_log(LOG_DEBUG, "whitelist: add '%s' as host.", str);
         return whitelist_add_host(str);
@@ -208,6 +208,21 @@ int whitelist_add_ipv4(char *ip) {
 }
 
 int whitelist_add_ipv6(char *ip) {
+    addrblock_t ab;
+    int i;
+
+    ab.addrkind = ADDRKIND_IPv6;
+
+    if (inet_pton(AF_INET6, ip, &ab.address.ip6.address.s6_addr) != 1) {
+        sshguard_log(LOG_ERR, "whitelist: add ipv6: Could not add %s.", ip);
+        return -1;
+    }
+
+    for (i = 0; i < sizeof(struct in6_addr); i++)
+        ab.address.ip6.mask.s6_addr[i] = 0xFF;
+
+    list_append(&whitelist, & ab);
+    sshguard_log(LOG_DEBUG, "whitelist: add plain ip %s.", ip);
     return 0;
 }
 
@@ -236,20 +251,27 @@ int whitelist_add_host(char *host) {
 
 int whitelist_match(char *addr, int addrkind) {
     uint32_t addrent;
-    int i;
+    struct in6_addr addrent6;
+    int i, j;
     addrblock_t *entry;
 
     switch (addrkind) {
         case ADDRKIND_IPv4:
+            if (inet_pton(AF_INET, addr, &addrent) != 1) {
+                sshguard_log(LOG_WARNING, "whitelist: could not interpret ip address '%s'.", addr);
+                return 0;
+            }
             break;
         case ADDRKIND_IPv6:
+            if (inet_pton(AF_INET6, addr, &addrent6.s6_addr) != 1) {
+                sshguard_log(LOG_WARNING, "whitelist: could not interpret ip address '%s'.", addr);
+                return 0;
+            }
+            break;
         default:       /* not recognized */
             return 0;
     }
-    if (inet_pton(AF_INET, addr, &addrent) != 1) {
-        sshguard_log(LOG_WARNING, "whitelist: could not interpret ip address '%s'.", addr);
-        return 0;
-    }
+
     /* compare with every entry in the list */
     for (i = 0; (unsigned int)i < list_size(&whitelist); i++) {
         entry = (addrblock_t *)list_get_at(&whitelist, i);
@@ -260,10 +282,15 @@ int whitelist_match(char *addr, int addrkind) {
                     return 1;
                 }
                 break;
+            case ADDRKIND_IPv6:
+                for (j = 0; j < sizeof(addrent6); j++) {
+                    if ((entry->address.ip6.address.s6_addr[j] & entry->address.ip6.mask.s6_addr[j]) != (addrent6.s6_addr[j] & entry->address.ip6.mask.s6_addr[j]))
+                        return 0; 
+                }
+                return 1;
             default:
                 return 0;
         }
     }
     return 0;
 }
-
