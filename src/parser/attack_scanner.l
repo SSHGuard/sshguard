@@ -126,8 +126,8 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
 "Bad protocol version identification".*" from "                 { return SSH_BADPROTOCOLIDENTIF; }
 
  /* dovecot */
-"imap-login: Aborted login ("(({NUMBER}" authentication attempts")|("auth failed, "{NUMBER}" attempts"))"): user="[^ ]+" method="[^ ]+" rip="[^ ]+" lip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
-<dovecot_loginerr>", secured"                                                     { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
+"imap-login: Aborted login (auth failed, "{NUMBER}" attempts): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
+<dovecot_loginerr>", lip=".+                                        { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
 
  /* UWimap login errors */
 "Login failed user="[^ ]+" auth="[^ ]*" host="[^ ]+" "          { return UWIMAP_LOGINERR; }
