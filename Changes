@@ -1,4 +1,5 @@
 * 1.4rc6    Jul 2009
+    - fix IPv6 pattern to match special addresses
     - fix dovecot pattern
 
 * 1.4rc5    Jun 2009

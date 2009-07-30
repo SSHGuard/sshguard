@@ -82,6 +82,11 @@ TIMESTAMP_SYSLOG {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
   * 2) words of 7 chars different to "sshguard" (^s.* | s^s.* | ss^h.*
   */
 PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA-Z0-9]{7})|([sS][-_a-rt-zA-RT-Z0-9][-_a-zA-Z0-9]{6})|([sS]{2}[-_a-gi-zA-gI-Z0-9][-_a-zA-Z0-9]{5})|([sS]{2}[hH][-_a-fh-zA-FH-Z0-9][-_a-zA-Z0-9]{4})|([sS]{2}[hH][gG][-_a-tv-zA-TV-Z0-9][-_a-zA-Z0-9]{3})|([sS]{2}[hH][gG][uU][b-zB-Z0-9][-_a-zA-Z0-9]{2})|([sS]{2}[hH][gG][uU][-_aA][-_a-qs-zA-QS-Z0-9][-_a-zA-Z0-9])|([sS]{2}[hH][gG][uU][-_aA][rR][-_a-ce-zA-CE-Z0-9])
+
+ /* IPv4 address (used in IPv6 address too, for IPv4 encapsulation) */
+IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?|0)){3})
+IPV6ATOM    ([a-fA-F0-9]{1,4})
+  
 %%
 
 
@@ -154,9 +159,11 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
-(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?|0)){3} { yylval.str = yytext; return IPv4; }
+{IPV4}                                                          { yylval.str = yytext; return IPv4; }
+
  /* an IPv6 address */
-(([a-fA-F0-9]{1,4}(:[a-fA-F0-9]{1,4}){7})|(([a-fA-F0-9]{1,4}:){2}(:[a-fA-F0-9]{1,4}){1,5})|(:(:[a-fA-F0-9]{1,4}){1,6}|([a-fA-F0-9]{1,4}:)(:[a-fA-F0-9]{1,4}){1,6}|([a-fA-F0-9]{1,4}:){2}(:[a-fA-F0-9]{1,4}){1,5}|([a-fA-F0-9]{1,4}:){3}(:[a-fA-F0-9]{1,4}){1,4}|([a-fA-F0-9]{1,4}:){4}(:[a-fA-F0-9]{1,4}){1,3}|([a-fA-F0-9]{1,4}:){5}(:[a-fA-F0-9]{1,4}){1,2}|([a-fA-F0-9]{1,4}:){6}:[a-fA-F0-9]{1,4}))           { yylval.str = yytext; return IPv6;  }
+ /* standard | clouds implied | embedded IPv4 */
+((({IPV6ATOM}:){7}{IPV6ATOM})|(({IPV6ATOM})?::(({IPV6ATOM}:){1,5}({IPV6ATOM}))?)|(::[fF0]{0,4}:){IPV4}) { yylval.str = yytext; return IPv6; }
 
  /* an host address (PTR) */
 {HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }
@@ -168,7 +175,7 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
  /* TAI64 timestamp */
 [0-9A-Fa-f]{8}                                                  { return TIMESTAMP_TAI64; }
 
-[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; }
+ /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }
 [ \n\t]+            /* eat blanks */
  /* literals */
