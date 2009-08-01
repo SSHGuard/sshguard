@@ -94,9 +94,11 @@ AC_ARG_WITH(firewall,
         AC_CHECK_PROG(hasip6fw, ip6fw, "true", "")
         if test x$hasip6fw = x
         then
-            AC_MSG_NOTICE([ip6fw program not in found. Assuming ipfw supports IPv6 rules on its own.])
+            AC_MSG_NOTICE([ip6fw program not found. Assuming ipfw supports IPv6 rules on its own.])
         else
             AC_MSG_NOTICE([ip6fw found. Using ip6fw for blocking IPv6 addresses.])
+            # define FWALL_HAS_IP6FW in config.h
+            AC_DEFINE(FWALL_HAS_IP6FW, 1, [use ip6fw as ipfw can't take IPv6 addresses])
         fi
         ;;
      iptables)
@@ -279,8 +281,6 @@ AC_DEFINE_UNQUOTED(IPFILTER_CONFFILE, "$ipfconf", [filename of the ipfilter conf
 AC_DEFINE_UNQUOTED(IPFW_PATH, "$ipfwpath", [path for the ipfw command])
 # define $ip6fwpath in config.h
 AC_DEFINE_UNQUOTED(IP6FW_PATH, "$ip6fwpath", [path for ip6fw command, use null if non-existent FreeBSD >=7])
-# define $hasip6fw in config.h
-AC_DEFINE_UNQUOTED(FWALL_HAS_IP6FW, "$hasip6fw", [determine usage of ip6fw vs ipfw for ipv6 addresses])
 # define $iptablespath in config.h
 AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$iptablespath", [path for the iptables command])
 # define $ipfpath in config.h

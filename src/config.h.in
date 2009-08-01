@@ -3,7 +3,7 @@
 /* path for the genfilt command */
 #undef FILT_PATH
 
-/* determine usage of ip6fw vs ipfw for ipv6 addresses */
+/* use ip6fw as ipfw can't take IPv6 addresses */
 #undef FWALL_HAS_IP6FW
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */

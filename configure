@@ -6404,11 +6404,17 @@ fi
 
         if test x$hasip6fw = x
         then
-            { $as_echo "$as_me:$LINENO: ip6fw program not in found. Assuming ipfw supports IPv6 rules on its own." >&5
-$as_echo "$as_me: ip6fw program not in found. Assuming ipfw supports IPv6 rules on its own." >&6;}
+            { $as_echo "$as_me:$LINENO: ip6fw program not found. Assuming ipfw supports IPv6 rules on its own." >&5
+$as_echo "$as_me: ip6fw program not found. Assuming ipfw supports IPv6 rules on its own." >&6;}
         else
             { $as_echo "$as_me:$LINENO: ip6fw found. Using ip6fw for blocking IPv6 addresses." >&5
 $as_echo "$as_me: ip6fw found. Using ip6fw for blocking IPv6 addresses." >&6;}
+            # define FWALL_HAS_IP6FW in config.h
+
+cat >>confdefs.h <<\_ACEOF
+#define FWALL_HAS_IP6FW 1
+_ACEOF
+
         fi
         ;;
      iptables)
@@ -6786,12 +6792,6 @@ _ACEOF
 
 cat >>confdefs.h <<_ACEOF
 #define IP6FW_PATH "$ip6fwpath"
-_ACEOF
-
-# define $hasip6fw in config.h
-
-cat >>confdefs.h <<_ACEOF
-#define FWALL_HAS_IP6FW "$hasip6fw"
 _ACEOF
 
 # define $iptablespath in config.h
