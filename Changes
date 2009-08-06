@@ -1,6 +1,7 @@
 * 1.4rc6    Jul 2009
     - fix IPv6 pattern to match special addresses
     - fix dovecot pattern
+    - fix grammar to be insensitive to a log injection in sshd (thanks J. Oosterveen)
 
 * 1.4rc5    Jun 2009
     - fix handling of IPv6 with IPFW under Mac OS X Leopard (thanks David Horn)
