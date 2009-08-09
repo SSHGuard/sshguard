@@ -103,7 +103,7 @@ echo -n "Generating backend as command_${fwname}.h ..."
 gen_template "$fwname" "$fwinitcmd" "$fwblockcmd" "$fwreleasecmd" "$fwflushcmd" "$fwfincmd"
 
 echo " done!"
-echo "Do you want me to anonymously submit this to http://sshguard.sourceforge.net/newfw.php ? [y/n]"
+echo "Do you want me to anonymously submit this to http://www.sshguard.net/newfw.php ? [y/n]"
 read response
 
 if test "x$response" = xn ; then echo "Not submitting, and terminating." ; exit 0 ; fi
@@ -115,7 +115,7 @@ if ! hash curl 2>/dev/null ; then
     exit 2
 fi
 
-curl --silent -F"fwname=$fwname" -F"init=$fwinitcmd" -F"fin=$fwfincmd" -F"block=$fwblockcmd" -F"release=$fwreleasecmd" -F"flush=$fwflushcmd" http://sshguard.sourceforge.net/newfw.php >/dev/null
+curl --silent -F"fwname=$fwname" -F"init=$fwinitcmd" -F"fin=$fwfincmd" -F"block=$fwblockcmd" -F"release=$fwreleasecmd" -F"flush=$fwflushcmd" http://www.sshguard.net/newfw.php >/dev/null
 if test $? -ne 0 ; then
     echo "curl failed while submitting."
     exit 3

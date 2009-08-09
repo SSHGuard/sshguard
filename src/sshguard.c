@@ -15,7 +15,7 @@
  */
 
 /*
- * SSHGuard. See http://sshguard.sourceforge.net
+ * SSHGuard. See http://www.sshguard.net
  */
 
 #include <stdio.h>

@@ -1764,7 +1764,7 @@ char *yytext_ptr;
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 /*
- * SSHGuard. See http://sshguard.sourceforge.net
+ * SSHGuard. See http://www.sshguard.net
  */
 /* the symbol table definitions */
 #line 24 "attack_scanner.l"
