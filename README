@@ -3,11 +3,11 @@
     SSHGUARD
 ===================
 
-version: 1.4rc4
-date: April 2009
-author: mij@bitchx.it
+version: 1.4
+date: Aug 2009
+authors: Mij <mij@bitchx.it>, T.J. Jones <tjjones03@gmail.com>
 
-See http://sshguard.sf.net for information about sshguard, including
+See http://www.sshguard.net for information about sshguard, including
 technical documentation and licensing.
 
-All the documentation is held at http://sshguard.sourceforge.net/doc/
+All the documentation is available at http://www.sshguard.net/doc/
