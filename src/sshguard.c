@@ -29,6 +29,7 @@
 
 #include <simclist.h>
 
+
 /* subsystem for parsing log entries, notably parse_line() */
 #include "parser.h"
 
@@ -86,7 +87,7 @@ list_t offenders;
 /* fill an attacker_t structure for usage */
 static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
 /* comparison operator for sorting offenders list */
-static int lastAttackComparator(const void *a, const void *b);
+static int attackt_whenlast_comparator(const void *a, const void *b);
 
 #ifdef EINTR
 /* get line unaffected by interrupts */
@@ -124,7 +125,7 @@ int main(int argc, char *argv[]) {
     list_attributes_seeker(& hell, seeker_addr);
     list_init(&offenders);
     list_attributes_seeker(& offenders, seeker_addr);
-    list_attributes_comparator(& offenders, lastAttackComparator);
+    list_attributes_comparator(& offenders, attackt_whenlast_comparator);
 
     /* whitelisting system */
     if (whitelist_init() != 0 || whitelist_conf_init() != 0) {
@@ -267,6 +268,14 @@ char *safe_fgets(char *restrict s, int size, FILE *restrict stream) {
 #endif
 
 
+/*
+ * This function is called every time an attack pattern is matched.
+ * It does the following:
+ * 1) update the attacker infos (counter, timestamps etc)
+ *      --OR-- create them if first sight.
+ * 2) block the attacker, if attacks > threshold (abuse)
+ * 3) blacklist the address, if the number of abuses is excessive
+ */
 void report_address(attack_t attack) {
     attacker_t *tmpent = NULL;
     attacker_t *offenderent;
@@ -299,7 +308,7 @@ void report_address(attack_t attack) {
     tmpent->whenlast = time(NULL);
     tmpent->numhits++;
     if (tmpent->numhits < opts.abuse_threshold) {
-        /* just go on observing this guy */
+        /* do nothing now, just keep an eye on this guy */
         return;
     }
 
@@ -310,9 +319,30 @@ void report_address(attack_t attack) {
      * duration of blocking */
     tmpent->pardontime = opts.pardon_threshold;
     offenderent = list_seek(& offenders, & attack.address);
-    if (offenderent != NULL) {        /* this is a previous offender */
+
+    if (offenderent == NULL) {
+        /* first time we block this guy */
+        sshguard_log(LOG_DEBUG, "First sight of offender '%s:%d', adding to offenders list.", tmpent->attack.address.value, tmpent->attack.address.kind);
+        offenderent = (attacker_t *)malloc(sizeof(attacker_t));
+        memcpy(offenderent, tmpent, sizeof(attacker_t));
+        offenderent->numhits = 1;
+        list_prepend(& offenders, offenderent);
+        assert(! list_empty(& offenders));
+#if 0
+        /* we assume that the list is already sorted by decreasing last-attack time */
+        /* prune list */
+        if (list_size(& offenders) > MAX_OFFENDER_ITEMS) {
+            list_delete_range(& offenders, MAX_OFFENDER_ITEMS, list_size(& offenders)-1);
+        }
+#endif
+    } else {
+        /* this is a previous offender */
+        offenderent->numhits++;
+        offenderent->whenlast = tmpent->whenlast;
+
         if (offenderent->numhits >= opts.blacklist_threshold) {
-            /* this host must be blocked permanently */
+            /* this host must be blacklisted -- blocked and never unblocked */
+            tmpent->pardontime = 0;
 
             /* insert in the blacklisted db iff enabled */
             if (opts.blacklist_filename != NULL) {
@@ -322,23 +352,29 @@ void report_address(attack_t attack) {
                         break;
                     case 0:     /* not in blacklist */
                         /* add it */
-                        sshguard_log(LOG_NOTICE, "Blacklisting address '%s:%d' after %d abuses.", offenderent->attack.address.value, offenderent->attack.address.kind, offenderent->numhits);
-                        blacklist_add(opts.blacklist_filename, offenderent);
+                        sshguard_log(LOG_NOTICE, "Offender '%s:%d' seen %d times (threshold %d) -> blacklisted.",
+                                tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->numhits,
+                                opts.blacklist_threshold);
+                        if (blacklist_add(opts.blacklist_filename, offenderent) != 0) {
+                            sshguard_log(LOG_ERR, "Could not blacklist address: %s", strerror(errno));
+                        }
                         break;
                     default:    /* error while looking up */
                         sshguard_log(LOG_ERR, "Error while looking up '%s:%d' in blacklist '%s'.", attack.address.value, attack.address.kind, opts.blacklist_filename);
                 }
             }
-            tmpent->pardontime = 0;
         } else {
+            sshguard_log(LOG_INFO, "Offender '%s:%d' seen %d times.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->numhits);
             /* compute blocking time wrt the "offensiveness" */
             for (ret = 0; ret < offenderent->numhits; ret++) {
                 tmpent->pardontime *= 2;
             }
         }
     }
+    list_sort(& offenders, -1);
 
-    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u failures over %u seconds.\n", tmpent->attack.address.value, tmpent->attack.address.kind, tmpent->pardontime, tmpent->numhits, tmpent->whenlast - tmpent->whenfirst);
+    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u failures over %u seconds.\n", tmpent->attack.address.value,
+            tmpent->attack.address.kind, tmpent->pardontime, tmpent->numhits, tmpent->whenlast - tmpent->whenfirst);
     ret = fw_block(attack.address.value, attack.address.kind, attack.service);
     if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
 
@@ -346,49 +382,6 @@ void report_address(attack_t attack) {
     list_append(&hell, tmpent);
     assert(list_locate(& limbo, tmpent) >= 0);
     list_delete_at(& limbo, list_locate(& limbo, tmpent));
-
-    /* add / increase entry to offenders list */
-    if (offenderent == NULL) {
-        /* add */
-        sshguard_log(LOG_DEBUG, "First sight of offender '%s:%d', adding to offenders list.", tmpent->attack.address.value, tmpent->attack.address.kind);
-        offenderent = (attacker_t *)malloc(sizeof(attacker_t));
-        memcpy(offenderent, tmpent, sizeof(attacker_t));
-        offenderent->numhits = 1;
-        list_prepend(& offenders, offenderent);
-        assert(! list_empty(& offenders));
-        /* we assume that the list is already sorted by decreasing last-attack time */
-        /* prune list */
-        if (list_size(& offenders) > MAX_OFFENDER_ITEMS) {
-            list_delete_range(& offenders, MAX_OFFENDER_ITEMS, list_size(& offenders)-1);
-        }
-    } else {
-        /* increase offence count */
-        offenderent->numhits++;
-        /* if it passed the blacklisting threshold, add it to permanent blacklist */
-        if (offenderent->numhits >= opts.blacklist_threshold) {
-            sshguard_log(LOG_NOTICE, "Offender '%s:%d' seen %d times (threshold %d) -> blacklisted.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->numhits, opts.blacklist_threshold);
-            ret = blacklist_lookup_address(opts.blacklist_filename, & offenderent->attack.address);
-            switch (ret) {
-                case 0:
-                    /* not already present, add it */
-                    ret = blacklist_add(opts.blacklist_filename, offenderent);
-                    if (ret != 0) {
-                        sshguard_log(LOG_ERR, "Could not blacklist address: %s", strerror(errno));
-                    }
-                    break;
-                case 1:
-                    /* already present, do nothing */
-                    break;
-                default:
-                    sshguard_log(LOG_ERR, "Unable to lookup address in blacklist.");
-            }
-            /* re-sort offenders list by descending time of last attack */
-            list_sort(& offenders, -1);
-        } else {
-            /* just print the notice */
-            sshguard_log(LOG_INFO, "Offender '%s:%d' seen %d times.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->numhits);
-        }
-    }
 }
 
 static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack) {
@@ -485,10 +478,10 @@ void sigstpcont_handler(int signo) {
     }
 }
 
-static int lastAttackComparator(const void *a, const void *b) {
+static int attackt_whenlast_comparator(const void *a, const void *b) {
     const attacker_t *aa = (const attacker_t *)a;
     const attacker_t *bb = (const attacker_t *)b;
 
-    return ((aa->whenlast < bb->whenlast) - (aa->whenlast > bb->whenlast));
+    return ((aa->whenlast > bb->whenlast) - (aa->whenlast < bb->whenlast));
 }
 
