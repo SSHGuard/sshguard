@@ -49,7 +49,7 @@ static int procauth_ischildof(pid_t child, pid_t parent);
 
 
 int procauth_init() {
-    srandom(time(NULL));
+    /* assume random number generator already seeded */
     list_init(&proclist);
     list_attributes_copy(&proclist, procpid_meter, 1);
 

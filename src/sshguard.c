@@ -115,7 +115,9 @@ int main(int argc, char *argv[]) {
     /* list of addresses that have been blacklisted */
     list_t *blacklist = NULL;
     
+
     /* initializations */
+    srandom(time(NULL));
     suspended = 0;
 
     /* pending, blocked, and offender address lists */
@@ -412,8 +414,6 @@ void *pardonBlocked(void *par) {
     attacker_t *tmpel;
     int ret, pos;
 
-
-    srandom(time(NULL));
 
     while (1) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
