@@ -1,6 +1,6 @@
 SUBDIRS = parser fwalls
 
-AM_CFLAGS=-I. -O2 -std=c99 -Wall
+AM_CFLAGS=-I. -std=c99 -Wall -D_POSIX_C_SOURCE=200112L
 
 if DEBUG
 AM_CFLAGS+= -g

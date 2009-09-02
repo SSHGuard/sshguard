@@ -1,4 +1,4 @@
-AM_CFLAGS=-I. -I.. -Wall -O2 -std=c99
+AM_CFLAGS=-I. -I.. -Wall -std=c99 -D_POSIX_C_SOURCE=200112L
 AM_YFLAGS = -d
 #AM_LFLAGS = -d
 
