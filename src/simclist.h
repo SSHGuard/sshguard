@@ -31,6 +31,15 @@ extern "C" {
 #include <errno.h>
 #include <sys/types.h>
 
+/* Be friend of both C90 and C99 compilers */
+#if __STDC_VERSION__ >= 199901L
+    /* "inline" and "restrict" are keywords */
+#else
+#   define inline           /* inline */
+#   define restrict         /* restrict */
+#endif
+
+
 /**
  * Type representing list hashes.
  *
@@ -598,9 +607,11 @@ int list_iterator_stop(list_t *restrict l);
  * return the hash of the current status of the list.
  *
  * @param l     list to operate
- * @return      an hash of the list
+ * @param hash  where the resulting hash is put
+ *
+ * @return      0 for success; <0 for failure
  */
-list_hash_t list_hash(const list_t *restrict l);
+int list_hash(const list_t *restrict l, list_hash_t *restrict hash);
 
 #ifndef SIMCLIST_NO_DUMPRESTORE
 /**
