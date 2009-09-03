@@ -146,6 +146,9 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    /* logging system */
+    sshguard_log_init(opts.debugging);
+
     /* whitelist localhost */
     if (whitelist_add("127.0.0.1") != 0) {
         fprintf(stderr, "Could not whitelist localhost. terminating...\n");
@@ -153,9 +156,6 @@ int main(int argc, char *argv[]) {
     }
 
     whitelist_conf_fin();
-
-    /* logging system */
-    sshguard_log_init(opts.debugging);
 
     /* address blocking system */
     if (fw_init() != FWALL_OK) {
