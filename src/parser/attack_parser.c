@@ -141,11 +141,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
+
 
 #include "../sshguard_log.h"
 #include "../sshguard_procauth.h"
@@ -177,13 +180,13 @@ extern int yylex();
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 24 "attack_parser.y"
+#line 27 "attack_parser.y"
 {
     char *str;
     int num;
 }
 /* Line 193 of yacc.c.  */
-#line 187 "attack_parser.c"
+#line 190 "attack_parser.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -196,7 +199,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 200 "attack_parser.c"
+#line 203 "attack_parser.c"
 
 #ifdef short
 # undef short
@@ -493,10 +496,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    57,    57,    58,    59,    60,    73,    82,    87,    91,
-      96,    97,    98,    99,   100,   101,   102,   107,   111,   115,
-     154,   156,   157,   158,   159,   164,   166,   170,   171,   175,
-     179,   183,   188,   193,   197,   202,   207,   212
+       0,    60,    60,    61,    62,    63,    76,    85,    90,    94,
+      99,   100,   101,   102,   103,   104,   105,   110,   114,   118,
+     170,   172,   173,   174,   175,   180,   182,   186,   187,   191,
+     195,   199,   204,   209,   213,   218,   223,   228
 };
 #endif
 
@@ -1447,28 +1450,8 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 2:
-#line 57 "attack_parser.y"
-    {   YYACCEPT;   }
-    break;
-
-  case 3:
-#line 58 "attack_parser.y"
-    {   YYACCEPT;   }
-    break;
-
-  case 4:
-#line 59 "attack_parser.y"
-    {   YYACCEPT;   }
-    break;
-
-  case 5:
-#line 60 "attack_parser.y"
-    {   YYACCEPT;   }
-    break;
-
-  case 6:
-#line 73 "attack_parser.y"
+        case 6:
+#line 76 "attack_parser.y"
     {
                         /* reject to accept if the pid has been forged */
                         if (procauth_isauthoritative(parsed_attack.service, (yyvsp[(1) - (2)].num)) == -1) {
@@ -1480,42 +1463,42 @@ yyreduce:
     break;
 
   case 10:
-#line 96 "attack_parser.y"
+#line 99 "attack_parser.y"
     {   parsed_attack.service = SERVICES_SSH; }
     break;
 
   case 11:
-#line 97 "attack_parser.y"
+#line 100 "attack_parser.y"
     {   parsed_attack.service = SERVICES_DOVECOT; }
     break;
 
   case 12:
-#line 98 "attack_parser.y"
+#line 101 "attack_parser.y"
     {   parsed_attack.service = SERVICES_UWIMAP; }
     break;
 
   case 13:
-#line 99 "attack_parser.y"
+#line 102 "attack_parser.y"
     {   parsed_attack.service = SERVICES_CYRUSIMAP; }
     break;
 
   case 14:
-#line 100 "attack_parser.y"
+#line 103 "attack_parser.y"
     {   parsed_attack.service = SERVICES_FREEBSDFTPD; }
     break;
 
   case 15:
-#line 101 "attack_parser.y"
+#line 104 "attack_parser.y"
     {   parsed_attack.service = SERVICES_PROFTPD; }
     break;
 
   case 16:
-#line 102 "attack_parser.y"
+#line 105 "attack_parser.y"
     {   parsed_attack.service = SERVICES_PUREFTPD; }
     break;
 
   case 17:
-#line 107 "attack_parser.y"
+#line 110 "attack_parser.y"
     {
                         parsed_attack.address.kind = ADDRKIND_IPv4;
                         strcpy(parsed_attack.address.value, (yyvsp[(1) - (1)].str));
@@ -1523,7 +1506,7 @@ yyreduce:
     break;
 
   case 18:
-#line 111 "attack_parser.y"
+#line 114 "attack_parser.y"
     {
                         parsed_attack.address.kind = ADDRKIND_IPv6;
                         strcpy(parsed_attack.address.value, (yyvsp[(1) - (1)].str));
@@ -1531,44 +1514,57 @@ yyreduce:
     break;
 
   case 19:
-#line 115 "attack_parser.y"
+#line 118 "attack_parser.y"
     {
-                        union { struct in_addr addr4; struct in6_addr addr6; } addr;
-                        struct hostent *he;
+                        struct addrinfo addrinfo_hints;
+                        struct addrinfo *addrinfo_result;
+                        int res;
 
-                        if (1 == 1) {
-                            he = gethostbyname((yyvsp[(1) - (1)].str));
-                            if (he == NULL) {
-                                /* could not resolve hostname in IPv4! */
-                                sshguard_log(LOG_DEBUG, "Could not resolve hostname '%s' in IPv4 address: %s.", (yyvsp[(1) - (1)].str), hstrerror(h_errno));
-                                /* try IPv6 */
-                                he = gethostbyname2((yyvsp[(1) - (1)].str), AF_INET6);
-                                if (he == NULL) {
-                                    /* could not resolve hostname in IPv6 either! */
-                                    sshguard_log(LOG_DEBUG, "Could not resolve hostname '%s' in IPv6 address: %s.", (yyvsp[(1) - (1)].str), hstrerror(h_errno));
-                                    sshguard_log(LOG_ERR, "Could not resolve hostname '%s' in IPv4 nor IPv6 address!", (yyvsp[(1) - (1)].str));
+                        /* look up IPv4 first */
+                        memset(& addrinfo_hints, 0x00, sizeof(addrinfo_hints));
+                        addrinfo_hints.ai_family = PF_INET;
+                        res = getaddrinfo((yyvsp[(1) - (1)].str), NULL, & addrinfo_hints, & addrinfo_result);
+                        if (res == 0) {
+                            struct sockaddr_in *foo4;
+                            /* pick the first (IPv4) result address and return */
+                            parsed_attack.address.kind = ADDRKIND_IPv4;
+                            foo4 = (struct sockaddr_in *)(addrinfo_result->ai_addr);
+                            if (inet_ntop(AF_INET, & foo4->sin_addr, parsed_attack.address.value, addrinfo_result->ai_addrlen) == NULL) {
+                                freeaddrinfo(addrinfo_result);
+                                sshguard_log(LOG_ERR, "Unable to interpret resolution result as IPv4 address: %s. Giving up entry.", strerror(errno));
+                                YYABORT;
+                            }
+                        } else {
+                            sshguard_log(LOG_DEBUG, "Failed to resolve '%s' @ IPv4! Trying IPv6.", (yyvsp[(1) - (1)].str));
+                            /* try IPv6 */
+                            addrinfo_hints.ai_family = PF_INET6;
+                            res = getaddrinfo((yyvsp[(1) - (1)].str), NULL, & addrinfo_hints, & addrinfo_result);
+                            if (res == 0) {
+                                struct sockaddr_in6 *foo6;
+                                /* pick the first (IPv6) result address and return */
+                                parsed_attack.address.kind = ADDRKIND_IPv6;
+                                foo6 = (struct sockaddr_in6 *)(addrinfo_result->ai_addr);
+                                if (inet_ntop(AF_INET6, & foo6->sin6_addr, parsed_attack.address.value, addrinfo_result->ai_addrlen) == NULL) {
+                                    sshguard_log(LOG_ERR, "Unable to interpret resolution result as IPv6 address: %s. Giving up entry.", strerror(errno));
+                                    freeaddrinfo(addrinfo_result);
                                     YYABORT;
                                 }
-                                /* SUCCESSFULLY resolved IPv6 */
-                                /* copy IPv6 address */
-                                memcpy(& addr.addr6, he->h_addr_list[0], he->h_length);
-                                inet_ntop(AF_INET6, & addr.addr6, parsed_attack.address.value, ADDRLEN);
-                                parsed_attack.address.kind = ADDRKIND_IPv6;
                             } else {
-                                /* SUCCESSFULLY resolved IPv4 */
-                                /* copy IPv4 address */
-                                memcpy(& addr.addr4, he->h_addr_list[0], he->h_length);
-                                inet_ntop(AF_INET, & addr.addr4, parsed_attack.address.value, ADDRLEN);
-                                parsed_attack.address.kind = ADDRKIND_IPv4;
+                                sshguard_log(LOG_ERR, "Could not resolv '%s' in neither of IPv{4,6}. Giving up entry.", (yyvsp[(1) - (1)].str));
+                                freeaddrinfo(addrinfo_result);
+                                YYABORT;
                             }
-                            sshguard_log(LOG_DEBUG, "Successfully resolved host '%s' to address '%s'.", (yyvsp[(1) - (1)].str), parsed_attack.address.value);
                         }
+
+                        sshguard_log(LOG_INFO, "Successfully resolved '%s' --> %d:'%s'.",
+                                (yyvsp[(1) - (1)].str), parsed_attack.address.kind, parsed_attack.address.value);
+                        freeaddrinfo(addrinfo_result);
                     }
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1572 "attack_parser.c"
+#line 1568 "attack_parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1782,7 +1778,7 @@ yyreturn:
 }
 
 
-#line 215 "attack_parser.y"
+#line 231 "attack_parser.y"
 
 
 void yyerror(char *msg) { /* do nothing */ }

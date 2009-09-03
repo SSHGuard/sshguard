@@ -2,11 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
+
 
 #include "../sshguard_log.h"
 #include "../sshguard_procauth.h"
@@ -54,10 +57,10 @@ extern int yylex();
 
 /* log source */
 text:
-    syslogent                                       {   YYACCEPT;   }
-    | multilogent                                   {   YYACCEPT;   }
-    | metalogent                                    {   YYACCEPT;   }
-    | logmsg                                        {   YYACCEPT;   }
+    syslogent
+    | multilogent
+    | metalogent
+    | logmsg
     ;
 
 /**         BEGIN OF "LIBRARY" RULES        **/
@@ -113,36 +116,49 @@ addr:
                         strcpy(parsed_attack.address.value, $1);
                     }
     | HOSTADDR      {
-                        union { struct in_addr addr4; struct in6_addr addr6; } addr;
-                        struct hostent *he;
+                        struct addrinfo addrinfo_hints;
+                        struct addrinfo *addrinfo_result;
+                        int res;
 
-                        if (1 == 1) {
-                            he = gethostbyname($1);
-                            if (he == NULL) {
-                                /* could not resolve hostname in IPv4! */
-                                sshguard_log(LOG_DEBUG, "Could not resolve hostname '%s' in IPv4 address: %s.", $1, hstrerror(h_errno));
-                                /* try IPv6 */
-                                he = gethostbyname2($1, AF_INET6);
-                                if (he == NULL) {
-                                    /* could not resolve hostname in IPv6 either! */
-                                    sshguard_log(LOG_DEBUG, "Could not resolve hostname '%s' in IPv6 address: %s.", $1, hstrerror(h_errno));
-                                    sshguard_log(LOG_ERR, "Could not resolve hostname '%s' in IPv4 nor IPv6 address!", $1);
+                        /* look up IPv4 first */
+                        memset(& addrinfo_hints, 0x00, sizeof(addrinfo_hints));
+                        addrinfo_hints.ai_family = PF_INET;
+                        res = getaddrinfo($1, NULL, & addrinfo_hints, & addrinfo_result);
+                        if (res == 0) {
+                            struct sockaddr_in *foo4;
+                            /* pick the first (IPv4) result address and return */
+                            parsed_attack.address.kind = ADDRKIND_IPv4;
+                            foo4 = (struct sockaddr_in *)(addrinfo_result->ai_addr);
+                            if (inet_ntop(AF_INET, & foo4->sin_addr, parsed_attack.address.value, addrinfo_result->ai_addrlen) == NULL) {
+                                freeaddrinfo(addrinfo_result);
+                                sshguard_log(LOG_ERR, "Unable to interpret resolution result as IPv4 address: %s. Giving up entry.", strerror(errno));
+                                YYABORT;
+                            }
+                        } else {
+                            sshguard_log(LOG_DEBUG, "Failed to resolve '%s' @ IPv4! Trying IPv6.", $1);
+                            /* try IPv6 */
+                            addrinfo_hints.ai_family = PF_INET6;
+                            res = getaddrinfo($1, NULL, & addrinfo_hints, & addrinfo_result);
+                            if (res == 0) {
+                                struct sockaddr_in6 *foo6;
+                                /* pick the first (IPv6) result address and return */
+                                parsed_attack.address.kind = ADDRKIND_IPv6;
+                                foo6 = (struct sockaddr_in6 *)(addrinfo_result->ai_addr);
+                                if (inet_ntop(AF_INET6, & foo6->sin6_addr, parsed_attack.address.value, addrinfo_result->ai_addrlen) == NULL) {
+                                    sshguard_log(LOG_ERR, "Unable to interpret resolution result as IPv6 address: %s. Giving up entry.", strerror(errno));
+                                    freeaddrinfo(addrinfo_result);
                                     YYABORT;
                                 }
-                                /* SUCCESSFULLY resolved IPv6 */
-                                /* copy IPv6 address */
-                                memcpy(& addr.addr6, he->h_addr_list[0], he->h_length);
-                                inet_ntop(AF_INET6, & addr.addr6, parsed_attack.address.value, ADDRLEN);
-                                parsed_attack.address.kind = ADDRKIND_IPv6;
                             } else {
-                                /* SUCCESSFULLY resolved IPv4 */
-                                /* copy IPv4 address */
-                                memcpy(& addr.addr4, he->h_addr_list[0], he->h_length);
-                                inet_ntop(AF_INET, & addr.addr4, parsed_attack.address.value, ADDRLEN);
-                                parsed_attack.address.kind = ADDRKIND_IPv4;
+                                sshguard_log(LOG_ERR, "Could not resolv '%s' in neither of IPv{4,6}. Giving up entry.", $1);
+                                freeaddrinfo(addrinfo_result);
+                                YYABORT;
                             }
-                            sshguard_log(LOG_DEBUG, "Successfully resolved host '%s' to address '%s'.", $1, parsed_attack.address.value);
                         }
+
+                        sshguard_log(LOG_INFO, "Successfully resolved '%s' --> %d:'%s'.",
+                                $1, parsed_attack.address.kind, parsed_attack.address.value);
+                        freeaddrinfo(addrinfo_result);
                     }
     ;
 
