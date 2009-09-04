@@ -82,6 +82,8 @@ int sshguard_log(int prio, char *fmt, ...) {
             msgbuf_len = newlen;
             msgbuf = (char *)malloc(msgbuf_len);
             assert(msgbuf != NULL);
+            va_end(ap);
+            va_start(ap, fmt);
         }
         syslog(prio, "%s", msgbuf);
     }
