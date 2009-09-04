@@ -6,8 +6,8 @@
 
 #include "../config.h"
 
-/* for initializing the firewall */
-#define COMMAND_INIT        ""
+/* for initializing the firewall (+ make sure we have sufficient credentials) */
+#define COMMAND_INIT        "iptables -L"
 
 /* for finalizing the firewall */
 #define COMMAND_FIN         ""

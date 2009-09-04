@@ -5,6 +5,7 @@
     - support non-POSIX libCs that require getopt.h (thanks Nobuhiro Iwamatsu)
     - import newer SimCList containing a number of fixes and improvements
     - firewall backends now block all traffic from attackers by default, not per-service
+    - netfilter/iptables backend now verifies credentials at initialization
     - parser accepts "-" and "_" chars in process names
     - fix detection of some ProFTPd and pure-ftp messages
     - support log formats of new versions of ProFTPd
