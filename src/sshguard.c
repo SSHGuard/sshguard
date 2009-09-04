@@ -129,6 +129,9 @@ int main(int argc, char *argv[]) {
     list_attributes_seeker(& offenders, seeker_addr);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
 
+    /* logging system */
+    sshguard_log_init(opts.debugging);
+
     /* whitelisting system */
     if (whitelist_init() != 0 || whitelist_conf_init() != 0) {
         fprintf(stderr, "Could not nitialize the whitelist engine.\n");
@@ -145,9 +148,6 @@ int main(int argc, char *argv[]) {
     if (get_options_cmdline(argc, argv) != 0) {
         exit(1);
     }
-
-    /* logging system */
-    sshguard_log_init(opts.debugging);
 
     /* whitelist localhost */
     if (whitelist_add("127.0.0.1") != 0) {
@@ -197,8 +197,13 @@ int main(int argc, char *argv[]) {
         for (retv = 0; retv < list_size(blacklist); retv++) {
             attacker_t *bl_attacker = list_get_at(blacklist, retv);
             assert(bl_attacker != NULL);
-            sshguard_log(LOG_DEBUG, "Loaded from blacklist (%d): '%s:%d', service %d, last seen %s.", retv, bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service, ctime(& bl_attacker->whenlast));
-            fw_block(bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service);
+            sshguard_log(LOG_DEBUG, "Loaded from blacklist (%d): '%s:%d', service %d, last seen %s.", retv,
+                    bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service,
+                    ctime(& bl_attacker->whenlast));
+            if (fw_block(bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service) != FWALL_OK) {
+                fprintf(stderr, "Unable to block addresses in firewall. Terminating.\n");
+                exit(1);
+            }
         }
         list_destroy(blacklist);
         free(blacklist);
