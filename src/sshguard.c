@@ -83,6 +83,9 @@ list_t hell;
 /* list of offenders (addresses already blocked in the past) */
 list_t offenders;
 
+/* global debugging flag */
+int sshg_debugging = 0;
+
 
 /* fill an attacker_t structure for usage */
 static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
@@ -119,6 +122,7 @@ int main(int argc, char *argv[]) {
     /* initializations */
     srandom(time(NULL));
     suspended = 0;
+    sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
 
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
@@ -130,7 +134,7 @@ int main(int argc, char *argv[]) {
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
 
     /* logging system */
-    sshguard_log_init(opts.debugging);
+    sshguard_log_init(sshg_debugging);
 
     /* whitelisting system */
     if (whitelist_init() != 0 || whitelist_conf_init() != 0) {
@@ -214,9 +218,9 @@ int main(int argc, char *argv[]) {
 
     }
 
-    /* set opts.debugging value for parser/scanner ... */
-    yydebug = opts.debugging;
-    yy_flex_debug = opts.debugging;
+    /* set debugging value for parser/scanner ... */
+    yydebug = sshg_debugging;
+    yy_flex_debug = sshg_debugging;
     
     /* start thread for purging stale blocked addresses */
     if (pthread_create(&tid, NULL, pardonBlocked, NULL) != 0) {

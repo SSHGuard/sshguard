@@ -2,6 +2,7 @@
     - add touchiness: block repeated abusers for longer
     - add blacklisting: store frequent abusers for permanent blocking
     - sshguard ignores interrupted fgets() and reloads more seldom (thanks Keven Tipping)
+    - debug mode now enabled with SSHGUARD_DEBUG environment variable (no "-d")
     - support non-POSIX libCs that require getopt.h (thanks Nobuhiro Iwamatsu)
     - import newer SimCList containing a number of fixes and improvements
     - firewall backends now block all traffic from attackers by default, not per-service

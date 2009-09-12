@@ -49,7 +49,6 @@ int get_options_cmdline(int argc, char *argv[]) {
     opts.pardon_threshold = DEFAULT_PARDON_THRESHOLD;
     opts.stale_threshold = DEFAULT_STALE_THRESHOLD;
     opts.abuse_threshold = DEFAULT_ABUSE_THRESHOLD;
-    opts.debugging = 0;
     while ((optch = getopt(argc, argv, "b:p:s:a:w:f:vdh")) != -1) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
@@ -66,9 +65,11 @@ int get_options_cmdline(int argc, char *argv[]) {
                     strcpy(opts.blacklist_filename, optarg);
                 }
                 break;
-            case 'd':   /* enable debugging */
-                opts.debugging = 1;
-                break;
+
+            case 'd':   /* (historical) debugging */
+                fprintf(stderr, "Debugging mode now uses environment variable. Run:\n\tenv SSHGUARD_DEBUG=\"\" %s ...\n", argv[0]);
+                return -1;
+
             case 'p':   /* pardon threshold interval */
                 opts.pardon_threshold = strtol(optarg, (char **)NULL, 10);
                 if (opts.pardon_threshold < 1) {
@@ -77,6 +78,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 					return -1;
                 }
                 break;
+
             case 's':   /* stale threshold interval */
                 opts.stale_threshold = strtol(optarg, (char **)NULL, 10);
                 if (opts.stale_threshold < 1) {
@@ -85,6 +87,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 					return -1;
                 }
                 break;
+
             case 'a':   /* abuse threshold count */
                 opts.abuse_threshold = strtol(optarg, (char **)NULL, 10);
                 if (opts.abuse_threshold < 1) {
@@ -93,6 +96,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 					return -1;
                 }
                 break;
+
             case 'w':   /* whitelist entries */
                 if (optarg[0] == '/' || optarg[0] == '.') {
                     /* add from file */
@@ -110,6 +114,7 @@ int get_options_cmdline(int argc, char *argv[]) {
                     }
                 }
                 break;
+
             case 'f':   /* process pid authorization */
                 if (procauth_addprocess(optarg) != 0) {
                     fprintf(stderr, "Could not parse service pid configuration '%s'.\n", optarg);
@@ -117,9 +122,11 @@ int get_options_cmdline(int argc, char *argv[]) {
 					return -1;
                 }
                 break;
+
 			case 'v': 	/* version */
 				version();
 				return -1;
+
             case 'h':   /* help */
             default:    /* or anything else: print help */
 				usage();
@@ -132,7 +139,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
 static void usage(void) {
     fprintf(stderr, "Usage:\nsshguard [-d] [-b <thr:file>] [-a num] [-p sec] [-w <whlst>]{0,n} [-s sec] [-l c] [-f srv:pidfile]{0,n}\n");
-    fprintf(stderr, "\t-d\tDebugging mode: don't fork to background, and dump activity to stderr.\n");
+    /* fprintf(stderr, "\t-d\tDebugging mode: don't fork to background, and dump activity to stderr.\n"); */
     fprintf(stderr, "\t-b\tBlacklist: thr = number of abuses before blacklisting, file = blacklist filename.\n");
     fprintf(stderr, "\t-a\tNumber of hits after which blocking an address (%d)\n", DEFAULT_ABUSE_THRESHOLD);
     fprintf(stderr, "\t-p\tSeconds after which unblocking a blocked address (%d)\n", DEFAULT_PARDON_THRESHOLD);
@@ -140,6 +147,8 @@ static void usage(void) {
     fprintf(stderr, "\t-s\tSeconds after which forgetting about a cracker candidate (%d)\n", DEFAULT_STALE_THRESHOLD);
     fprintf(stderr, "\t-f\t\"authenticate\" service's logs through its process pid, as in pidfile\n");
     fprintf(stderr, "\t-v\tDump version message to stderr, supply this when reporting bugs\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "\tThe SSHGUARD_DEBUG environment variable enables debugging mode (verbosity + interactivity).\n");
 }
 
 static void version(void) {

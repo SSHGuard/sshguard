@@ -104,9 +104,6 @@ enable blacklisting: blacklist after
 (or 3) blocked abuses, and hold the permanent blacklist in
 .Ar filename .
 See TOUCHINESS & BLACKLISTING below.
-.It Fl d
-run in debug mode: all logging is done to standard error, not syslog. Debug
-messages are included.
 .It Fl v
 print summary information on sshguard and exit.
 .It Fl a Ar num
@@ -136,7 +133,16 @@ is signalled with SIGTSTP, it suspends activity. When
 .Nm
 is signalled with SIGCONT, it resumes monitoring. During suspension, log
 entries are discarded without being analyzed.
-.\"
+.Pp
+When
+.Nm
+senses the SSHGUARD_DEBUG environment variable, it enables debugging mode: 
+logging is directed to standard error instead of syslog, and includes
+comprehensive details of the activity and parsing process. Debugging mode can
+help investigating patterns: once enabled, a pattern can be directly pasted
+into the tool from the console, and the behavior is immediately and minutely
+shown beneath.
+.\
 .\"
 .Sh WHITELISTING
 .Nm

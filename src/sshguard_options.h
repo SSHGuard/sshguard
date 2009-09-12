@@ -23,7 +23,6 @@
 
 /* dynamic configuration options */
 typedef struct {
-    int debugging;                      /* boolean for debugging enabled/disabled */
     time_t pardon_threshold;            /* minimal time before releasing an address */
     time_t stale_threshold;             /* time after which suspicious entries remained idle are forgiven */
     unsigned int abuse_threshold;       /* number of attacks before raising an abuse */
