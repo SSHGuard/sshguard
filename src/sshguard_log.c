@@ -52,6 +52,23 @@ int sshguard_log_init(int debugmode) {
     return 0;
 }
 
+/* enable/disable debug mode */
+int sshguard_log_debug(int use_debug) {
+    int tmp;
+
+    if (sshg_log_debugging == use_debug)
+        return use_debug;
+
+    if (use_debug)
+        closelog();
+    else
+        openlog("sshguard", LOG_PID, LOG_AUTH);
+
+    tmp = sshg_log_debugging;
+    sshg_log_debugging = use_debug;
+    return tmp;
+}
+
 /* finalize the given logging subsystem */
 int sshguard_log_fin() {
     if (! sshg_log_debugging) closelog();
@@ -59,6 +76,18 @@ int sshguard_log_fin() {
     return 0;
 }
 
+/* increase msgbuf_growth_factor times the capacity of the logging buffer */
+static void enlarge_buffer() {
+    size_t newlen = msgbuf_len + msgbuf_growth_factor * msgbuf_len;
+    if (newlen > msgbuf_max_length)
+        newlen = msgbuf_max_length;
+    free(msgbuf);
+    msgbuf_len = newlen;
+    msgbuf = (char *)malloc(msgbuf_len);
+    assert(msgbuf != NULL);
+}
+
+/* log one message */
 int sshguard_log(int prio, char *fmt, ...) {
     va_list ap;
 
@@ -72,16 +101,9 @@ int sshguard_log(int prio, char *fmt, ...) {
     } else {
         /* avoid the more convenient vsyslog() for portability reasons.. */
         while (vsnprintf(msgbuf, msgbuf_len, fmt, ap) >= msgbuf_len) {
+            if (msgbuf_len >= msgbuf_max_length) break;
             /* msgbuf was too small to host message, increase it by 20% and retry */
-            size_t newlen = msgbuf_len + msgbuf_growth_factor * msgbuf_len;
-            if (newlen > msgbuf_max_length) {
-                /* give up, just log a "cut" message.. */
-                break;
-            }
-            free(msgbuf);
-            msgbuf_len = newlen;
-            msgbuf = (char *)malloc(msgbuf_len);
-            assert(msgbuf != NULL);
+            enlarge_buffer();
             va_end(ap);
             va_start(ap, fmt);
         }
