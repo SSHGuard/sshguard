@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
     
 
     /* initializations */
-    srandom(time(NULL));
+    srand(time(NULL));
     suspended = 0;
     sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
 
