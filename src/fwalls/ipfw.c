@@ -43,7 +43,7 @@ int ipfw_rule_comparator(const void *a, const void *b) {
 }
 
 int fw_init() {
-    srandom(time(NULL));
+    srand(time(NULL));
     list_init(&addrrulenumbers);
     list_attributes_copy(& addrrulenumbers, ipfw_rule_meter, 1);
     list_attributes_comparator(& addrrulenumbers, ipfw_rule_comparator);
@@ -62,7 +62,7 @@ int fw_block(char *addr, int addrkind, int service) {
     struct addr_ruleno_s addendum;
 
     /* choose a random number to assign to IPFW rule */
-    ruleno = (random() % (IPFW_RULERANGE_MAX - IPFW_RULERANGE_MIN)) + IPFW_RULERANGE_MIN;
+    ruleno = (rand() % (IPFW_RULERANGE_MAX - IPFW_RULERANGE_MIN)) + IPFW_RULERANGE_MIN;
     switch (addrkind) {
         case ADDRKIND_IPv4:
             /* use ipfw */

@@ -426,7 +426,7 @@ void *pardonBlocked(void *par) {
 
     while (1) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
-        sleep(1 + (random() % (1+opts.pardon_threshold/2)));
+        sleep(1 + (rand() % (1+opts.pardon_threshold/2)));
         now = time(NULL);
         tmpel = list_get_at(&hell, 0);
         pthread_testcancel();
