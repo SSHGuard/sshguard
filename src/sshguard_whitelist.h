@@ -27,87 +27,87 @@
 /*
  * Initialize the clist containing whitelisted entries
  *
- * returns 0
+ * @return 0
  */
 int whitelist_init(void);
 
 /* 
  * compile regular expressions for each address type
  *
- * returns 0 if success, -1 if compile failed
+ * @return 0 if success, -1 if compile failed
  */
 int whitelist_conf_init(void);
 
 /*
  * free compiled regular expressions
  *
- * returns 0
+ * @return 0
  */
 int whitelist_conf_fin(void);
 
 /*
  * Free memory associated with this whitelist
  *
- * returns 0
+ * @return 0
  */
 int whitelist_fin(void);
 
 /*
  * Adds entries to whitelist from file
  *
- * param filename: The filename containing whitelist entries
- * returns 0 if success, -1 if unable to open filename 
+ * @param filename The filename containing whitelist entries
+ * @return 0 if success, -1 if unable to open filename 
  */
 int whitelist_file(char *filename);
 
 /* 
  * wrapper for _add_ip, _add_block and _add_host 
  *
- * returns 0 if success, -1 if failure
+ * @return 0 if success, -1 if failure
  */
 int whitelist_add(char *str);
 
 /*
  * add an ipv4 address to the whitelist
  *
- * param ip: character string representation of ip address
- * returns 0
+ * @param ip character string representation of ip address
+ * @return 0
  */
 int whitelist_add_ipv4(char *ip);
 
 /*
  * add an ipv6 address to the whitelist
  *
- * param ip: character string representation of ip address
- * returns 0
+ * @param ip character string representation of ip address
+ * @return 0
  */
 int whitelist_add_ipv6(char *ip);
 
 /*
  * add an ipv4 address block to the whitelist
  *
- * param address: character string representation of ip address
- * param masklen: length of bits to mask in address block 
+ * @param address character string representation of ip address
+ * @param masklen length of bits to mask in address block 
  *
- * returns 0 if success, -1 if invalid address
+ * @return 0 if success, -1 if invalid address
  */
 int whitelist_add_block4(char *address, int masklen);
 
 /*
  * add an ipv6 address block to the whitelist
  *
- * param address: character string representation of ip address
- * param masklen: length of bits to mask in address block 
+ * @param address character string representation of ip address
+ * @param masklen length of bits to mask in address block 
  *
- * returns 0 if success, -1 if invalid address
+ * @return 0 if success, -1 if invalid address
  */
 int whitelist_add_block6(char *address, int masklen);
 
 /*
  * add an ip address to the whitelist based on a hostname
  *
- * param host: the hostname to whitelist
- * returns 0 if success -1 if host could not be resolved
+ * @param host the hostname to whitelist
+ * @return 0 if success -1 if host could not be resolved
  */
 int whitelist_add_host(char *host);
 
@@ -115,12 +115,11 @@ int whitelist_add_host(char *host);
 /*
  * search for an address in the whitelist
  *
- * param addr: the address to search for
- * param addrkind: the type of address, one of
+ * @param addr the address to search for
+ * @param addrkind the type of address, one of
  *                 ADDRKIND_IPv4 or ADDRKIND_IPv6
  *
- * returns 1 if the address exists in the whitelist
- *         0 if it doesn't
+ * @return 1 if the address exists in the whitelist, 0 if it doesn't
  */
 int whitelist_match(char *addr, int addrkind);
 
