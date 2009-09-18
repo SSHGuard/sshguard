@@ -226,15 +226,15 @@ on it.
 For enabling log message authentication on a given service the
 .Fl f
 option is used as follows:
-.Dl -f 10:/var/run/sshd.pid
-which associates the given pidfile to the ssh service (code 10). A list of well-known
+.Dl -f 100:/var/run/sshd.pid
+which associates the given pidfile to the ssh service (code 100). A list of well-known
 service codes is available at
 .Ar http://www.sshguard.net/doc/servicecodes.html .
 .Pp
 The
 .Fl f
 option can be used multiple times for associating different services with their pidfile:
-.Dl sshguard -f 10:/var/run/sshd.pid -f 123:/var/run/mydaemon.pid
+.Dl sshguard -f 100:/var/run/sshd.pid -f 123:/var/run/mydaemon.pid
 .Pp
 Services that are not configured for log message authentication follow a default-allow
 policy (all of their log messages are accepted by default).
