@@ -12,7 +12,6 @@
 .Op Fl p Ar pardon_min_interval
 .Op Fl s Ar stale_tresh
 .Op Fl w Ar addr/host/block/file
-.Op Fl d
 .Op Fl f Ar srv:pidfile
 .\"
 .\"
@@ -156,17 +155,17 @@ command-line option. This option can add explicit addresses, host names and
 address blocks:
 .Bl -tag -width
 .It addresses
-specify the address directly, like:
+specify the numeric IPv4 or IPv6 address directly, like:
 .Dl -w 192.168.1.10
 or in multiple occurrences:
-.Dl -w 192.168.1.10 -w 192.168.1.11 -w 192.168.1.12
+.Dl -w 192.168.1.10 -w 2001:0db8:85a3:0000:0000:8a2e:0370:7334
 .It host names
 specify the host name directly, like:
 .Dl -w friendhost.enterprise.com
 or in multiple occurrences:
 .Dl -w friendhost.enterprise.com -w friend2.enterprise.com
-When hosts resolve to multiple addresses, all of them are whitelisted.
-Hosts are resolved to addresses once, when sshguard starts up.
+All IPv4 addresses that the host resolves to are whitelisted. Hosts are
+resolved to addresses once, when sshguard starts up.
 .It address blocks
 specify the address block in the usual CIDR notation:
 .Dl -w 192.168.0.0/24
@@ -185,8 +184,9 @@ option argument begins with a `.' (dot) or `/' (slash).
 This is a sample whitelist file (say /etc/friends):
 .Bd -literal -offset indent
 # comment line (a '#' as very first character)
-#   a single ip address
+#   a single IPv4 and IPv6 address
 1.2.3.4
+2001:0db8:85a3:08d3:1319:8a2e:0370:7344
 #   address blocks in CIDR notation
 127.0.0.0/8
 10.11.128.0/17

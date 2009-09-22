@@ -149,6 +149,10 @@ int whitelist_add(char *str) {
         pos = strrchr(buf, '/');
         *pos = '\0';
         masklen = (unsigned int)strtol(pos+1, (char **)NULL, 10);
+        if (masklen == 0 && pos[1] != '0') {
+            sshguard_log(LOG_WARNING, "whitelist: mask specified as '/%s' makes no sense.", pos+1);
+            return -1;
+        }
 
         if (masklen == 0 && errno != EINVAL) {
             /* could not convert the mask to an integer value */
@@ -157,13 +161,16 @@ int whitelist_add(char *str) {
         }
         if (regexec(&wl_ip4reg, buf, 0, NULL, 0) == 0) {
             if (masklen > 32) {     /* sanity check for netmask */
-                sshguard_log(LOG_WARNING, "whitelist: could not parse line \"%s\" as plain IP nor IP block nor host name", str);
+                sshguard_log(LOG_WARNING, "whitelist: mask length '%u' makes no sense for IPv4.", masklen);
                 return -1;
             }
             return whitelist_add_block4(buf, masklen);
         } else if (regexec(&wl_ip6reg, buf, 0, NULL, 0) == 0) {
-            sshguard_log(LOG_WARNING, "whitelist: IPv6 whitelisting not yet supported, skipping...");
-            return -1;
+            if (masklen > 128) {     /* sanity check for netmask */
+                sshguard_log(LOG_WARNING, "whitelist: mask length '%u' makes no sense for IPv6.", masklen);
+                return -1;
+            }
+            return whitelist_add_block6(buf, masklen);
         }
     } else {
         /* line not recognized */
@@ -192,6 +199,7 @@ int whitelist_add_block4(char *address, int masklen) {
 }
 
 int whitelist_add_block6(char *address, int masklen) {
+    sshguard_log(LOG_WARNING, "whitelist: IPv6 block whitelisting not yet supported, skipping...");
     return -1;
 }
 
