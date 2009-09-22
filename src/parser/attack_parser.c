@@ -185,7 +185,7 @@ typedef union YYSTYPE
     char *str;
     int num;
 }
-/* Line 193 of yacc.c.  */
+/* Line 187 of yacc.c.  */
 #line 190 "attack_parser.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -249,7 +249,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -710,7 +710,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -1522,7 +1522,7 @@ yyreduce:
 
                         /* look up IPv4 first */
                         memset(& addrinfo_hints, 0x00, sizeof(addrinfo_hints));
-                        addrinfo_hints.ai_family = PF_INET;
+                        addrinfo_hints.ai_family = AF_INET;
                         res = getaddrinfo((yyvsp[(1) - (1)].str), NULL, & addrinfo_hints, & addrinfo_result);
                         if (res == 0) {
                             struct sockaddr_in *foo4;
@@ -1537,7 +1537,7 @@ yyreduce:
                         } else {
                             sshguard_log(LOG_DEBUG, "Failed to resolve '%s' @ IPv4! Trying IPv6.", (yyvsp[(1) - (1)].str));
                             /* try IPv6 */
-                            addrinfo_hints.ai_family = PF_INET6;
+                            addrinfo_hints.ai_family = AF_INET6;
                             res = getaddrinfo((yyvsp[(1) - (1)].str), NULL, & addrinfo_hints, & addrinfo_result);
                             if (res == 0) {
                                 struct sockaddr_in6 *foo6;

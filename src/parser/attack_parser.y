@@ -122,7 +122,7 @@ addr:
 
                         /* look up IPv4 first */
                         memset(& addrinfo_hints, 0x00, sizeof(addrinfo_hints));
-                        addrinfo_hints.ai_family = PF_INET;
+                        addrinfo_hints.ai_family = AF_INET;
                         res = getaddrinfo($1, NULL, & addrinfo_hints, & addrinfo_result);
                         if (res == 0) {
                             struct sockaddr_in *foo4;
@@ -137,7 +137,7 @@ addr:
                         } else {
                             sshguard_log(LOG_DEBUG, "Failed to resolve '%s' @ IPv4! Trying IPv6.", $1);
                             /* try IPv6 */
-                            addrinfo_hints.ai_family = PF_INET6;
+                            addrinfo_hints.ai_family = AF_INET6;
                             res = getaddrinfo($1, NULL, & addrinfo_hints, & addrinfo_result);
                             if (res == 0) {
                                 struct sockaddr_in6 *foo6;

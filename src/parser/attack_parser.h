@@ -115,7 +115,7 @@ typedef union YYSTYPE
     char *str;
     int num;
 }
-/* Line 1529 of yacc.c.  */
+/* Line 1489 of yacc.c.  */
 #line 120 "attack_parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
