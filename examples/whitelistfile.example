@@ -1,12 +1,11 @@
-# comment lines have a '#' as *first* character (no blanks before allowed)
-# this is a single ip address
+# comment line (a '#' as very first character)
+#   a single IPv4 and IPv6 address
 1.2.3.4
-# this is a couple of blocks of address in CIDR notation
+2001:0db8:85a3:08d3:1319:8a2e:0370:7344
+#   address blocks in CIDR notation
 127.0.0.0/8
 10.11.128.0/17
 192.168.0.0/24
-# hostnames are allowed. Rules:
-#   1. if xhost resolves to several addresses, every of them will be whitelisted
-#   2. the address are resolved once, when starting up
+#   hostnames
 rome-fw.enterprise.com
 hosts.friends.com
