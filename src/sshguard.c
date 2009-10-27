@@ -302,6 +302,15 @@ void report_address(attack_t attack) {
     /* clean list from stale entries */
     purge_limbo_stale();
 
+    /* address already blocked? (can happen for 100 reasons) */
+    pthread_mutex_lock(& list_mutex);
+    tmpent = list_seek(& hell, attack.address.value);
+    pthread_mutex_unlock(& list_mutex);
+    if (tmpent != NULL) {
+        sshguard_log(LOG_INFO, "Asked to block '%s', which was already blocked to my account.", attack.address.value);
+        return;
+    }
+
     /* protected address? */
     if (whitelist_match(attack.address.value, attack.address.kind)) {
         sshguard_log(LOG_INFO, "Pass over address %s because it's been whitelisted.", attack.address.value);
