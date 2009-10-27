@@ -86,6 +86,9 @@ list_t offenders;
 /* global debugging flag */
 int sshg_debugging = 0;
 
+/* mutex against races between insertions and pruning of lists */
+pthread_mutex_t list_mutex;
+
 
 /* fill an attacker_t structure for usage */
 static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
@@ -132,6 +135,8 @@ int main(int argc, char *argv[]) {
     list_init(&offenders);
     list_attributes_seeker(& offenders, seeker_addr);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
+    pthread_mutex_init(& list_mutex, NULL);
+
 
     /* logging system */
     sshguard_log_init(sshg_debugging);
@@ -390,7 +395,9 @@ void report_address(attack_t attack) {
     if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
 
     /* append blocked attacker to the blocked list, and remove it from the pending list */
-    list_append(&hell, tmpent);
+    pthread_mutex_lock(& list_mutex);
+    list_append(& hell, tmpent);
+    pthread_mutex_unlock(& list_mutex);
     assert(list_locate(& limbo, tmpent) >= 0);
     list_delete_at(& limbo, list_locate(& limbo, tmpent));
 }
@@ -428,9 +435,9 @@ void *pardonBlocked(void *par) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
         sleep(1 + (rand() % (1+opts.pardon_threshold/2)));
         now = time(NULL);
-        tmpel = list_get_at(&hell, 0);
         pthread_testcancel();
         pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
+        pthread_mutex_lock(& list_mutex);
 
         for (pos = 0; pos < list_size(& hell); pos++) {
             tmpel = list_get_at(&hell, pos);
@@ -442,13 +449,14 @@ void *pardonBlocked(void *par) {
                 sshguard_log(LOG_INFO, "Releasing %s after %u seconds.\n", tmpel->attack.address.value, now - tmpel->whenlast);
                 ret = fw_release(tmpel->attack.address.value, tmpel->attack.address.kind, tmpel->attack.service);
                 if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Release command failed. Exited: %d", ret);
-                list_delete_at(&hell, 0);
+                list_delete_at(&hell, pos);
                 free(tmpel);
                 /* element removed, next element is at current index (don't step pos) */
                 pos--;
             }
         }
         
+        pthread_mutex_unlock(& list_mutex);
         pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &ret);
         pthread_testcancel();
     }
