@@ -16,6 +16,9 @@
 #endif
 #define HOSTS_MAXCMDLEN       1024
 
+/* hosts_access limits line length. How many addresses per line to use? */
+#define HOSTS_ADDRS_PER_LINE    8
+
 #define HOSTS_SSHGUARD_PREFIX "###sshguard###\n"
 #define HOSTS_SSHGUARD_SUFFIX "###sshguard###\n"
 
@@ -163,9 +166,20 @@ int hosts_updatelist() {
             curr = (addr_service_t *)list_get_at(&hosts_blockedaddrs, cnt);
 
             /* block lines differ depending on IP Version */
-            if (curr->addrkind == ADDRKIND_IPv4)
-                fprintf(tmp, " %s", curr->addr);
-            else fprintf(tmp, " [%s]", curr->addr);
+            switch (curr->addrkind) {
+                case ADDRKIND_IPv4:
+                    fprintf(tmp, " %s", curr->addr);
+                    break;
+
+                case ADDRKIND_IPv6:
+                    fprintf(tmp, " [%s]", curr->addr);
+                    break;
+            }
+
+            if (((cnt+1) % HOSTS_ADDRS_PER_LINE) == 0) {
+                /* switch to new line */
+                fprintf(tmp, " : DENY\nALL : ");
+            }
         }
         fprintf(tmp, " : DENY\n");
     }    
