@@ -26,6 +26,9 @@
 
 #include "sshguard_log.h"
 
+
+const int sshguard_log_minloglevel = LOG_NOTICE;
+
 static int sshg_log_debugging;
 
 static char *msgbuf = NULL;
@@ -93,6 +96,10 @@ int sshguard_log(int prio, char *fmt, ...) {
 
     /* has the logging subsystem been initialized? */
     assert(msgbuf != NULL);
+
+    /* cut irrelevant messages when not debugging */
+    if (! sshg_log_debugging && prio < sshguard_log_minloglevel)
+        return 0;
 
     va_start(ap, fmt);
     if (sshg_log_debugging) {

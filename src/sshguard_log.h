@@ -24,8 +24,11 @@
 
 #include <syslog.h>
 
-#define SLOG_SYSLOG     5
-#define SLOG_STDERRR    10
+/**
+ * Cut messages under this value, except when debugging enabled.
+ */
+extern const int sshguard_log_minloglevel;
+
 
 /**
  * Initialize the logging system.
