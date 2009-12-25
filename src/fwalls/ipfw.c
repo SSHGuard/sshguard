@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <errno.h>
 #include <time.h>
 #include <time.h>
@@ -13,6 +14,8 @@
 #include "../sshguard_log.h"
 #include "../sshguard_fw.h"
 
+#define IPFWMOD_ADDRESS_BULK_REPRESENTATIVE     "FF:FF:FF:FF:FF:FF:FF:FF"
+
 #define MAXIPFWCMDLEN           90
 
 #ifndef IPFW_RULERANGE_MIN
@@ -23,20 +26,26 @@
 #define IPFW_RULERANGE_MAX      55050
 #endif
 
+typedef uint16_t ipfw_rulenumber_t;
+
 struct addr_ruleno_s {
     char addr[ADDRLEN];
     int addrkind;
-    unsigned int ruleno;
+    ipfw_rulenumber_t ruleno;
 };
 
-list_t addrrulenumbers;
+static list_t addrrulenumbers;
+static char command[MAXIPFWCMDLEN], args[MAXIPFWCMDLEN];
 
+/* generate an IPFW rule ID for inserting a rule */
+static ipfw_rulenumber_t ipfwmod_getrulenumber(void);
+/* execute an IPFW command */
+static int ipfwmod_runcommand(char *command, char *args);
+/* build an IPFW rule for blocking a list of addresses, all of the given kind */
+static int ipfwmod_buildblockcommand(ipfw_rulenumber_t ruleno, const char *restrict addresses[], int addrkind, char *restrict command, char *restrict args);
 
-int ipfwmod_runcommand(char *command, char *args);
-void ipfwmod_logsystemretval(char *command, int returnval);
-
-size_t ipfw_rule_meter(const void *el) { return sizeof(struct addr_ruleno_s); }
-int ipfw_rule_comparator(const void *a, const void *b) {
+static size_t ipfw_rule_meter(const void *el) { return sizeof(struct addr_ruleno_s); }
+static int ipfw_rule_comparator(const void *a, const void *b) {
     struct addr_ruleno_s *A = (struct addr_ruleno_s *)a;
     struct addr_ruleno_s *B = (struct addr_ruleno_s *)b;
     return !((strcmp(A->addr, B->addr) == 0) && (A->addrkind == B->addrkind));
@@ -55,35 +64,18 @@ int fw_fin() {
     return FWALL_OK;
 }
 
-int fw_block(char *addr, int addrkind, int service) {
-    unsigned int ruleno;
+int fw_block(const char *restrict addr, int addrkind, int service) {
+    ipfw_rulenumber_t ruleno;
     int ret;
-    char command[MAXIPFWCMDLEN], args[MAXIPFWCMDLEN];
+    const char *restrict addresses[2];
     struct addr_ruleno_s addendum;
 
-    /* choose a random number to assign to IPFW rule */
-    ruleno = (rand() % (IPFW_RULERANGE_MAX - IPFW_RULERANGE_MIN)) + IPFW_RULERANGE_MIN;
-    switch (addrkind) {
-        case ADDRKIND_IPv4:
-            /* use ipfw */
-            sprintf(command, IPFW_PATH "/ipfw");
-            sprintf(args, "add %u drop ip from %s to me", ruleno, addr);
-            break;
-
-        case ADDRKIND_IPv6:
-#ifdef FWALL_HAS_IP6FW
-            /* use ip6fw if found */
-	    	sprintf(command, IPFW_PATH "/ip6fw");
-#else
-            /* use ipfw, assume it supports IPv6 rules as well */
-	    	sprintf(command, IPFW_PATH "/ipfw");
-#endif
-            sprintf(args, "add %u drop ipv6 from %s to any", ruleno, addr);
-            break;
-
-        default:
-            return FWALL_UNSUPP;
-    }
+    /* get a rule number */
+    ruleno = ipfwmod_getrulenumber();
+    addresses[0] = addr;
+    addresses[1] = NULL;
+    if (ipfwmod_buildblockcommand(ruleno, addresses, addrkind, command, args) != FWALL_OK)
+        return FWALL_ERR;
 
     /* run command */
     ret = ipfwmod_runcommand(command, args);
@@ -104,9 +96,45 @@ int fw_block(char *addr, int addrkind, int service) {
     return FWALL_OK;
 }
 
-int fw_release(char *addr, int addrkind, int service) {
+/* add all addresses in one single rule:
+ *
+ *   ipfw add 1234 drop ipv4 from 1.2.3.4,10.11.12.13,123.234.213.112 to any
+ */
+int fw_block_list(const char *restrict addresses[], int addrkind, const int service_codes[]) {
+    ipfw_rulenumber_t ruleno;
+    struct addr_ruleno_s addendum;
+    int ret;
+
+    
+    assert(addresses != NULL);
+    assert(service_codes != NULL);
+
+    ruleno = ipfwmod_getrulenumber();
+    /* insert rules under this rule number (in chunks of max_addresses_per_rule) */
+    if (ipfwmod_buildblockcommand(ruleno, addresses, addrkind, command, args) != FWALL_OK)
+        return FWALL_ERR;
+
+    /* run command */
+    ret = ipfwmod_runcommand(command, args);
+    if (ret != 0) {
+        sshguard_log(LOG_ERR, "Command \"%s %s\" exited %d", command, args, ret);
+        return FWALL_ERR;
+    }
+    
+    sshguard_log(LOG_DEBUG, "Command exited %d.", ret);
+
+    /* insert a placeholder for the bulk */
+    strcpy(addendum.addr, IPFWMOD_ADDRESS_BULK_REPRESENTATIVE);
+    addendum.ruleno = ruleno;
+    addendum.addrkind = addrkind;
+    list_append(& addrrulenumbers, & addendum);
+
+    return FWALL_OK;
+}
+
+
+int fw_release(const char *restrict addr, int addrkind, int service) {
     struct addr_ruleno_s data;
-    char args[MAXIPFWCMDLEN], command[MAXIPFWCMDLEN];
     int pos, ret = 0;
 
     /* retrieve ID of rule blocking "addr" */
@@ -156,7 +184,6 @@ int fw_release(char *addr, int addrkind, int service) {
 
 int fw_flush(void) {
     struct addr_ruleno_s *data;
-    char command[MAXIPFWCMDLEN], args[MAXIPFWCMDLEN];
     int ret = 0;
 
     if (list_empty(& addrrulenumbers)) return FWALL_OK;
@@ -195,7 +222,12 @@ int fw_flush(void) {
     return FWALL_OK;
 }
 
-int ipfwmod_runcommand(char *command, char *args) {
+static ipfw_rulenumber_t ipfwmod_getrulenumber(void) {
+    /* choose a random number to assign to IPFW rule */
+    return (rand() % (IPFW_RULERANGE_MAX - IPFW_RULERANGE_MIN)) + IPFW_RULERANGE_MIN;
+}
+
+static int ipfwmod_runcommand(char *command, char *args) {
     char *argsvec[20];
     pid_t pid;
     int i, j, ret;
@@ -231,4 +263,54 @@ int ipfwmod_runcommand(char *command, char *args) {
 
     return ret;
 }
+
+static int ipfwmod_buildblockcommand(ipfw_rulenumber_t ruleno, const char *restrict addresses[], int addrkind, char *restrict command, char *restrict args) {
+    int i;
+
+    assert(addresses != NULL);
+    assert(addresses[0] != NULL     /* there is at least one address to block */);
+    assert(command != NULL);
+    assert(args != NULL);
+
+    /*
+     * command looks like
+     *      /full/path/to/ipfw
+     *          -or-
+     *      /full/path/to/ip6fw     (on systems that require ip6fw to block IPv6)
+     *
+     * args is the rule arguments; it looks like:
+     *      add <rulenum> drop <ip|ipv6> from addr1,addr2...,addrN to me
+     */
+    switch (addrkind) {
+        case ADDRKIND_IPv4:
+            /* use ipfw */
+            sprintf(command, IPFW_PATH "/ipfw");
+            sprintf(args, "add %u drop ip", ruleno);
+            break;
+
+        case ADDRKIND_IPv6:
+#ifdef FWALL_HAS_IP6FW
+            /* use ip6fw if found */
+	    	sprintf(command, IPFW_PATH "/ip6fw");
+#else
+            /* use ipfw, assume it supports IPv6 rules as well */
+	    	sprintf(command, IPFW_PATH "/ipfw");
+#endif
+            sprintf(args, "add %u drop ipv6", ruleno);
+            break;
+
+        default:
+            return FWALL_UNSUPP;
+    }
+
+    /* add the rest of the rule */
+    sprintf(args, " from %s", addresses[0]);
+    for (i = 1; addresses[i] != NULL; ++i) {
+        sprintf(args, ",%s", addresses[i]);
+    }
+    sprintf(args, " to me");
+
+    return FWALL_OK;
+}
+
 

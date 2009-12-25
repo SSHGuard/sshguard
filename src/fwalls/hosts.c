@@ -34,6 +34,9 @@ int hosts_clearsshguardblocks(void);
 list_t hosts_blockedaddrs;
 FILE *hosts_file;
 
+/* buffer to hold the name of temporary configuration files. Set once, in fw_init() */
+static char tempflname[40];
+
 size_t addr_service_meter(const void *el) { return sizeof(addr_service_t); }
 int addr_service_comparator(const void *a, const void *b) {
     addr_service_t *A = (addr_service_t *)a;
@@ -41,11 +44,23 @@ int addr_service_comparator(const void *a, const void *b) {
     return !((strcmp(A->addr, B->addr) == 0) && (A->addrkind == B->addrkind) && (A->service == B->service));
 }
 
+static FILE *make_temporary_conffile(void) {
+    return  fopen(tempflname, "a+");
+}
+
+static int install_temporary_conffile() {
+    if (rename(tempflname, HOSTSFILE_PATH) != 0) {
+        sshguard_log(LOG_CRIT, "OUCHH! Could not rename temp file '%s' to '%s' (%s).", tempflname, HOSTSFILE_PATH, strerror(errno));
+        return FWALL_ERR;
+    }
+
+    return FWALL_OK;
+}
+
 int fw_init() {
     char buf[HOSTS_MAXCMDLEN];
     char tempflname[30];
     FILE *tmp, *deny;
-    int fd;
 
     hosts_clearsshguardblocks();
 
@@ -56,12 +71,15 @@ int fw_init() {
         return FWALL_ERR;
     }
 
-    strcpy(tempflname, "/tmp/sshguard.deny.XXXXXX");
-    if ((fd = mkstemp(tempflname)) == -1) {
+    /* set the filename of the temporary configuration file */
+    sprintf(tempflname, "%s-sshguard.%u", HOSTSFILE_PATH, getpid());
+
+    tmp = make_temporary_conffile();
+    if (tmp == NULL) {
         sshguard_log(LOG_ERR, "Could not create temporary file %s!", tempflname);
+        fclose(deny);
         return FWALL_ERR;
     }
-    tmp = fdopen(fd, "a+");
     fprintf(tmp, "%s%s", HOSTS_SSHGUARD_PREFIX, HOSTS_SSHGUARD_SUFFIX);
 
     /* copy the original content of HOSTSFILE_PATH into tmp */
@@ -69,15 +87,14 @@ int fw_init() {
         fprintf(tmp, "%s", buf);
     }
     
-    rewind(tmp);
-    rewind(deny);
-    while (fgets(buf, HOSTS_MAXCMDLEN, tmp) != NULL) {
-        fprintf(deny, "%s", buf);
-    }
-
     fclose(tmp);
     fclose(deny);
-    unlink(tempflname);
+
+    /* install temporary conf file into main file */
+    if (install_temporary_conffile() != FWALL_OK) {
+        sshguard_log(LOG_CRIT, "OUCHH! Could not rename temp file '%s' to '%s' (%s).", tempflname, HOSTSFILE_PATH, strerror(errno));
+        return FWALL_ERR;
+    }
 
     list_init(&hosts_blockedaddrs);
     list_attributes_copy(&hosts_blockedaddrs, addr_service_meter, 1);
@@ -92,7 +109,7 @@ int fw_fin() {
     return FWALL_OK;
 }
 
-int fw_block(char *addr, int addrkind, int service) {
+int fw_block(const char *restrict addr, int addrkind, int service) {
     addr_service_t ads;
 
     strcpy(ads.addr, addr);
@@ -103,7 +120,22 @@ int fw_block(char *addr, int addrkind, int service) {
     return hosts_updatelist();
 }
 
-int fw_release(char *addr, int addrkind, int services) {
+int fw_block_list(const char *restrict addresses[], int addrkind, const int service_codes[]) {
+    int cnt;
+    addr_service_t ads;
+
+    for (cnt = 0; addresses[cnt] != NULL; ++cnt) {
+        strcpy(ads.addr, addresses[cnt]);
+        ads.addrkind = addrkind;
+        ads.service = service_codes[cnt];
+
+        list_append(& hosts_blockedaddrs, & ads);
+    }
+    
+    return hosts_updatelist();
+}
+
+int fw_release(const char *restrict addr, int addrkind, int services) {
     int pos;
 
     if ((pos = list_locate(&hosts_blockedaddrs, addr)) < 0) {
@@ -120,7 +152,6 @@ int fw_flush(void) {
 }
 
 int hosts_updatelist() {
-    int fd;
     char buf[HOSTS_MAXCMDLEN];
     char tempflname[30];
     FILE *tmp, *deny;
@@ -133,14 +164,13 @@ int hosts_updatelist() {
     }
 
     /* create/open a temporary file */
-    strcpy(tempflname, "/tmp/sshguard.hosts.XXXXXX");
-    if ((fd = mkstemp(tempflname)) == -1) {
+    tmp = make_temporary_conffile();
+    if (tmp == NULL) {
         sshguard_log(LOG_ERR, "Could not create temporary file %s!", tempflname);
         fclose(deny);
         return FWALL_ERR;
     }
-    tmp = fdopen(fd, "a+");
-    
+
     /* copy everything until sshguard prefix line */
     while (fgets(buf, HOSTS_MAXCMDLEN, deny) != NULL) {
         fprintf(tmp, "%s", buf);
@@ -152,7 +182,6 @@ int hosts_updatelist() {
         sshguard_log(LOG_ERR, "hosts.allow file did not contain sshguard rules block.");
         fclose(deny);
         fclose(tmp);
-        close(fd);
         unlink(tempflname);
         return FWALL_ERR;
     }
@@ -195,7 +224,6 @@ int hosts_updatelist() {
         sshguard_log(LOG_ERR, "hosts.allow file's sshguard rules block was malformed.");
         fclose(deny);
         fclose(tmp);
-        close(fd);
         unlink(tempflname);
         return FWALL_ERR;
     }
@@ -205,7 +233,16 @@ int hosts_updatelist() {
         fprintf(tmp, "%s", buf);
     }
 
+    fclose(tmp);
+    fclose(deny);
+
     /* move tmp over to deny */
+    if (install_temporary_conffile() != FWALL_OK) {
+        sshguard_log(LOG_CRIT, "OUCHH! Could not rename temp file '%s' to '%s' (%s).", tempflname, HOSTSFILE_PATH, strerror(errno));
+        return FWALL_ERR;
+    }
+
+#if 0
     fseek(tmp, 0, SEEK_SET);
     fseek(deny, 0, SEEK_SET);
     while(fgets(buf, HOSTS_MAXCMDLEN, tmp) != NULL) {
@@ -216,12 +253,12 @@ int hosts_updatelist() {
     fclose(deny);
     close(fd);
     unlink(tempflname);
+#endif
 
     return FWALL_OK;
 }
 
 int hosts_clearsshguardblocks(void) {
-    char tempflname[30];
     char buf[HOSTS_MAXCMDLEN];
     int docopy;
     FILE *tmp, *deny;
@@ -233,13 +270,13 @@ int hosts_clearsshguardblocks(void) {
         return FWALL_ERR;
     }
 
-    /* open temporary file */
-    strcpy(tempflname, "/tmp/sshguard.deny.XXXXXX");
-    if ((docopy = mkstemp(tempflname)) == -1) {
-        sshguard_log(LOG_ERR, "Could not get temporary file from /tmp: %s", strerror(errno));
+    /* create/open a temporary file */
+    tmp = make_temporary_conffile();
+    if (tmp == NULL) {
+        sshguard_log(LOG_ERR, "Could not create temporary file %s!", tempflname);
+        fclose(deny);
         return FWALL_ERR;
     }
-    tmp = fdopen(docopy, "a+");
 
     /* save to tmp only those parts that are not sshguard blocks */
     docopy = 1;
@@ -260,16 +297,14 @@ int hosts_clearsshguardblocks(void) {
         }
     }
 
-    /* move tmp over to deny */
-    rewind(tmp);
-    rewind(deny);
-    while(fgets(buf, HOSTS_MAXCMDLEN, tmp) != NULL) {
-        fprintf(deny, "%s", buf);
-    }
-    ftruncate(fileno(deny), ftell(tmp));
     fclose(tmp);
     fclose(deny);
-    unlink(tempflname);
+
+    /* move tmp over to deny */
+    if (install_temporary_conffile() != FWALL_OK) {
+        sshguard_log(LOG_CRIT, "OUCHH! Could not rename temp file '%s' to '%s' (%s).", tempflname, HOSTSFILE_PATH, strerror(errno));
+        return FWALL_ERR;
+    }
 
     return FWALL_OK;
 }

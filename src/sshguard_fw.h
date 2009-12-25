@@ -33,25 +33,81 @@
 /* unsupported operation */
 #define FWALL_UNSUPP    -2
 
+
 /*      fw backend functions        */
-/* initialization */
+/**
+ * Initialize the firewall.
+ *
+ * This function is called once, at the beginning. All
+ * the other firewall's functions are called thereafter.
+ *
+ * @return FWALL_OK or FWALL_ERR
+ *
+ * @see fw_release()
+ */
 int fw_init();
 
-/* finalization */
+
+/**
+ * Terminate the firewall.
+ *
+ * This function is called once, at the end. No other
+ * firewall functions are called thereafter.
+ *
+ * @return FWALL_OK or FWALL_ERR
+ */
 int fw_fin();
 
-/* block an address (of kind addrkind) */
-/* the buffer addr is not guaranteed to maintain its content after
- * the function returns. */
-int fw_block(char *addr, int addrkind, int service);
 
-/* release an address formerly blocked (of kind addrkind) */
-/* the buffer addr is not guaranteed to maintain its content after
- * the function returns. */
-int fw_release(char *addr, int addrkind, int service);
+/**
+ * Block an address.
+ *
+ * Block an address of a given kind and for a given service.
+ *
+ * @param addr          the address (string representation)
+ * @param addrkind      the kind of the given address
+ * @param service       the target service when blocking addr
+ *
+ * @return FWALL_OK or FWALL_ERR
+ */
+int fw_block(const char *restrict addr, int addrkind, int service);
 
 
-/* release all addresses formerly blocked */
+/**
+ * Block a list of addresses.
+ *
+ * Block a given list of addresses, all of the same kind and
+ * destined to the same service.
+ *
+ * @param addresses     an array of strings, one per address to be blocked
+ * @param addrkind      the type of all addresses in addresses[]
+ * @param service       an array of integers, service[i] is the target service when blocking addresses[i]
+ *
+ * @return FWALL_OK or FWALL_ERR
+ */
+int fw_block_list(const char *restrict addresses[], int addrkind, const int service_codes[]);
+
+
+/**
+ * Release an address.
+ *
+ * @param addr          the address (string representation)
+ * @param addrkind      the kind of the given address
+ * @param service       the target service when blocking addr
+ *
+ * @return FWALL_OK or FWALL_ERR
+ *
+ * @see fw_block()
+ * @see fw_flush()
+ */
+int fw_release(const char *restrict addr, int addrkind, int service);
+
+
+/**
+ * Release all blocked addresses.
+ *
+ * @return FWALL_OK or FWALL_ERR
+ */
 int fw_flush(void);
 
 #endif

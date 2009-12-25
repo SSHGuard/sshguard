@@ -20,6 +20,10 @@
  */
 #define COMMAND_BLOCK       "case $SSHG_ADDRKIND in 4) exec " IPTABLES_PATH "/iptables -I sshguard -s $SSHG_ADDR -j DROP ;; 6) exec " IPTABLES_PATH "/ip6tables -I sshguard -s $SSHG_ADDR -j DROP ;; *) exit -2 ;; esac"
 
+/* iptables does not support blocking multiple addresses in one call.
+ * COMMAND_BLOCK_LIST can not be provided here, a sequence of calls to
+ * COMMAND_BLOCK will be automatically used instead */
+
 /* for releasing a blocked IP */
 /* the command will have the following variables in its environment:
  *  $SSHG_ADDR      the address to operate (e.g. 192.168.0.12)
