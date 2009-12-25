@@ -24,95 +24,129 @@
 #include "sshguard_addresskind.h"
 
 
-/*
- * Initialize the clist containing whitelisted entries
+/**
+ * Initialize the whitelisting subsystem.
  *
- * @return 0
+ * Any other whitelist_*() function must be executed
+ * after this. This function cannot be executed twice
+ * unless whitelist_fin() occurred in between.
+ *
+ * @return  0 if success, <0 if failure
+ *
+ * @see whitelist_fin()
  */
 int whitelist_init(void);
 
-/* 
- * compile regular expressions for each address type
+/**
+ * Start a session for configuring the whitelist.
  *
- * @return 0 if success, -1 if compile failed
+ * The whitelist subsystem must have been initialized first.
+ * Calls to whitelist_add*() must occur only between this
+ * function's call and whitelist_conf_fin()'s call.
+ *
+ * @return 0 if success, <0 if compile failed
+ *
+ * @see whitelist_conf_fin()
  */
 int whitelist_conf_init(void);
 
-/*
- * free compiled regular expressions
+/**
+ * End a session for configuring the whitelist.
  *
  * @return 0
  */
 int whitelist_conf_fin(void);
 
-/*
- * Free memory associated with this whitelist
+/**
+ * Terminate the whitelisting subsystem.
  *
- * @return 0
+ * No calls to any whitelist_*() function can occur after
+ * this, unless whitelist_init() is called first.
+ *
+ * @return  0 if success, <0 if failure
  */
 int whitelist_fin(void);
 
-/*
- * Adds entries to whitelist from file
+/**
+ * Adds entries to whitelist from file.
  *
- * @param filename The filename containing whitelist entries
- * @return 0 if success, -1 if unable to open filename 
- */
-int whitelist_file(char *filename);
-
-/* 
- * wrapper for _add_ip, _add_block and _add_host 
+ * The file is human readable and line-based. Entries look like:
  *
- * @return 0 if success, -1 if failure
- */
-int whitelist_add(char *str);
-
-/*
- * add an ipv4 address to the whitelist
+ *  # comment line (a '#' as very first character)
+ *  #   a single ip address
+ *  1.2.3.4
+ *  #   address blocks in CIDR notation
+ *  127.0.0.0/8
+ *  10.11.128.0/17
+ *  192.168.0.0/24
+ *  #   hostnames
+ *  rome-fw.enterprise.com
+ *  hosts.friends.com
  *
- * @param ip character string representation of ip address
- * @return 0
+ * @param filename  The filename containing whitelist entries
+ * @return          0 if success, -1 if unable to open filename 
  */
-int whitelist_add_ipv4(char *ip);
+int whitelist_file(const char *restrict filename);
 
-/*
- * add an ipv6 address to the whitelist
+/**
+ * Wrapper for _add_ip, _add_block and _add_host.
  *
- * @param ip character string representation of ip address
- * @return 0
+ * @return 0 if success, <0 if failure
+ *
+ * @see whitelist_add_ipv4()
+ * @see whitelist_add_ipv6()
+ * @see whitelist_add_block4()
+ * @see whitelist_add_block6()
+ * @see whitelist_add_host()
  */
-int whitelist_add_ipv6(char *ip);
+int whitelist_add(const char *restrict str);
 
-/*
- * add an ipv4 address block to the whitelist
+/**
+ * Add an IPv4 address to the whitelist.
+ *
+ * @param ip    ip address, in dotted decimal notation
+ * @return      0 if success, <0 if failure
+ */
+int whitelist_add_ipv4(const char *restrict ip);
+
+/**
+ * Add an IPv6 address to the whitelist.
+ *
+ * @param ip    ip address, in numerical string notation
+ * @return      0 if success, <0 if failure
+ */
+int whitelist_add_ipv6(const char *restrict ip);
+
+/**
+ * Add an IPv4 address block to the whitelist
  *
  * @param address character string representation of ip address
  * @param masklen length of bits to mask in address block 
  *
  * @return 0 if success, -1 if invalid address
  */
-int whitelist_add_block4(char *address, int masklen);
+int whitelist_add_block4(const char *restrict address, int masklen);
 
-/*
- * add an ipv6 address block to the whitelist
+/**
+ * Add an IPv6 address block to the whitelist
  *
  * @param address character string representation of ip address
  * @param masklen length of bits to mask in address block 
  *
  * @return 0 if success, -1 if invalid address
  */
-int whitelist_add_block6(char *address, int masklen);
+int whitelist_add_block6(const char *restrict address, int masklen);
 
-/*
+/**
  * add an ip address to the whitelist based on a hostname
  *
  * @param host the hostname to whitelist
  * @return 0 if success -1 if host could not be resolved
  */
-int whitelist_add_host(char *host);
+int whitelist_add_host(const char *restrict host);
 
 
-/*
+/**
  * search for an address in the whitelist
  *
  * @param addr the address to search for
@@ -121,7 +155,7 @@ int whitelist_add_host(char *host);
  *
  * @return 1 if the address exists in the whitelist, 0 if it doesn't
  */
-int whitelist_match(char *addr, int addrkind);
+int whitelist_match(const char *restrict addr, int addrkind);
 
 #endif
 

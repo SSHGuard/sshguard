@@ -96,12 +96,14 @@ int whitelist_fin(void) {
     return 0;
 }
 
-int whitelist_file(char *filename) {
+int whitelist_file(const char *restrict filename) {
     FILE *src;
     char line[WHITELIST_SRCLINE_LEN];
     int lineno = 0;
     size_t len;
 
+
+    if (filename == NULL) return -1;
 
     src = fopen(filename, "r");
     if (src == NULL) {
@@ -128,7 +130,7 @@ int whitelist_file(char *filename) {
 }
 
 
-int whitelist_add(char *str) {
+int whitelist_add(const char *str) {
     char *pos;
 
     /* try address/mask first */
@@ -181,7 +183,7 @@ int whitelist_add(char *str) {
     return -1;
 }
 
-int whitelist_add_block4(char *address, int masklen) {
+int whitelist_add_block4(const char *restrict address, int masklen) {
     addrblock_t ab;
 
     /* parse block line */
@@ -198,12 +200,12 @@ int whitelist_add_block4(char *address, int masklen) {
     return 0;
 }
 
-int whitelist_add_block6(char *address, int masklen) {
+int whitelist_add_block6(const char *restrict address, int masklen) {
     sshguard_log(LOG_WARNING, "whitelist: IPv6 block whitelisting not yet supported, skipping...");
     return -1;
 }
 
-int whitelist_add_ipv4(char *ip) {
+int whitelist_add_ipv4(const char *restrict ip) {
     addrblock_t ab;
 
     ab.addrkind = ADDRKIND_IPv4;
@@ -215,7 +217,7 @@ int whitelist_add_ipv4(char *ip) {
     return 0;
 }
 
-int whitelist_add_ipv6(char *ip) {
+int whitelist_add_ipv6(const char *restrict ip) {
     addrblock_t ab;
     int i;
 
@@ -234,7 +236,7 @@ int whitelist_add_ipv6(char *ip) {
     return 0;
 }
 
-int whitelist_add_host(char *host) {
+int whitelist_add_host(const char *restrict host) {
     addrblock_t ab;
     struct hostent *he;
     int i;
@@ -257,7 +259,7 @@ int whitelist_add_host(char *host) {
     return 0;
 }
 
-int whitelist_match(char *addr, int addrkind) {
+int whitelist_match(const char *restrict addr, int addrkind) {
     uint32_t addrent;
     struct in6_addr addrent6;
     int i, j;
