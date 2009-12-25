@@ -97,29 +97,29 @@ static int attackt_whenlast_comparator(const void *a, const void *b);
 
 #ifdef EINTR
 /* get line unaffected by interrupts */
-char *safe_fgets(char *restrict s, int size, FILE *restrict stream);
+static char *safe_fgets(char *restrict s, int size, FILE *restrict stream);
 #endif
 /* handler for termination-related signals */
-void sigfin_handler(int signo);
+static void sigfin_handler(int signo);
 /* handler for suspension/resume signals */
-void sigstpcont_handler(int signo);
+static void sigstpcont_handler(int signo);
 /* called at exit(): flush blocked addresses and finalize subsystems */
-void finishup(void);
+static void finishup(void);
 
+/* load blacklisted addresses and block them (if blacklist enabled) */
+static void process_blacklisted_addresses();
 /* handle an attack: addr is the author, addrkind its address kind, service the attacked service code */
-void report_address(attack_t attack);
+static void report_address(attack_t attack);
 /* cleanup false-alarm attackers from limbo list (ones with too few attacks in too much time) */
-void purge_limbo_stale(void);
+static void purge_limbo_stale(void);
 /* release blocked attackers after their penalty expired */
-void *pardonBlocked(void *par);
+static void *pardonBlocked(void *par);
 
 
 int main(int argc, char *argv[]) {
     pthread_t tid;
     int retv;
     char buf[MAX_LOGLINE_LEN];
-    /* list of addresses that have been blacklisted */
-    list_t *blacklist = NULL;
     
 
     /* initializations */
@@ -186,42 +186,8 @@ int main(int argc, char *argv[]) {
     signal(SIGHUP, sigfin_handler);
     signal(SIGINT, sigfin_handler);
 
-    /* if blacklist enabled, block blacklisted addresses */
-    if (opts.blacklist_filename != NULL) {
-        blacklist = blacklist_load(opts.blacklist_filename);
-        if (blacklist == NULL) {
-            sshguard_log(LOG_NOTICE, "Blacklist file '%s' doesn't exist, I'll create it for you.\n", opts.blacklist_filename);
-            if (blacklist_create(opts.blacklist_filename) != 0) {
-                /* write to both destinations to make sure the user notice it */
-                fprintf(stderr, "Unable to create a blacklist file at '%s'! Terminating.\n", opts.blacklist_filename);
-                sshguard_log(LOG_CRIT, "Unable to create a blacklist file at '%s'! Terminating.\n", opts.blacklist_filename);
-                exit(1);
-            }
-            blacklist = blacklist_load(opts.blacklist_filename);
-        }
-
-        /* blacklist enabled */
-        assert(blacklist != NULL);
-        sshguard_log(LOG_INFO, "Blacklist loaded, %d addresses.", list_size(blacklist));
-        for (retv = 0; retv < list_size(blacklist); retv++) {
-            attacker_t *bl_attacker = list_get_at(blacklist, retv);
-            assert(bl_attacker != NULL);
-            sshguard_log(LOG_DEBUG, "Loaded from blacklist (%d): '%s:%d', service %d, last seen %s.", retv,
-                    bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service,
-                    ctime(& bl_attacker->whenlast));
-            if (fw_block(bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service) != FWALL_OK) {
-                fprintf(stderr, "Unable to block addresses in firewall. Terminating.\n");
-                exit(1);
-            }
-        }
-        list_destroy(blacklist);
-        free(blacklist);
-        blacklist = NULL;
-
-
-        blacklist = blacklist_load(opts.blacklist_filename);
-
-    }
+    /* load blacklisted addresses and block them (if requested) */
+    process_blacklisted_addresses();
 
     /* set debugging value for parser/scanner ... */
     yydebug = sshg_debugging;
@@ -266,7 +232,7 @@ int main(int argc, char *argv[]) {
 }
 
 #ifdef EINTR
-char *safe_fgets(char *restrict s, int size, FILE *restrict stream) {
+static char *safe_fgets(char *restrict s, int size, FILE *restrict stream) {
     char *restrict ret;
 
     do {
@@ -292,7 +258,7 @@ char *safe_fgets(char *restrict s, int size, FILE *restrict stream) {
  * 2) block the attacker, if attacks > threshold (abuse)
  * 3) blacklist the address, if the number of abuses is excessive
  */
-void report_address(attack_t attack) {
+static void report_address(attack_t attack) {
     attacker_t *tmpent = NULL;
     attacker_t *offenderent;
     int ret;
@@ -420,7 +386,7 @@ static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restri
     ipe->numhits = 0;
 }
 
-void purge_limbo_stale(void) {
+static void purge_limbo_stale(void) {
     attacker_t *tmpent;
     time_t now;
     unsigned int pos = 0;
@@ -434,7 +400,7 @@ void purge_limbo_stale(void) {
     }
 }
 
-void *pardonBlocked(void *par) {
+static void *pardonBlocked(void *par) {
     time_t now;
     attacker_t *tmpel;
     int ret, pos;
@@ -442,7 +408,7 @@ void *pardonBlocked(void *par) {
 
     while (1) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
-        sleep(1 + (rand() % (1+opts.pardon_threshold/2)));
+        sleep(1 + ((unsigned int)rand() % (1+opts.pardon_threshold/2)));
         now = time(NULL);
         pthread_testcancel();
         pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
@@ -475,7 +441,7 @@ void *pardonBlocked(void *par) {
 }
 
 /* finalization routine */
-void finishup(void) {
+static void finishup(void) {
     /* flush blocking rules */
     sshguard_log(LOG_INFO, "Got exit signal, flushing blocked addresses and exiting...");
     fw_flush();
@@ -485,12 +451,12 @@ void finishup(void) {
     sshguard_log_fin();
 }
 
-void sigfin_handler(int signo) {
+static void sigfin_handler(int signo) {
     /* let exit() call finishup() */
     exit(0);
 }
 
-void sigstpcont_handler(int signo) {
+static void sigstpcont_handler(int signo) {
     /* update "suspended" status */
     switch (signo) {
         case SIGTSTP:
@@ -509,5 +475,68 @@ static int attackt_whenlast_comparator(const void *a, const void *b) {
     const attacker_t *bb = (const attacker_t *)b;
 
     return ((aa->whenlast > bb->whenlast) - (aa->whenlast < bb->whenlast));
+}
+
+static void process_blacklisted_addresses() {
+    list_t *blacklist;
+    const char **addresses;         /* NULL-terminated array of (string) addresses to block:  char *addresses[]  */
+    int *restrict service_codes;    /* array of service codes resp to the given addresses */
+    int i;
+
+
+    /* if blacklist enabled, block blacklisted addresses */
+    if (opts.blacklist_filename == NULL)
+        return;
+
+    blacklist = blacklist_load(opts.blacklist_filename);
+    if (blacklist == NULL) {
+        sshguard_log(LOG_NOTICE, "Blacklist file '%s' doesn't exist, I'll create it for you.\n", opts.blacklist_filename);
+        if (blacklist_create(opts.blacklist_filename) != 0) {
+            /* write to both destinations to make sure the user notice it */
+            fprintf(stderr, "Unable to create a blacklist file at '%s'! Terminating.\n", opts.blacklist_filename);
+            sshguard_log(LOG_CRIT, "Unable to create a blacklist file at '%s'! Terminating.\n", opts.blacklist_filename);
+            exit(1);
+        }
+        blacklist = blacklist_load(opts.blacklist_filename);
+    }
+
+    /* blacklist enabled */
+    assert(blacklist != NULL);
+    size_t num_blacklisted = list_size(blacklist);
+    sshguard_log(LOG_INFO, "Blacklist loaded, blocking %d addresses.", num_blacklisted);
+    /* prepare to call fw_block_list() to block in bulk */
+    /* two runs, one for each address kind (but allocate arrays once) */
+    addresses = (const char **)malloc(sizeof(const char *) * (num_blacklisted+1));
+    service_codes = (int *restrict)malloc(sizeof(int) * num_blacklisted);
+    int addrkind;
+    for (addrkind = ADDRKIND_IPv4; addrkind != -1; addrkind = (addrkind == ADDRKIND_IPv4 ? ADDRKIND_IPv6 : -1)) {
+        /* extract from blacklist only addresses (and resp. codes) of type addrkind */
+        i = 0;
+        list_iterator_start(blacklist);
+        while (list_iterator_hasnext(blacklist)) {
+            const attacker_t *bl_attacker = list_iterator_next(blacklist);
+            if (bl_attacker->attack.address.kind != addrkind)
+                continue;
+            sshguard_log(LOG_DEBUG, "Loaded from blacklist (%d): '%s:%d', service %d, last seen %s.", i,
+                    bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service,
+                    ctime(& bl_attacker->whenlast));
+            addresses[i] = bl_attacker->attack.address.value;
+            service_codes[i] = bl_attacker->attack.service;
+            ++i;
+        }
+        list_iterator_stop(blacklist);
+        /* terminate array list */
+        addresses[i] = NULL;
+        /* do block addresses of this kind */
+        if (fw_block_list(addresses, addrkind, service_codes) != FWALL_OK) {
+            sshguard_log(LOG_CRIT, "While blocking blacklisted addresses, the firewall refused to block!");
+        }
+    }
+    /* free temporary arrays */
+    free(addresses);
+    free(service_codes);
+    /* free blacklist stuff */
+    list_destroy(blacklist);
+    free(blacklist);
 }
 
