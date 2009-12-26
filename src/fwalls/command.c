@@ -100,14 +100,13 @@ static int run_command(const char *restrict command, const char *restrict addr, 
     int ret;
     char *addrks, *servs;
 
-    assert(command != NULL);
-    assert(addr != NULL);
-    assert(addrkind == ADDRKIND_IPv4 || addrkind == ADDRKIND_IPv6);
 
     /* sanity check */
     if (command == NULL || strlen(command) == 0) return 0;
 
     if (addr != NULL) {
+        assert(addrkind == ADDRKIND_IPv4 || addrkind == ADDRKIND_IPv6);
+
         /* export information to the environment */
         addrks = malloc(5);
         servs = malloc(5);
