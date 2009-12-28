@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2008 Mij <mij@bitchx.it>
+ * Copyright (c) 2007,2008,2009 Mij <mij@sshguard.net>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -51,6 +51,8 @@
 #include "seekers.h"
 /* data types for tracking attacks (attack_t, attacker_t etc) */
 #include "sshguard_attack.h"
+/* subsystem for polling multiple log files and getting log entries */
+#include "sshguard_logsuck.h"
 
 #include "sshguard.h"
 
@@ -95,6 +97,9 @@ static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restri
 /* comparison operator for sorting offenders list */
 static int attackt_whenlast_comparator(const void *a, const void *b);
 
+/* get log lines in here. Hide the actual source and the method. Fill buf up
+ * to buflen chars, return 0 for success, -1 for failure */
+static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source);
 #ifdef EINTR
 /* get line unaffected by interrupts */
 static char *safe_fgets(char *restrict s, int size, FILE *restrict stream);
@@ -160,7 +165,7 @@ int main(int argc, char *argv[]) {
 
     /* whitelist localhost */
     if (whitelist_add("127.0.0.1") != 0) {
-        fprintf(stderr, "Could not whitelist localhost. terminating...\n");
+        fprintf(stderr, "Could not whitelist localhost. Terminating...\n");
         exit(1);
     }
 
@@ -206,12 +211,7 @@ int main(int argc, char *argv[]) {
             opts.abuse_threshold, (unsigned int)opts.pardon_threshold, (unsigned int)opts.stale_threshold);
 
 
-#ifdef EINTR
-    while (safe_fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL) {
-#else
-    while (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL) {
-#endif
-
+    while (read_log_line(buf, MAX_LOGLINE_LEN, false) == 0) {
         if (suspended) continue;
 
         retv = parse_line(buf);
@@ -229,6 +229,23 @@ int main(int argc, char *argv[]) {
 
     /* let exit() call finishup() */
     exit(0);
+}
+
+static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source) {
+    /* must fill buf, and return 0 for success and -1 for error */
+
+    /* get logs from polled files ? */
+    if (opts.has_polled_files) {
+        /* logsuck_getline() reflects the 0/-1 codes already */
+        return logsuck_getline(buf, MAX_LOGLINE_LEN, from_last_source);
+    }
+
+    /* otherwise, get logs from stdin */
+#ifdef EINTR
+    return (safe_fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
+#else
+    return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
+#endif
 }
 
 #ifdef EINTR
@@ -448,6 +465,7 @@ static void finishup(void) {
     if (fw_fin() != FWALL_OK) sshguard_log(LOG_ERR, "Cound not finalize firewall.");
     if (whitelist_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the whitelisting system.");
     if (procauth_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the process authorization subsystem.");
+    if (logsuck_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the log polling subsystem.");
     sshguard_log_fin();
 }
 

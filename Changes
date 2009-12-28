@@ -1,3 +1,11 @@
+* 1.5beta   Dec 2009
+    - logsucker: sshguard can now get logs from many files at once
+    - autonomously cut logging when not in debug mode
+    - limit per-line addresses in hosts backend (thanks Petr Lampa)
+    - fix possible race stimulated when many addresses are blocked (thanks Petr Lampa)
+    - explicitly handle when firewall allows blocked hosts to keep producing traffic
+    - fix log filtering on OSes with inverted priority declarations
+
 * 1.4       Aug 2009
     - add touchiness: block repeated abusers for longer
     - add blacklisting: store frequent abusers for permanent blocking

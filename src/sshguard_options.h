@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2008 Mij <mij@bitchx.it>
+ * Copyright (c) 2007,2008,2009 Mij <mij@sshguard.net>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,6 +28,7 @@ typedef struct {
     unsigned int abuse_threshold;       /* number of attacks before raising an abuse */
     unsigned int blacklist_threshold;   /* number of abuses after which blacklisting the attacker */
     char *blacklist_filename;           /* NULL to disable blacklist, or path of the blacklist file */
+    int has_polled_files;               /* true if we are polling log any file, false if reading from stdin */
 } sshg_opts;
 
 

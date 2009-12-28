@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2008 Mij <mij@bitchx.it>
+ * Copyright (c) 2007,2008,2009 Mij <mij@sshguard.net>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -32,6 +32,7 @@
 #include "sshguard.h"
 #include "sshguard_procauth.h"
 #include "sshguard_whitelist.h"
+#include "sshguard_logsuck.h"
 #include "sshguard_options.h"
 
 sshg_opts opts;
@@ -49,7 +50,8 @@ int get_options_cmdline(int argc, char *argv[]) {
     opts.pardon_threshold = DEFAULT_PARDON_THRESHOLD;
     opts.stale_threshold = DEFAULT_STALE_THRESHOLD;
     opts.abuse_threshold = DEFAULT_ABUSE_THRESHOLD;
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:vdh")) != -1) {
+    opts.has_polled_files = 0;
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:vdh")) != -1) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
@@ -121,6 +123,14 @@ int get_options_cmdline(int argc, char *argv[]) {
 					usage();
 					return -1;
                 }
+                break;
+
+            case 'l':
+                if (logsuck_add_logfile(optarg) != 0) {
+                    fprintf(stderr, "Unable to poll from '%s'!", optarg);
+                    return -1;
+                }
+                opts.has_polled_files = 1;
                 break;
 
 			case 'v': 	/* version */
