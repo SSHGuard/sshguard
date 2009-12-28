@@ -8,6 +8,8 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl b Ar thr:filename
+.Op Fl v
+.Op Fl l Ar filename
 .Op Fl a Ar abuse_tresh
 .Op Fl p Ar pardon_min_interval
 .Op Fl s Ar stale_tresh
@@ -20,15 +22,15 @@
 monitors logging activity and reacts to attacks by blocking their source addresses.
 .Pp
 .Nm
-has born for protecting SSH servers from the today's widespread brute force
+was born for protecting SSH servers from the today's widespread brute force
 attacks, and evolved to an extensible log supervisor for blocking attacks to
 applications in real-time.
 .Pp
 .Nm
-is given log messages in its standard input. By means of a parser, it decides
-whether an entry is normal activity or attack; in the latter case, it remarks
-the author's address. After a number of attacks, the address is distinguished
-as an
+can monitor a number of log files proactively, or receive log messages in its
+standard input. By means of a parser, it decides whether an entry is normal
+activity or attack; in the latter case, it remarks the author's
+address. After a number of attacks, the address is distinguished as an
 .Ar abuser ,
 and blocked with the firewall.
 .Pp
@@ -48,14 +50,15 @@ for FreeBSD, NetBSD and Solaris
 .It tcpd's hosts_access (/etc/hosts.allow)
 portable across UNIX
 .It null
-portable do-nothing backend for applying detection but not prevention
+portable do-nothing backend for running detection without prevention
 .El
 .\"
 .\"
 .Sh USAGE
 .Nm
-is given log entries to scan in its standard input. It can interpret logs with
-the following formats:
+reads log entries to analyze by monitoring a number of log files, or
+from its standard input. It can interpret logs with all of the following
+formats:
 .Bl -bullet -compact -offset indent
 .It
 syslog
@@ -90,7 +93,8 @@ null firewall
 .Pp
 Depending on the way chosen for giving logs to sshguard, and depending on the
 chosen blocking system, some setup may be needed. Instructions are documented
-at http://www.sshguard.net/doc/setup/setup.html .
+at
+.Ar http://www.sshguard.net/doc/setup/setup.html .
 .Pp
 .Nm
 does not make use of any configuration file. Instead, a combination of optional
@@ -105,6 +109,14 @@ enable blacklisting: blacklist after
 See TOUCHINESS & BLACKLISTING below.
 .It Fl v
 print summary information on sshguard and exit.
+.It Fl l Ar filename
+add
+.Ar filename
+to the list of log files to monitor. This can be used multiple times. When no
+files are specified,
+.Nm
+expects log entries from its standard input. Otherwise, standard input is
+ignored, unless the magic "-" is indicated as filename.
 .It Fl a Ar num
 block an address after
 .Ar num
