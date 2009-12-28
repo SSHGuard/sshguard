@@ -98,8 +98,18 @@ int sshguard_log(int prio, char *fmt, ...) {
     assert(msgbuf != NULL);
 
     /* cut irrelevant messages when not debugging */
-    if (! sshg_log_debugging && prio < sshguard_log_minloglevel)
-        return 0;
+    if (! sshg_log_debugging ) {
+        /* LOG_* are sometimes defined in uncomparable manners. Find out */
+        if (LOG_EMERG > LOG_DEBUG) {
+            /* right ordering */
+            if (prio < sshguard_log_minloglevel)
+                return 0;
+        } else {
+            /* opposite ordering */
+            if (prio > sshguard_log_minloglevel)
+                return 0;
+        }
+    }
 
     va_start(ap, fmt);
     if (sshg_log_debugging) {
