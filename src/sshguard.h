@@ -39,5 +39,7 @@
 
 /* maximum number of files polled */
 #define MAX_FILES_POLLED        35
+/* maximum file polling interval when logs are idle (millisecs) */
+#define MAX_LOGPOLL_INTERVAL    2200
 
 #endif

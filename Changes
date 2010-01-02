@@ -1,4 +1,7 @@
-* 1.5beta   Dec 2009
+* 1.5beta2
+    - logsucker: handle files disappearing and reappearing at runtime
+
+* 1.5beta1  Dec 2009
     - logsucker: sshguard can now get logs from many files at once
     - autonomously cut logging when not in debug mode
     - limit per-line addresses in hosts backend (thanks Petr Lampa)
