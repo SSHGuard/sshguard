@@ -304,11 +304,11 @@ static int ipfwmod_buildblockcommand(ipfw_rulenumber_t ruleno, const char *restr
     }
 
     /* add the rest of the rule */
-    sprintf(args, " from %s", addresses[0]);
+    sprintf(args + strlen(args), " from %s", addresses[0]);
     for (i = 1; addresses[i] != NULL; ++i) {
-        sprintf(args, ",%s", addresses[i]);
+        sprintf(args + strlen(args), ",%s", addresses[i]);
     }
-    sprintf(args, " to me");
+    strcat(args, " to me");
 
     return FWALL_OK;
 }
