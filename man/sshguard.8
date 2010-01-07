@@ -94,7 +94,7 @@ null firewall
 Depending on the way chosen for giving logs to sshguard, and depending on the
 chosen blocking system, some setup may be needed. Instructions are documented
 at
-.Ar http://www.sshguard.net/doc/setup/setup.html .
+.Ar http://www.sshguard.net/docs/setup/ .
 .Pp
 .Nm
 does not make use of any configuration file. Instead, a combination of optional
@@ -153,7 +153,7 @@ comprehensive details of the activity and parsing process. Debugging mode can
 help investigating patterns: once enabled, a pattern can be directly pasted
 into the tool from the console, and the behavior is immediately and minutely
 shown beneath.
-.\
+.\"
 .\"
 .Sh WHITELISTING
 .Nm
@@ -241,7 +241,7 @@ option is used as follows:
 .Dl -f 100:/var/run/sshd.pid
 which associates the given pidfile to the ssh service (code 100). A list of well-known
 service codes is available at
-.Ar http://www.sshguard.net/doc/servicecodes.html .
+.Ar http://www.sshguard.net/docs/reference/service-codes/ .
 .Pp
 The
 .Fl f
@@ -331,7 +331,7 @@ Adding more attack patterns needs some expertise with bison, as
 .Nm
 uses a grammar-based context-free parser for powerfulness. Thus, there is one
 tracker for user-proposed patterns at
-.Ar http://www.sshguard.net/newattackpatt.php .
+.Ar http://www.sshguard.net/support/attacks/submit/ .
 .\"
 .\"
 .Sh SEE ALSO
