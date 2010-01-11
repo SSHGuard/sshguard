@@ -65,7 +65,7 @@ int filtersyslogprocess(char *syslogbanner) {
 %option debug
 
 %array
-%s ssh_notallowed ssh_loginerr ssh_reversemap  dovecot_loginerr  cyrusimap_loginerr  freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr
+%s ssh_notallowed ssh_loginerr ssh_reversemap  dovecot_loginerr  cyrusimap_loginerr exim_esmtp_autherr  freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr
 
 MONTH       (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
 DAYNO       [1-9][0-9]?
@@ -159,6 +159,9 @@ IPV6ATOM    ([a-fA-F0-9]{1,4})
  /* Cucipop */
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
 
+ /* Exim */
+.*" auth_plaintext authenticator failed for ".+" ["             { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
+<exim_esmtp_autherr>"]:"[0-9]+" I=".+": 535 Incorrect authentication data (set_id=test)"    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */

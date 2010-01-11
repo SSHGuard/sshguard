@@ -44,6 +44,9 @@
 /* cucipop */
 #define SERVICES_CUCIPOP                230
 
+/* exim */
+#define SERVICES_EXIM                   240
+
 /* FTP SERVICES */
 /* ftpd shipped with FreeBSD */
 #define SERVICES_FREEBSDFTPD            300

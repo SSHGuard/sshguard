@@ -48,6 +48,8 @@ extern int yylex();
 %token CYRUSIMAP_SASL_LOGINERR_PREF CYRUSIMAP_SASL_LOGINERR_SUFF
 /* cucipop */
 %token CUCIPOP_AUTHFAIL
+/* exim */
+%token EXIM_ESMTP_AUTHFAIL_PREF EXIM_ESMTP_AUTHFAIL_SUFF
 /* FreeBSD's FTPd */
 %token FREEBSDFTPD_LOGINERR_PREF FREEBSDFTPD_LOGINERR_SUFF
 /* proFTPd */
@@ -103,6 +105,7 @@ logmsg:
     | uwimapmsg         {   parsed_attack.service = SERVICES_UWIMAP; }
     | cyrusimapmsg      {   parsed_attack.service = SERVICES_CYRUSIMAP; }
     | cucipopmsg        {   parsed_attack.service = SERVICES_CUCIPOP; }
+    | eximmsg           {   parsed_attack.service = SERVICES_EXIM; }
     | freebsdftpdmsg    {   parsed_attack.service = SERVICES_FREEBSDFTPD; }
     | proftpdmsg        {   parsed_attack.service = SERVICES_PROFTPD; }
     | pureftpdmsg       {   parsed_attack.service = SERVICES_PUREFTPD; }
@@ -220,6 +223,11 @@ cyrusimapmsg:
 cucipopmsg:
     CUCIPOP_AUTHFAIL addr
     ;
+
+/* */
+eximmsg:
+   EXIM_ESMTP_AUTHFAIL_PREF addr EXIM_ESMTP_AUTHFAIL_SUFF
+   ;
 
 /* attack rules for FreeBSD's ftpd */
 freebsdftpdmsg:
