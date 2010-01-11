@@ -166,7 +166,7 @@ IPV6ATOM    ([a-fA-F0-9]{1,4})
 
  /* an IPv6 address */
  /* standard | clouds implied | embedded IPv4 */
-((({IPV6ATOM}:){7}{IPV6ATOM})|(({IPV6ATOM})?::(({IPV6ATOM}:){1,5}({IPV6ATOM}))?)|(::[fF0]{0,4}:){IPV4}) { yylval.str = yytext; return IPv6; }
+((({IPV6ATOM}:){5}{IPV6ATOM})|(({IPV6ATOM})?::(({IPV6ATOM}:){1,3}({IPV6ATOM}))?)|(::[fF0]{0,4}:){IPV4}) { yylval.str = yytext; return IPv6; }
 
  /* an host address (PTR) */
 {HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }

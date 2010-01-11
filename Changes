@@ -1,6 +1,7 @@
 * 1.5beta2
     - support for Cucipop authentication failure messages
     - logsucker: handle files disappearing and reappearing at runtime
+    - fix recognition of some IPv6 addresses
 
 * 1.5beta1  Dec 2009
     - logsucker: sshguard can now get logs from many files at once
