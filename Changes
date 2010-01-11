@@ -1,4 +1,5 @@
 * 1.5beta2
+    - support for Cucipop authentication failure messages
     - logsucker: handle files disappearing and reappearing at runtime
 
 * 1.5beta1  Dec 2009

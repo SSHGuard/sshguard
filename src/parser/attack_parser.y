@@ -46,6 +46,8 @@ extern int yylex();
 %token UWIMAP_LOGINERR
 /* cyrus-imap */
 %token CYRUSIMAP_SASL_LOGINERR_PREF CYRUSIMAP_SASL_LOGINERR_SUFF
+/* cucipop */
+%token CUCIPOP_AUTHFAIL
 /* FreeBSD's FTPd */
 %token FREEBSDFTPD_LOGINERR_PREF FREEBSDFTPD_LOGINERR_SUFF
 /* proFTPd */
@@ -100,6 +102,7 @@ logmsg:
     | dovecotmsg        {   parsed_attack.service = SERVICES_DOVECOT; }
     | uwimapmsg         {   parsed_attack.service = SERVICES_UWIMAP; }
     | cyrusimapmsg      {   parsed_attack.service = SERVICES_CYRUSIMAP; }
+    | cucipopmsg        {   parsed_attack.service = SERVICES_CUCIPOP; }
     | freebsdftpdmsg    {   parsed_attack.service = SERVICES_FREEBSDFTPD; }
     | proftpdmsg        {   parsed_attack.service = SERVICES_PROFTPD; }
     | pureftpdmsg       {   parsed_attack.service = SERVICES_PUREFTPD; }
@@ -211,6 +214,11 @@ uwimapmsg:
 
 cyrusimapmsg:
     CYRUSIMAP_SASL_LOGINERR_PREF addr CYRUSIMAP_SASL_LOGINERR_SUFF
+    ;
+
+/* cucipop reports @addr@ tried to log in with wrong password */
+cucipopmsg:
+    CUCIPOP_AUTHFAIL addr
     ;
 
 /* attack rules for FreeBSD's ftpd */

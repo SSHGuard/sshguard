@@ -156,6 +156,9 @@ IPV6ATOM    ([a-fA-F0-9]{1,4})
 "("[^@]+"@"                                                     { BEGIN(pureftpd_loginerr); return PUREFTPD_LOGINERR_PREF; }
 <pureftpd_loginerr>") [WARNING] Authentication failed for user ".+  { BEGIN(INITIAL); return PUREFTPD_LOGINERR_SUFF; }
 
+ /* Cucipop */
+"authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
+
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */

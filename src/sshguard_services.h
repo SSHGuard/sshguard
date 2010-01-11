@@ -41,6 +41,9 @@
 /* cyrus-imap */
 #define SERVICES_CYRUSIMAP              220
 
+/* cucipop */
+#define SERVICES_CUCIPOP                230
+
 /* FTP SERVICES */
 /* ftpd shipped with FreeBSD */
 #define SERVICES_FREEBSDFTPD            300
