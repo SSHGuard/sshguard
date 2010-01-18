@@ -84,8 +84,13 @@ TIMESTAMP_SYSLOG {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
 PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA-Z0-9]{7})|([sS][-_a-rt-zA-RT-Z0-9][-_a-zA-Z0-9]{6})|([sS]{2}[-_a-gi-zA-gI-Z0-9][-_a-zA-Z0-9]{5})|([sS]{2}[hH][-_a-fh-zA-FH-Z0-9][-_a-zA-Z0-9]{4})|([sS]{2}[hH][gG][-_a-tv-zA-TV-Z0-9][-_a-zA-Z0-9]{3})|([sS]{2}[hH][gG][uU][b-zB-Z0-9][-_a-zA-Z0-9]{2})|([sS]{2}[hH][gG][uU][-_aA][-_a-qs-zA-QS-Z0-9][-_a-zA-Z0-9])|([sS]{2}[hH][gG][uU][-_aA][rR][-_a-ce-zA-CE-Z0-9])
 
  /* IPv4 address (used in IPv6 address too, for IPv4 encapsulation) */
-IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?|0)){3})
+IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)){3})
+ /* IPv6 addresses including compressed and IPv4-embedded variants (RFC 2373) */
+ /* Nota bene:
+  *     a:b:c:d::f:g:h is not allowed by RFC 2373, but since tools use it, we support it.
+  */
 IPV6ATOM    ([a-fA-F0-9]{1,4})
+IPV6        (::|(((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})|({IPV6ATOM}:){7}({IPV6ATOM})|(:(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){1,6}:)|(({IPV6ATOM}:)(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){2}(:{IPV6ATOM}){1,5})|(({IPV6ATOM}:){3}(:{IPV6ATOM}){1,4})|(({IPV6ATOM}:){4}(:{IPV6ATOM}){1,3})|(({IPV6ATOM}:){5}(:{IPV6ATOM}){1,2}))
   
 %%
 
@@ -157,7 +162,7 @@ IPV6ATOM    ([a-fA-F0-9]{1,4})
 <pureftpd_loginerr>") [WARNING] Authentication failed for user ".+  { BEGIN(INITIAL); return PUREFTPD_LOGINERR_SUFF; }
 
  /* Cucipop */
-"authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
+ /*"authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; } */
 
  /* Exim */
 .*" auth_plaintext authenticator failed for ".+" ["             { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
@@ -169,7 +174,7 @@ IPV6ATOM    ([a-fA-F0-9]{1,4})
 
  /* an IPv6 address */
  /* standard | clouds implied | embedded IPv4 */
-((({IPV6ATOM}:){5}{IPV6ATOM})|(({IPV6ATOM})?::(({IPV6ATOM}:){1,3}({IPV6ATOM}))?)|(::[fF0]{0,4}:){IPV4}) { yylval.str = yytext; return IPv6; }
+{IPV6}                                                          { yylval.str = yytext; return IPv6; }
 
  /* an host address (PTR) */
 {HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }
