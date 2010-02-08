@@ -47,6 +47,9 @@
 /* exim */
 #define SERVICES_EXIM                   240
 
+/* sendmail */
+#define SERVICES_SENDMAIL               250
+
 /* FTP SERVICES */
 /* ftpd shipped with FreeBSD */
 #define SERVICES_FREEBSDFTPD            300
@@ -57,4 +60,6 @@
 /* Pure-FTPd */
 #define SERVICES_PUREFTPD               320
 
+/* vsftpd */
+#define SERVICES_VSFTPD                 330
 #endif

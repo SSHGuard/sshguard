@@ -1,4 +1,9 @@
-* 1.5beta2
+* 1.5beta3
+    - support for Sendmail relaying abuse messages
+    - support for vsftpd authentication failure messages
+    - recognize messages of Gentoo's PAM implementation for authentication failure
+
+* 1.5beta2  Jan 2010
     - support for Cucipop authentication failure messages
     - support for Exim ESMTP authentication failure messages
     - logsucker: handle files disappearing and reappearing at runtime

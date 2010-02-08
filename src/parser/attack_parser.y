@@ -50,12 +50,16 @@ extern int yylex();
 %token CUCIPOP_AUTHFAIL
 /* exim */
 %token EXIM_ESMTP_AUTHFAIL_PREF EXIM_ESMTP_AUTHFAIL_SUFF
+/* sendmail */
+%token SENDMAIL_RELAYDENIED_PREF SENDMAIL_RELAYDENIED_SUFF
 /* FreeBSD's FTPd */
 %token FREEBSDFTPD_LOGINERR_PREF FREEBSDFTPD_LOGINERR_SUFF
 /* proFTPd */
 %token PROFTPD_LOGINERR_PREF PROFTPD_LOGINERR_SUFF
 /* PureFTPd */
 %token PUREFTPD_LOGINERR_PREF PUREFTPD_LOGINERR_SUFF
+/* vsftpd */
+%token VSFTPD_LOGINERR_PREF VSFTPD_LOGINERR_SUFF
 
 %%
 
@@ -106,9 +110,11 @@ logmsg:
     | cyrusimapmsg      {   parsed_attack.service = SERVICES_CYRUSIMAP; }
     | cucipopmsg        {   parsed_attack.service = SERVICES_CUCIPOP; }
     | eximmsg           {   parsed_attack.service = SERVICES_EXIM; }
+    | sendmailmsg       {   parsed_attack.service = SERVICES_SENDMAIL; }
     | freebsdftpdmsg    {   parsed_attack.service = SERVICES_FREEBSDFTPD; }
     | proftpdmsg        {   parsed_attack.service = SERVICES_PROFTPD; }
     | pureftpdmsg       {   parsed_attack.service = SERVICES_PUREFTPD; }
+    | vsftpdmsg         {   parsed_attack.service = SERVICES_VSFTPD; }
     ;
 
 /* an address */
@@ -229,6 +235,10 @@ eximmsg:
    EXIM_ESMTP_AUTHFAIL_PREF addr EXIM_ESMTP_AUTHFAIL_SUFF
    ;
 
+sendmailmsg:
+   SENDMAIL_RELAYDENIED_PREF addr SENDMAIL_RELAYDENIED_SUFF;
+   ;
+
 /* attack rules for FreeBSD's ftpd */
 freebsdftpdmsg:
     FREEBSDFTPD_LOGINERR_PREF addr FREEBSDFTPD_LOGINERR_SUFF
@@ -242,6 +252,11 @@ proftpdmsg:
 /* attack rules for Pure-FTPd */
 pureftpdmsg:
     PUREFTPD_LOGINERR_PREF addr PUREFTPD_LOGINERR_SUFF
+    ;
+
+/* attack rules for vsftpd */
+vsftpdmsg:
+    VSFTPD_LOGINERR_PREF addr VSFTPD_LOGINERR_SUFF
     ;
 
 %%
