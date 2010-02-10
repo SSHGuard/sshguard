@@ -23,6 +23,8 @@
 
 #include <stdbool.h>
 
+typedef uint32_t sourceid_t;
+
 /**
  * Initialize the logsuck subsystem.
  *
@@ -35,7 +37,7 @@ int logsuck_init();
  *
  * @return 0 on success, -1 on error
  */
-int logsuck_add_logfile(const char *restrict filename);
+int logsuck_add_logsource(const char *restrict filename);
 
 /**
  * Get the first whole log line coming from any log file configured.
@@ -44,7 +46,7 @@ int logsuck_add_logfile(const char *restrict filename);
  *
  * @return 0 on success, -1 on error
  */
-int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source);
+int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source, sourceid_t *restrict whichsource);
 
 /**
  * Finalize the logsuck subsystem.

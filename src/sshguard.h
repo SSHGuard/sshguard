@@ -27,12 +27,19 @@
 
 /* default: minimum seconds after which unblocking a blocked IP. Max is (min*3/2) */
 #define DEFAULT_PARDON_THRESHOLD    (7 * 60)
-/* default number of hits after which blocking an IP (inclusive) */
-#define DEFAULT_ABUSE_THRESHOLD     4
+/* default cumulated danger after which blocking an IP (inclusive) */
+#define DEFAULT_ABUSE_THRESHOLD     40
 /* default seconds after which forgiving a cracker candidate */
 #define DEFAULT_STALE_THRESHOLD     (20 * 60)
-/* default number of abuses (blocked) from which the attacker gets blacklisted and blocked permanently */
-#define DEFAULT_BLACKLIST_THRESHOLD 3
+/* default total cumulated danger from which an offender (attacker blocked in the past) gets blacklisted and blocked permanently */
+#define DEFAULT_BLACKLIST_THRESHOLD (3 * DEFAULT_ABUSE_THRESHOLD)
+#if DEFAULT_BLACKLIST_THRESHOLD < DEFAULT_ABUSE_THRESHOLD
+#   error   "Doesn't make sense to blacklist before blocking. Set DEFAULT_BLACKLIST_THRESHOLD >= DEFAULT_ABUSE_THRESHOLD."
+#endif
+
+/* default "weight" of an attack */
+#define DEFAULT_ATTACKS_DANGEROUSNESS           10
+
 
 /* maximum number of recent offenders to retain in memory at once */
 #define MAX_OFFENDER_ITEMS      15

@@ -29,16 +29,12 @@
 #include "../parser.h"
 
 
-YY_BUFFER_STATE bufstate;
+void scanner_init(char *str) {
+    yy_scan_string(str);
+}
 
-int parse_line(char *str) {
-    int ret;
-    
-    yy_scan_string (str);
-    ret = yyparse();
+void scanner_fin() {
     yy_delete_buffer(YY_CURRENT_BUFFER);
-
-    return ret;
 }
 
 int getsyslogpid(char *syslogbanner, int length) {
@@ -118,7 +114,14 @@ IPV6        (::|(((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})|({IPV6ATOM}:){7}({IPV
         return SYSLOG_BANNER_PID;
         }
 
-{TIMESTAMP_SYSLOG}[ ]+({WORD}|{HOSTADDR})[ ]+{PROCESSNAME}":"   { return SYSLOG_BANNER; }
+{TIMESTAMP_SYSLOG}[ ]+({WORD}|{HOSTADDR})[ ]+({PROCESSNAME}":")?   { return SYSLOG_BANNER; }
+
+ /* syslog style  "last message repeated N times" */
+"last message repeated "([1-9][0-9]*)" times"                   {
+                                                                    /* extract number of times */
+                                                                    yylval.num = (int)strtol(& yytext[sizeof("last message repeated ")-1], (char **)NULL, 10);
+                                                                    return LAST_LINE_REPEATED_N_TIMES;
+                                                                }
 
  /* metalog banner */
 {TIMESTAMP_SYSLOG}" ["{PROCESSNAME}"] "                         { return METALOG_BANNER; }

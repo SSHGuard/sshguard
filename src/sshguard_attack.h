@@ -29,6 +29,7 @@
 typedef struct {
     sshg_address_t address;         /* address (value + type) */
     int service;                    /* type of service offended */
+    unsigned int dangerousness;     /* how dangerous the attack is, the bigger the worse */
 } attack_t;
 
 /* portable definition of the length in bytes of the attack_t structure */
@@ -40,7 +41,7 @@ typedef struct {
     time_t whenfirst;               /* first time seen (or blocked) */
     time_t whenlast;                /* last time seen (or blocked) */
     time_t pardontime;              /* minimum seconds to wait before releasing address when blocked */
-    unsigned int numhits;           /* number of times caught attacking (or blocked) */
+    unsigned int cumulated_danger;  /* total danger incurred (before or after blocked) */
 } attacker_t;
 
 /* portable definition of the length in bytes of the attacker_t structure */

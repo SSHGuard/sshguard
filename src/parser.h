@@ -36,9 +36,8 @@ extern int yy_flex_debug;
 
 attack_t parsed_attack;
 
-int yyparse();
 /* this is defined in attack_scanner.c */
-int parse_line(char *str);
+int parse_line(int source_id, char *str);
 
 #endif
 

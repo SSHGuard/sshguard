@@ -99,7 +99,7 @@ static int attackt_whenlast_comparator(const void *a, const void *b);
 
 /* get log lines in here. Hide the actual source and the method. Fill buf up
  * to buflen chars, return 0 for success, -1 for failure */
-static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source);
+static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source, sourceid_t *restrict source_id);
 #ifdef EINTR
 /* get line unaffected by interrupts */
 static char *safe_fgets(char *restrict s, int size, FILE *restrict stream);
@@ -124,6 +124,7 @@ static void *pardonBlocked(void *par);
 int main(int argc, char *argv[]) {
     pthread_t tid;
     int retv;
+    sourceid_t source_id;
     char buf[MAX_LOGLINE_LEN];
     
 
@@ -211,17 +212,17 @@ int main(int argc, char *argv[]) {
             opts.abuse_threshold, (unsigned int)opts.pardon_threshold, (unsigned int)opts.stale_threshold);
 
 
-    while (read_log_line(buf, MAX_LOGLINE_LEN, false) == 0) {
+    while (read_log_line(buf, MAX_LOGLINE_LEN, false, & source_id) == 0) {
         if (suspended) continue;
 
-        retv = parse_line(buf);
+        retv = parse_line(source_id, buf);
         if (retv != 0) {
             /* sshguard_log(LOG_DEBUG, "Skip line '%s'", buf); */
             continue;
         }
 
         /* extract the IP address */
-        sshguard_log(LOG_DEBUG, "Matched address %s:%d attacking service %d", parsed_attack.address.value, parsed_attack.address.kind, parsed_attack.service);
+        sshguard_log(LOG_DEBUG, "Matched address %s:%d attacking service %d, dangerousness %u.", parsed_attack.address.value, parsed_attack.address.kind, parsed_attack.service, parsed_attack.dangerousness);
        
         /* report IP */
         report_address(parsed_attack);
@@ -231,13 +232,13 @@ int main(int argc, char *argv[]) {
     exit(0);
 }
 
-static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source) {
+static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source, sourceid_t *restrict source_id) {
     /* must fill buf, and return 0 for success and -1 for error */
 
     /* get logs from polled files ? */
     if (opts.has_polled_files) {
         /* logsuck_getline() reflects the 0/-1 codes already */
-        return logsuck_getline(buf, MAX_LOGLINE_LEN, from_last_source);
+        return logsuck_getline(buf, MAX_LOGLINE_LEN, from_last_source, source_id);
     }
 
     /* otherwise, get logs from stdin */
@@ -314,8 +315,8 @@ static void report_address(attack_t attack) {
     /* otherwise, the entry was already existing */
     /* update last hit */
     tmpent->whenlast = time(NULL);
-    tmpent->numhits++;
-    if (tmpent->numhits < opts.abuse_threshold) {
+    tmpent->cumulated_danger += attack.dangerousness;
+    if (tmpent->cumulated_danger < opts.abuse_threshold) {
         /* do nothing now, just keep an eye on this guy */
         return;
     }
@@ -333,22 +334,15 @@ static void report_address(attack_t attack) {
         sshguard_log(LOG_DEBUG, "First sight of offender '%s:%d', adding to offenders list.", tmpent->attack.address.value, tmpent->attack.address.kind);
         offenderent = (attacker_t *)malloc(sizeof(attacker_t));
         memcpy(offenderent, tmpent, sizeof(attacker_t));
-        offenderent->numhits = 1;
+        offenderent->cumulated_danger = tmpent->attack.dangerousness;
         list_prepend(& offenders, offenderent);
         assert(! list_empty(& offenders));
-#if 0
-        /* we assume that the list is already sorted by decreasing last-attack time */
-        /* prune list */
-        if (list_size(& offenders) > MAX_OFFENDER_ITEMS) {
-            list_delete_range(& offenders, MAX_OFFENDER_ITEMS, list_size(& offenders)-1);
-        }
-#endif
     } else {
         /* this is a previous offender */
-        offenderent->numhits++;
+        offenderent->cumulated_danger += tmpent->attack.dangerousness;
         offenderent->whenlast = tmpent->whenlast;
 
-        if (offenderent->numhits >= opts.blacklist_threshold) {
+        if (offenderent->cumulated_danger >= opts.blacklist_threshold) {
             /* this host must be blacklisted -- blocked and never unblocked */
             tmpent->pardontime = 0;
 
@@ -360,8 +354,8 @@ static void report_address(attack_t attack) {
                         break;
                     case 0:     /* not in blacklist */
                         /* add it */
-                        sshguard_log(LOG_NOTICE, "Offender '%s:%d' seen %d times (threshold %d) -> blacklisted.",
-                                tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->numhits,
+                        sshguard_log(LOG_NOTICE, "Offender '%s:%d' scored %d danger (threshold %u) -> blacklisted.",
+                                tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger,
                                 opts.blacklist_threshold);
                         if (blacklist_add(opts.blacklist_filename, offenderent) != 0) {
                             sshguard_log(LOG_ERR, "Could not blacklist address: %s", strerror(errno));
@@ -372,17 +366,17 @@ static void report_address(attack_t attack) {
                 }
             }
         } else {
-            sshguard_log(LOG_INFO, "Offender '%s:%d' seen %d times.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->numhits);
+            sshguard_log(LOG_INFO, "Offender '%s:%d' scored %u danger.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger);
             /* compute blocking time wrt the "offensiveness" */
-            for (ret = 0; ret < offenderent->numhits; ret++) {
-                tmpent->pardontime *= 2;
+            for (ret = 0; ret < offenderent->cumulated_danger; ret++) {
+                tmpent->pardontime *= 1.5;
             }
         }
     }
     list_sort(& offenders, -1);
 
-    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u failures over %u seconds.\n", tmpent->attack.address.value,
-            tmpent->attack.address.kind, tmpent->pardontime, tmpent->numhits, tmpent->whenlast - tmpent->whenfirst);
+    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u danger over %u seconds.\n", tmpent->attack.address.value,
+            tmpent->attack.address.kind, tmpent->pardontime, tmpent->cumulated_danger, tmpent->whenlast - tmpent->whenfirst);
     ret = fw_block(attack.address.value, attack.address.kind, attack.service);
     if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
 
@@ -400,7 +394,7 @@ static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restri
     ipe->attack.address.kind = attack->address.kind;
     ipe->attack.service = attack->service;
     ipe->whenfirst = ipe->whenlast = time(NULL);
-    ipe->numhits = 0;
+    ipe->cumulated_danger = 0;
 }
 
 static void purge_limbo_stale(void) {
@@ -465,7 +459,9 @@ static void finishup(void) {
     if (fw_fin() != FWALL_OK) sshguard_log(LOG_ERR, "Cound not finalize firewall.");
     if (whitelist_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the whitelisting system.");
     if (procauth_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the process authorization subsystem.");
-    if (logsuck_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the log polling subsystem.");
+    if (opts.has_polled_files) {
+        if (logsuck_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the log polling subsystem.");
+    }
     sshguard_log_fin();
 }
 

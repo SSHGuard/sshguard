@@ -107,7 +107,7 @@ static void *attacker_serializer(const void *restrict el, uint32_t *restrict len
     memcpy(serialization_buf+*len, & val, sizeof(val));
     *len += sizeof(val);
 
-    val = htonl((uint32_t)atkr.numhits);
+    val = htonl((uint32_t)atkr.cumulated_danger);
     memcpy(serialization_buf+*len, & val, sizeof(val));
     *len += sizeof(val);
 
@@ -146,7 +146,7 @@ static void *attacker_unserializer(const void *restrict el, uint32_t *restrict l
     *len += sizeof(val);
 
     memcpy(&val, el + *len, sizeof(val));
-    atkr->numhits = ntohl(val);
+    atkr->cumulated_danger = ntohl(val);
     *len += sizeof(val);
 
     assert(*len == ATTACKER_T_LEN);

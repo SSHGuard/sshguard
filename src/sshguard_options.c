@@ -55,10 +55,10 @@ int get_options_cmdline(int argc, char *argv[]) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
-                if (sscanf(optarg, "%d:%s", &opts.blacklist_threshold, opts.blacklist_filename) == 2) {
+                if (sscanf(optarg, "%u:%s", & opts.blacklist_threshold, opts.blacklist_filename) == 2) {
                     /* custom threshold specified */
-                    if (opts.blacklist_threshold < 1) {
-                        fprintf(stderr, "Doesn't make sense to have a blacklist threshold lower than one abuse. Terminating.\n");
+                    if (opts.blacklist_threshold < DEFAULT_ABUSE_THRESHOLD) {
+                        fprintf(stderr, "Doesn't make sense to have a blacklist threshold lower than one abuse (%u). Terminating.\n", DEFAULT_ABUSE_THRESHOLD);
 						usage();
 						return -1;
                     }
@@ -96,6 +96,8 @@ int get_options_cmdline(int argc, char *argv[]) {
                     fprintf(stderr, "Doesn't make sense to have an abuse threshold lower than 1 attempt. Terminating.\n");
 					usage();
 					return -1;
+                } else if (opts.abuse_threshold < DEFAULT_ABUSE_THRESHOLD) {
+                    fprintf(stderr, "Warning! Sshguard now uses *attack dangerousness*, not occurrences, to gauge threats. Default dangerousness is %u.", DEFAULT_ATTACKS_DANGEROUSNESS);
                 }
                 break;
 
@@ -126,8 +128,11 @@ int get_options_cmdline(int argc, char *argv[]) {
                 break;
 
             case 'l':
-                if (logsuck_add_logfile(optarg) != 0) {
-                    fprintf(stderr, "Unable to poll from '%s'!", optarg);
+                if (! opts.has_polled_files) {
+                    logsuck_init();
+                }
+                if (logsuck_add_logsource(optarg) != 0) {
+                    fprintf(stderr, "Unable to poll from '%s'!\n", optarg);
                     return -1;
                 }
                 opts.has_polled_files = 1;
