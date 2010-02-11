@@ -242,6 +242,8 @@ static int read_log_line(char *restrict buf, size_t buflen, bool from_last_sourc
     }
 
     /* otherwise, get logs from stdin */
+    if (source_id != NULL) *source_id = 0;
+
 #ifdef EINTR
     return (safe_fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
 #else
