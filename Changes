@@ -1,3 +1,6 @@
+* 1.5beta4
+    - treat IPv4-mapped IPv6 addresses as IPv4
+
 * 1.5beta3
     - recognize "last message repeated N times" contextually and per-source
     - attackers now gauged with *dangerousness* instead of attack counts (adjust your -a !)

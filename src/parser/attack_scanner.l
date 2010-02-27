@@ -94,7 +94,8 @@ IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)(\.(25[0-5]|2[0-4][0-9
   *     a:b:c:d::f:g:h is not allowed by RFC 2373, but since tools use it, we support it.
   */
 IPV6ATOM    ([a-fA-F0-9]{1,4})
-IPV6        (::|(((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})|({IPV6ATOM}:){7}({IPV6ATOM})|(:(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){1,6}:)|(({IPV6ATOM}:)(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){2}(:{IPV6ATOM}){1,5})|(({IPV6ATOM}:){3}(:{IPV6ATOM}){1,4})|(({IPV6ATOM}:){4}(:{IPV6ATOM}){1,3})|(({IPV6ATOM}:){5}(:{IPV6ATOM}){1,2}))
+IPV6        (::|({IPV6ATOM}:){7}({IPV6ATOM})|(:(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){1,6}:)|(({IPV6ATOM}:)(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){2}(:{IPV6ATOM}){1,5})|(({IPV6ATOM}:){3}(:{IPV6ATOM}){1,4})|(({IPV6ATOM}:){4}(:{IPV6ATOM}){1,3})|(({IPV6ATOM}:){5}(:{IPV6ATOM}){1,2}))
+IPV4MAPPED6 (((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})
   
 %%
 
@@ -190,6 +191,7 @@ IPV6        (::|(((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})|({IPV6ATOM}:){7}({IPV
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
 {IPV4}                                                          { yylval.str = yytext; return IPv4; }
+{IPV4MAPPED6}                                                   { yylval.str = strrchr(yytext, ':')+1; return IPv4; }
 
  /* an IPv6 address */
  /* standard | clouds implied | embedded IPv4 */

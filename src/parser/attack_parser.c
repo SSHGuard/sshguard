@@ -154,6 +154,28 @@
 /* Copy the first part of user declarations.  */
 #line 1 "attack_parser.y"
 
+
+/*
+ * Copyright (c) 2007,2008,2009,2010 Mij <mij@bitchx.it>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/*
+ * SSHGuard. See http://www.sshguard.net
+ */
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -222,13 +244,13 @@ static struct {
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 56 "attack_parser.y"
+#line 78 "attack_parser.y"
 {
     char *str;
     int num;
 }
 /* Line 193 of yacc.c.  */
-#line 232 "attack_parser.c"
+#line 254 "attack_parser.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -241,7 +263,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 245 "attack_parser.c"
+#line 267 "attack_parser.c"
 
 #ifdef short
 # undef short
@@ -543,11 +565,11 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   100,   100,   101,   102,   103,   116,   126,   131,   135,
-     141,   143,   147,   148,   149,   150,   151,   152,   153,   154,
-     155,   156,   157,   162,   181,   185,   189,   241,   243,   244,
-     245,   246,   251,   253,   257,   258,   262,   266,   270,   275,
-     280,   284,   289,   294,   298,   303,   308,   313,   318
+       0,   122,   122,   123,   124,   125,   138,   148,   153,   157,
+     163,   165,   169,   170,   171,   172,   173,   174,   175,   176,
+     177,   178,   179,   184,   203,   207,   211,   263,   265,   266,
+     267,   268,   273,   275,   279,   280,   284,   288,   292,   297,
+     302,   306,   311,   316,   320,   325,   330,   335,   340
 };
 #endif
 
@@ -1527,7 +1549,7 @@ yyreduce:
   switch (yyn)
     {
         case 6:
-#line 116 "attack_parser.y"
+#line 138 "attack_parser.y"
     {
                         /* reject to accept if the pid has been forged */
                         if (procauth_isauthoritative(parsed_attack.service, (yyvsp[(1) - (2)].num)) == -1) {
@@ -1539,72 +1561,72 @@ yyreduce:
     break;
 
   case 10:
-#line 141 "attack_parser.y"
+#line 163 "attack_parser.y"
     {   parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity = 1;    }
     break;
 
   case 11:
-#line 143 "attack_parser.y"
+#line 165 "attack_parser.y"
     {   parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity = (yyvsp[(1) - (1)].num); }
     break;
 
   case 12:
-#line 147 "attack_parser.y"
+#line 169 "attack_parser.y"
     {   parsed_attack.service = SERVICES_SSH; }
     break;
 
   case 13:
-#line 148 "attack_parser.y"
+#line 170 "attack_parser.y"
     {   parsed_attack.service = SERVICES_DOVECOT; }
     break;
 
   case 14:
-#line 149 "attack_parser.y"
+#line 171 "attack_parser.y"
     {   parsed_attack.service = SERVICES_UWIMAP; }
     break;
 
   case 15:
-#line 150 "attack_parser.y"
+#line 172 "attack_parser.y"
     {   parsed_attack.service = SERVICES_CYRUSIMAP; }
     break;
 
   case 16:
-#line 151 "attack_parser.y"
+#line 173 "attack_parser.y"
     {   parsed_attack.service = SERVICES_CUCIPOP; }
     break;
 
   case 17:
-#line 152 "attack_parser.y"
+#line 174 "attack_parser.y"
     {   parsed_attack.service = SERVICES_EXIM; }
     break;
 
   case 18:
-#line 153 "attack_parser.y"
+#line 175 "attack_parser.y"
     {   parsed_attack.service = SERVICES_SENDMAIL; }
     break;
 
   case 19:
-#line 154 "attack_parser.y"
+#line 176 "attack_parser.y"
     {   parsed_attack.service = SERVICES_FREEBSDFTPD; }
     break;
 
   case 20:
-#line 155 "attack_parser.y"
+#line 177 "attack_parser.y"
     {   parsed_attack.service = SERVICES_PROFTPD; }
     break;
 
   case 21:
-#line 156 "attack_parser.y"
+#line 178 "attack_parser.y"
     {   parsed_attack.service = SERVICES_PUREFTPD; }
     break;
 
   case 22:
-#line 157 "attack_parser.y"
+#line 179 "attack_parser.y"
     {   parsed_attack.service = SERVICES_VSFTPD; }
     break;
 
   case 23:
-#line 162 "attack_parser.y"
+#line 184 "attack_parser.y"
     {
                         /* the message repeated, was it an attack? */
                         if (! parser_metadata.sources[parser_metadata.current_source_index].last_was_recognized) {
@@ -1623,7 +1645,7 @@ yyreduce:
     break;
 
   case 24:
-#line 181 "attack_parser.y"
+#line 203 "attack_parser.y"
     {
                         parsed_attack.address.kind = ADDRKIND_IPv4;
                         strcpy(parsed_attack.address.value, (yyvsp[(1) - (1)].str));
@@ -1631,7 +1653,7 @@ yyreduce:
     break;
 
   case 25:
-#line 185 "attack_parser.y"
+#line 207 "attack_parser.y"
     {
                         parsed_attack.address.kind = ADDRKIND_IPv6;
                         strcpy(parsed_attack.address.value, (yyvsp[(1) - (1)].str));
@@ -1639,7 +1661,7 @@ yyreduce:
     break;
 
   case 26:
-#line 189 "attack_parser.y"
+#line 211 "attack_parser.y"
     {
                         struct addrinfo addrinfo_hints;
                         struct addrinfo *addrinfo_result;
@@ -1689,7 +1711,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1693 "attack_parser.c"
+#line 1715 "attack_parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1903,7 +1925,7 @@ yyreturn:
 }
 
 
-#line 321 "attack_parser.y"
+#line 343 "attack_parser.y"
 
 
 static void yyerror(int source_id, const char *msg) { /* do nothing */ }
