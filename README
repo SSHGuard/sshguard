@@ -3,24 +3,26 @@
     SSHGUARD
 ===================
 
-version: 1.4
-date: Aug 2009
+Version: 1.5
+Date: Feb 2010
 authors: Mij <mij@bitchx.it>, T.J. Jones <tjjones03@gmail.com>
 
 See http://www.sshguard.net for information about sshguard.
 All the documentation is available at http://www.sshguard.net/doc/ .
 
 
-With exclusion of the following imported components:
+## License ##
+
+With exception of the following components:
+
 * Fowler/Noll/Vo Hash (fnv) library by chongo@mellis.com
     http://www.isthe.com/chongo/tech/comp/fnv/
-    (public domain)
+    released in the public domain
 * SimCList library by mij@bitchx.it
     http://mij.oltrelinux.com/devel/simclist/
-    (3-clause BSD)
+    licensed with the 3-clause BSD
 
-all the software contained in this package can be distributed in compliance
-to the following license (namely, the New BSD license):
+the authors license all the software contained in this package as follows:
 
 /*
  * Permission to use, copy, modify, and distribute this software for any
