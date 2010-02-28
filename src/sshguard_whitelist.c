@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2008 Mij <mij@bitchx.it>
+ * Copyright (c) 2007,2008,2010 Mij <mij@bitchx.it>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -30,12 +30,19 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "simclist.h"
 #include "sshguard_log.h"
+#include "regexlib.h"
 #include "sshguard_whitelist.h"
 
 #define WHITELIST_SRCLINE_LEN       300
+
+/* number of bits in the address types */
+#define IPV4_BITS                   32
+#define IPV6_BITS                   128
+
 
 regex_t wl_ip4reg, wl_ip6reg, wl_hostreg;
 list_t whitelist;
@@ -45,8 +52,8 @@ typedef struct {
     int addrkind;
     union {
         struct {
-            uint32_t address;
-            uint32_t  mask;
+            in_addr_t address;
+            in_addr_t mask;
         } ip4;  /* an IPv4 address w/ mask */
         struct {
             struct in6_addr address;
@@ -55,21 +62,40 @@ typedef struct {
     } address;
 } addrblock_t;
 
-size_t whitelist_meter(const void *el) { return sizeof(addrblock_t); }
+
+/* tell if IPv4 addr1 and addr2 are equivalent modulo mask */
+static int match_ip4(in_addr_t addr1, in_addr_t addr2, in_addr_t mask) {
+    return ((addr1 & mask) == (addr2 & mask)) ? 1 : 0;
+}
+
+/* tell if IPv6 addr1 and addr2 are equivalent modulo mask */
+static int match_ip6(const struct in6_addr *restrict addr1, const struct in6_addr *restrict addr2, const struct in6_addr *restrict mask) {
+    int i;
+
+    for (i = 0; i < sizeof(addr1->s6_addr) && mask->s6_addr[i] != 0; i++) {
+        if ((addr1->s6_addr[i] & mask->s6_addr[i]) != (addr2->s6_addr[i] & mask->s6_addr[i]))
+            return 0;
+    }
+
+    return 1;
+}
+
+
+static size_t whitelist_meter(const void *el) { return sizeof(addrblock_t); }
 
 int whitelist_conf_init(void) {
     /* IPv4 address regex */
-    if (regcomp(&wl_ip4reg, "^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3})$", REG_EXTENDED) != 0) {
+    if (regcomp(&wl_ip4reg, "^" REGEXLIB_IPV4 "$", REG_EXTENDED) != 0) {
         return -1;
     }
 
     /* IPv6 address regex */
-    if (regcomp(&wl_ip6reg, "^(((([a-fA-F0-9]{1,4}):){7}([a-fA-F0-9]{1,4}))|((([a-fA-F0-9]{1,4}))?::((([a-fA-F0-9]{1,4}):){1,5}(([a-fA-F0-9]{1,4})))?)|(::[fF0]{0,4}:)((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?)(.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]([0-9])?|0)){3}))$", REG_EXTENDED) != 0) {
+    if (regcomp(&wl_ip6reg, "^" REGEXLIB_IPV6 "$", REG_EXTENDED) != 0) {
         return -1;
     }
 
     /* hostname regex */
-    if (regcomp(&wl_hostreg, "^([-a-z0-9]+\\.)*[-a-z0-9]+$", REG_EXTENDED) != 0) {
+    if (regcomp(&wl_hostreg, "^" REGEXLIB_HOSTNAME "$", REG_EXTENDED) != 0) {
         whitelist_fin();
         return -1;
     }
@@ -131,8 +157,6 @@ int whitelist_file(const char *restrict filename) {
 
 
 int whitelist_add(const char *str) {
-    char *pos;
-
     /* try address/mask first */
     if (regexec(&wl_ip4reg, str, 0, NULL, 0) == 0) {         /* plain IPv4 address */
         sshguard_log(LOG_DEBUG, "whitelist: add '%s' as plain IPv4.", str);
@@ -144,6 +168,7 @@ int whitelist_add(const char *str) {
         sshguard_log(LOG_DEBUG, "whitelist: add '%s' as host.", str);
         return whitelist_add_host(str);
     } else if (strrchr(str, '/') != NULL) {                         /* CIDR form (net block) */
+        char *pos;
         char buf[ADDRLEN+5];
         unsigned int masklen;
 
@@ -162,21 +187,29 @@ int whitelist_add(const char *str) {
             return -1;
         }
         if (regexec(&wl_ip4reg, buf, 0, NULL, 0) == 0) {
-            if (masklen > 32) {     /* sanity check for netmask */
+            if (masklen > IPV4_BITS) {     /* sanity check for netmask */
                 sshguard_log(LOG_WARNING, "whitelist: mask length '%u' makes no sense for IPv4.", masklen);
                 return -1;
             }
+            if (masklen == IPV4_BITS) {
+                /* de-genere case with full mask --> plain address */
+                return whitelist_add_ipv4(buf);
+            }
             return whitelist_add_block4(buf, masklen);
         } else if (regexec(&wl_ip6reg, buf, 0, NULL, 0) == 0) {
-            if (masklen > 128) {     /* sanity check for netmask */
+            if (masklen > IPV6_BITS) {     /* sanity check for netmask */
                 sshguard_log(LOG_WARNING, "whitelist: mask length '%u' makes no sense for IPv6.", masklen);
                 return -1;
+            }
+            if (masklen == IPV6_BITS) {
+                /* de-genere case with full mask --> plain address */
+                return whitelist_add_ipv6(buf);
             }
             return whitelist_add_block6(buf, masklen);
         }
     } else {
         /* line not recognized */
-        sshguard_log(LOG_WARNING, "whitelist: could not parse line \"%s\" as plain IP nor IP block nor host name", str);
+        sshguard_log(LOG_WARNING, "whitelist: could not parse line \"%s\" as plain IP nor IP block nor host name.", str);
         return -1;
     }
 
@@ -189,20 +222,46 @@ int whitelist_add_block4(const char *restrict address, int masklen) {
     /* parse block line */
     ab.addrkind = ADDRKIND_IPv4;
     if (inet_pton(AF_INET, address, & ab.address.ip4.address) != 1) {
-        sshguard_log(LOG_WARNING, "whitelist: could not intepret address '%s': %s.", address, strerror(errno));
+        sshguard_log(LOG_WARNING, "whitelist: could not interpret address '%s': %s.", address, strerror(errno));
         return -1;
     }
-    ab.address.ip4.mask = htonl(0xFFFFFFFF << (32-masklen));
+    ab.address.ip4.mask = htonl(0xFFFFFFFF << (IPV4_BITS-masklen));
 
     list_append(& whitelist, &ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add block: %s with mask %d.", address, masklen);
+    sshguard_log(LOG_DEBUG, "whitelist: add IPv4 block: %s with mask %d.", address, masklen);
 
     return 0;
 }
 
 int whitelist_add_block6(const char *restrict address, int masklen) {
-    sshguard_log(LOG_WARNING, "whitelist: IPv6 block whitelisting not yet supported, skipping...");
-    return -1;
+    addrblock_t ab;
+    int bytelen, bitlen;
+    uint8_t bitmask;
+
+    /* parse block line */
+    ab.addrkind = ADDRKIND_IPv6;
+    if (inet_pton(AF_INET6, address, & ab.address.ip6.address.s6_addr) != 1) {
+        sshguard_log(LOG_WARNING, "whitelist: could not interpret address '%s': %s.", address, strerror(errno));
+        return -1;
+    }
+
+    bytelen = masklen / 8;
+    /* compile the "all 1s" part */
+    memset(ab.address.ip6.mask.s6_addr, 0xFF, bytelen);
+    /* compile the "crossing byte" */
+    if (bytelen == sizeof(ab.address.ip6.mask.s6_addr))
+        return 0;
+
+    /* compile the remainder "all 0s" part */
+    bitlen = masklen % 8;
+    bitmask = 0xFF << (8 - bitlen);
+    ab.address.ip6.mask.s6_addr[bytelen] = bitmask;
+    memset(& ab.address.ip6.mask.s6_addr[bytelen+1], 0x00, sizeof(ab.address.ip6.mask.s6_addr) - bytelen);
+
+    list_append(& whitelist, &ab);
+    sshguard_log(LOG_DEBUG, "whitelist: add IPv6 block: %s with mask %d.", address, masklen);
+
+    return 0;
 }
 
 int whitelist_add_ipv4(const char *restrict ip) {
@@ -213,13 +272,12 @@ int whitelist_add_ipv4(const char *restrict ip) {
     ab.address.ip4.mask = 0xFFFFFFFF;
 
     list_append(&whitelist, & ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add plain ip %s.", ip);
+    sshguard_log(LOG_DEBUG, "whitelist: add plain IPv4 %s.", ip);
     return 0;
 }
 
 int whitelist_add_ipv6(const char *restrict ip) {
     addrblock_t ab;
-    int i;
 
     ab.addrkind = ADDRKIND_IPv6;
 
@@ -228,11 +286,10 @@ int whitelist_add_ipv6(const char *restrict ip) {
         return -1;
     }
 
-    for (i = 0; i < sizeof(struct in6_addr); i++)
-        ab.address.ip6.mask.s6_addr[i] = 0xFF;
+    memset(ab.address.ip6.mask.s6_addr, 0xFF, sizeof(ab.address.ip6.mask.s6_addr));
 
     list_append(&whitelist, & ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add plain ip %s.", ip);
+    sshguard_log(LOG_DEBUG, "whitelist: add plain IPv6 %s.", ip);
     return 0;
 }
 
@@ -253,6 +310,7 @@ int whitelist_add_host(const char *restrict host) {
         memcpy(& ab.address.ip4.address, he->h_addr_list[i], he->h_length);
         list_append(&whitelist, &ab);
     }
+    /* TODO: add IPv6 addresses too, if any! */
 
     sshguard_log(LOG_DEBUG, "whitelist: add hostname '%s' with %d addresses.", host, i);
     
@@ -260,9 +318,8 @@ int whitelist_add_host(const char *restrict host) {
 }
 
 int whitelist_match(const char *restrict addr, int addrkind) {
-    uint32_t addrent;
+    in_addr_t addrent;
     struct in6_addr addrent6;
-    int i, j;
     addrblock_t *entry;
 
     switch (addrkind) {
@@ -271,36 +328,41 @@ int whitelist_match(const char *restrict addr, int addrkind) {
                 sshguard_log(LOG_WARNING, "whitelist: could not interpret ip address '%s'.", addr);
                 return 0;
             }
+            /* compare with every IPv4 entry in the list */
+            list_iterator_start(&whitelist);
+            while (list_iterator_hasnext(&whitelist)) {
+                entry = (addrblock_t *)list_iterator_next(&whitelist);
+                if (entry->addrkind != ADDRKIND_IPv4)
+                    continue;
+                if (match_ip4(addrent, entry->address.ip4.address, entry->address.ip4.mask)) {
+                    return 1;
+                }
+            }
+            list_iterator_stop(&whitelist);
             break;
+
         case ADDRKIND_IPv6:
             if (inet_pton(AF_INET6, addr, &addrent6.s6_addr) != 1) {
                 sshguard_log(LOG_WARNING, "whitelist: could not interpret ip address '%s'.", addr);
                 return 0;
             }
-            break;
-        default:       /* not recognized */
-            return 0;
-    }
-
-    /* compare with every entry in the list */
-    for (i = 0; (unsigned int)i < list_size(&whitelist); i++) {
-        entry = (addrblock_t *)list_get_at(&whitelist, i);
-        if (addrkind != entry->addrkind) continue;
-        switch (entry->addrkind) {
-            case ADDRKIND_IPv4:
-                if ((entry->address.ip4.address & entry->address.ip4.mask) == (addrent & entry->address.ip4.mask)) {
+            /* compare with every IPv6 entry in the list */
+            list_iterator_start(&whitelist);
+            while (list_iterator_hasnext(&whitelist)) {
+                entry = (addrblock_t *)list_iterator_next(&whitelist);
+                if (entry->addrkind != ADDRKIND_IPv6)
+                    continue;
+                if (match_ip6(&addrent6, &entry->address.ip6.address, &entry->address.ip6.mask)) {
                     return 1;
                 }
-                break;
-            case ADDRKIND_IPv6:
-                for (j = 0; j < sizeof(addrent6); j++) {
-                    if ((entry->address.ip6.address.s6_addr[j] & entry->address.ip6.mask.s6_addr[j]) != (addrent6.s6_addr[j] & entry->address.ip6.mask.s6_addr[j]))
-                        return 0; 
-                }
-                return 1;
-            default:
-                return 0;
-        }
+            }
+            list_iterator_stop(&whitelist);
+            break;
+
+        default:       /* not recognized */
+            /* make errors apparent */
+            assert(0);
     }
+
     return 0;
 }
