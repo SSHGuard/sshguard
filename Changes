@@ -1,6 +1,7 @@
 * 1.5beta4
     - treat IPv4-mapped IPv6 addresses as IPv4
-    - add support for IPv6 CIDR blocks (thanks Dimitry Andric)
+    - add support for IPv6 CIDR blocks (thanks Dimitry Andric) in whitelists
+    - whitelist hosts in both the IPv4 and IPv6 addresses they map to
 
 * 1.5beta3
     - recognize "last message repeated N times" contextually and per-source

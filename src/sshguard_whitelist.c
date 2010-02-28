@@ -83,6 +83,33 @@ static int match_ip6(const struct in6_addr *restrict addr1, const struct in6_add
 
 static size_t whitelist_meter(const void *el) { return sizeof(addrblock_t); }
 
+static int whitelist_compare(const void *a, const void *b) {
+    int ret;
+    const addrblock_t *A = (const addrblock_t *)a;
+    const addrblock_t *B = (const addrblock_t *)b;
+
+    if ( A->addrkind != B->addrkind )
+        return (A->addrkind > B->addrkind ? 1 : -1);
+
+    switch (A->addrkind) {
+        case ADDRKIND_IPv4:
+            if (A->address.ip4.address != B->address.ip4.address)
+                return (A->address.ip4.address > B->address.ip4.address ? 1 : -1);
+            if (A->address.ip4.mask != B->address.ip4.mask)
+                return (A->address.ip4.mask > B->address.ip4.mask ? 1 : -1);
+            break;
+
+        case ADDRKIND_IPv6:
+            ret = memcmp(& A->address.ip6.address, & B->address.ip6.address, sizeof(B->address.ip6.address));
+            if (ret != 0) return ret;
+            ret = memcmp(& A->address.ip6.mask, & B->address.ip6.mask, sizeof(B->address.ip6.mask));
+            if (ret != 0) return ret;
+            break;
+    }
+
+    return 0;
+}
+
 int whitelist_conf_init(void) {
     /* IPv4 address regex */
     if (regcomp(&wl_ip4reg, "^" REGEXLIB_IPV4 "$", REG_EXTENDED) != 0) {
@@ -113,6 +140,7 @@ int whitelist_conf_fin(void) {
 int whitelist_init(void) {
     list_init(&whitelist);
     list_attributes_copy(&whitelist, whitelist_meter, 1);
+    list_attributes_comparator(&whitelist, whitelist_compare);
     
     return 0;
 }
@@ -227,8 +255,12 @@ int whitelist_add_block4(const char *restrict address, int masklen) {
     }
     ab.address.ip4.mask = htonl(0xFFFFFFFF << (IPV4_BITS-masklen));
 
-    list_append(& whitelist, &ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add IPv4 block: %s with mask %d.", address, masklen);
+    if (! list_contains(& whitelist, &ab)) {
+        list_append(& whitelist, &ab);
+        sshguard_log(LOG_DEBUG, "whitelist: add IPv4 block: %s with mask %d.", address, masklen);
+    } else {
+        sshguard_log(LOG_DEBUG, "whitelist: skipping IPv4 block: %s/%d -- already present.", address, masklen);
+    }
 
     return 0;
 }
@@ -258,8 +290,12 @@ int whitelist_add_block6(const char *restrict address, int masklen) {
     ab.address.ip6.mask.s6_addr[bytelen] = bitmask;
     memset(& ab.address.ip6.mask.s6_addr[bytelen+1], 0x00, sizeof(ab.address.ip6.mask.s6_addr) - bytelen);
 
-    list_append(& whitelist, &ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add IPv6 block: %s with mask %d.", address, masklen);
+    if (! list_contains(& whitelist, &ab)) {
+        list_append(& whitelist, &ab);
+        sshguard_log(LOG_DEBUG, "whitelist: add IPv6 block: %s with mask %d.", address, masklen);
+    } else {
+        sshguard_log(LOG_DEBUG, "whitelist: skipping IPv6 block: %s/%d -- already present.", address, masklen);
+    }
 
     return 0;
 }
@@ -271,8 +307,12 @@ int whitelist_add_ipv4(const char *restrict ip) {
     inet_pton(AF_INET, ip, & ab.address.ip4.address);
     ab.address.ip4.mask = 0xFFFFFFFF;
 
-    list_append(&whitelist, & ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add plain IPv4 %s.", ip);
+    if (! list_contains(& whitelist, &ab)) {
+        list_append(&whitelist, & ab);
+        sshguard_log(LOG_DEBUG, "whitelist: add plain IPv4 %s.", ip);
+    } else {
+        sshguard_log(LOG_DEBUG, "whitelist: skipping plain IPv4 %s -- already present.", ip);
+    }
     return 0;
 }
 
@@ -288,31 +328,49 @@ int whitelist_add_ipv6(const char *restrict ip) {
 
     memset(ab.address.ip6.mask.s6_addr, 0xFF, sizeof(ab.address.ip6.mask.s6_addr));
 
-    list_append(&whitelist, & ab);
-    sshguard_log(LOG_DEBUG, "whitelist: add plain IPv6 %s.", ip);
+    if (! list_contains(& whitelist, &ab)) {
+        list_append(&whitelist, & ab);
+        sshguard_log(LOG_DEBUG, "whitelist: add plain IPv6 %s.", ip);
+    } else {
+        sshguard_log(LOG_DEBUG, "whitelist: skipping plain IPv6 %s -- already present.", ip);
+    }
     return 0;
 }
 
 int whitelist_add_host(const char *restrict host) {
-    addrblock_t ab;
-    struct hostent *he;
-    int i;
+    struct addrinfo *hostaddrs;
+    struct addrinfo *addriter;
+    int ret, numaddresses;
 
-    he = gethostbyname(host);
-    if (he == NULL) {
-        /* could not resolve hostname */
-        sshguard_log(LOG_ERR, "Could not resolve hostname '%s'!", host);
+    ret = getaddrinfo(host, NULL, NULL, & hostaddrs);
+    if (ret != 0) {
+        sshguard_log(LOG_ERR, "Could not resolve hostname '%s': %s.", host, gai_strerror(ret));
         return -1;
     }
-    for (i = 0; he->h_addr_list[i] != NULL; i++) {
-        ab.addrkind = ADDRKIND_IPv4;
-        ab.address.ip4.mask = 0xFFFFFFFF;
-        memcpy(& ab.address.ip4.address, he->h_addr_list[i], he->h_length);
-        list_append(&whitelist, &ab);
-    }
-    /* TODO: add IPv6 addresses too, if any! */
+    /* iterate on all results, whitelist each based on its type */
+    for (numaddresses = 0, addriter = hostaddrs; addriter != NULL; addriter = addriter->ai_next, ++numaddresses) {
+        /* convert result to printable format */
+        char addrstring[ADDRLEN];
+        switch (addriter->ai_family) {
+            case AF_INET:       /* IPv4 */
+                if (inet_ntop(addriter->ai_family, & ((struct sockaddr_in *)addriter->ai_addr)->sin_addr.s_addr, addrstring, ADDRLEN) == NULL) continue;
+                whitelist_add_ipv4(addrstring);
+                break;
 
-    sshguard_log(LOG_DEBUG, "whitelist: add hostname '%s' with %d addresses.", host, i);
+            case AF_INET6:      /* IPv6 */
+                if (inet_ntop(addriter->ai_family, & ((struct sockaddr_in6 *)addriter->ai_addr)->sin6_addr, addrstring, ADDRLEN) == NULL) continue;
+                whitelist_add_ipv6(addrstring);
+                break;
+
+            default:
+                --numaddresses;
+        }
+    }
+
+    /* free all resolve stuff */
+    freeaddrinfo(hostaddrs);
+
+    sshguard_log(LOG_DEBUG, "whitelist: add hostname '%s' with %d addresses.", host, numaddresses);
     
     return 0;
 }
