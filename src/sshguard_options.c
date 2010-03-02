@@ -168,6 +168,6 @@ static void usage(void) {
 
 static void version(void) {
 	fprintf(stderr, "sshguard %d.%d.%d\n\n", MAJOR_VERSION, MINOR_VERSION, BUILD_VERSION);
-	fprintf(stderr, "Copyright (c) 2007,2008 Mij <mij@bitchx.it>\n");
+	fprintf(stderr, "Copyright (c) 2007,2008 Mij <mij@sshguard.net>\n");
 	fprintf(stderr, "This is free software; see the source for conditions on copying.\n");
 }
