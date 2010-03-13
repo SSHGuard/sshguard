@@ -55,7 +55,7 @@ list_t hosts_blockedaddrs;
 FILE *hosts_file;
 
 /* buffer to hold the name of temporary configuration files. Set once, in fw_init() */
-static char tempflname[40];
+static char tempflname[40] = "";
 
 size_t addr_service_meter(const void *el) { return sizeof(addr_service_t); }
 int addr_service_comparator(const void *a, const void *b) {
@@ -79,8 +79,10 @@ static int install_temporary_conffile() {
 
 int fw_init() {
     char buf[HOSTS_MAXCMDLEN];
-    char tempflname[30];
     FILE *tmp, *deny;
+
+    /* set the filename of the temporary configuration file */
+    sprintf(tempflname, "%s-sshguard.%u", HOSTSFILE_PATH, getpid());
 
     hosts_clearsshguardblocks();
 
@@ -90,9 +92,6 @@ int fw_init() {
         sshguard_log(LOG_ERR, "Could not initialize " HOSTSFILE_PATH " for use by sshguard: %s", strerror(errno));
         return FWALL_ERR;
     }
-
-    /* set the filename of the temporary configuration file */
-    sprintf(tempflname, "%s-sshguard.%u", HOSTSFILE_PATH, getpid());
 
     tmp = make_temporary_conffile();
     if (tmp == NULL) {
@@ -111,10 +110,8 @@ int fw_init() {
     fclose(deny);
 
     /* install temporary conf file into main file */
-    if (install_temporary_conffile() != FWALL_OK) {
-        sshguard_log(LOG_CRIT, "OUCHH! Could not rename temp file '%s' to '%s' (%s).", tempflname, HOSTSFILE_PATH, strerror(errno));
+    if (install_temporary_conffile() != FWALL_OK)
         return FWALL_ERR;
-    }
 
     list_init(&hosts_blockedaddrs);
     list_attributes_copy(&hosts_blockedaddrs, addr_service_meter, 1);
@@ -179,7 +176,7 @@ int hosts_updatelist() {
     /* open hosts.allow file */
     deny = fopen(HOSTSFILE_PATH, "r+");
     if (deny == NULL) {
-        sshguard_log(LOG_ERR, "Could not open hosts.allow file " HOSTSFILE_PATH);
+        sshguard_log(LOG_ERR, "Could not open hosts.allow file %s: %s", HOSTSFILE_PATH, strerror(errno));
         return FWALL_ERR;
     }
 
@@ -286,7 +283,7 @@ int hosts_clearsshguardblocks(void) {
     /* open deny file */
     deny = fopen(HOSTSFILE_PATH, "r+");
     if (deny == NULL) {
-        sshguard_log(LOG_ERR, "unable to open temporary file %s: %s", tempflname, strerror(errno));
+        sshguard_log(LOG_ERR, "unable to open hosts file %s: %s", HOSTSFILE_PATH, strerror(errno));
         return FWALL_ERR;
     }
 
