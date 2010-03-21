@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2008,2009 Mij <mij@bitchx.it>
+ * Copyright (c) 2007,2008,2009,2010 Mij <mij@bitchx.it>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -18,6 +18,8 @@
 /*
  * SimCList library. See http://mij.oltrelinux.com/devel/simclist
  */
+
+/* SimCList implementation, version 1.4.4rc3 */
 
 #include <stdlib.h>
 #include <string.h>
@@ -441,6 +443,22 @@ int list_insert_at(list_t *restrict l, const void *data, unsigned int pos) {
     assert(list_repOk(l));
 
     return 1;
+}
+
+int list_delete(list_t *restrict l, const void *data) {
+	int pos, r;
+
+	pos = list_locate(l, data);
+	if (pos < 0)
+		return -1;
+
+	r = list_delete_at(l, pos);
+	if (r < 0)
+		return -1;
+
+    assert(list_repOk(l));
+
+	return 0;
 }
 
 int list_delete_at(list_t *restrict l, unsigned int pos) {
@@ -1056,6 +1074,10 @@ int list_dump_filedescriptor(const list_t *restrict l, int fd, size_t *restrict 
                         header.elemlen = 0;
                         header.totlistlen = 0;
                         x = l->head_sentinel;
+                        if (lseek(fd, SIMCLIST_DUMPFORMAT_HEADERLEN, SEEK_SET) < 0) {
+                            /* errno set by lseek() */
+                            return -1;
+                        }
                         /* restart from the beginning */
                         continue;
                     }
@@ -1314,20 +1336,20 @@ SIMCLIST_NUMBER_COMPARATOR(double);
 int list_comparator_string(const void *a, const void *b) { return strcmp((const char *)b, (const char *)a); }
 
 /* ready-made metric functions */
-#define SIMCLIST_METER(type)        size_t list_meter_##type(const void *el) { return sizeof(type); }
+#define SIMCLIST_METER(type)        size_t list_meter_##type(const void *el) { if (el) { /* kill compiler whinge */ } return sizeof(type); }
 
-SIMCLIST_METER(int8_t);
-SIMCLIST_METER(int16_t);
-SIMCLIST_METER(int32_t);
-SIMCLIST_METER(int64_t);
+SIMCLIST_METER(int8_t)
+SIMCLIST_METER(int16_t)
+SIMCLIST_METER(int32_t)
+SIMCLIST_METER(int64_t)
 
-SIMCLIST_METER(uint8_t);
-SIMCLIST_METER(uint16_t);
-SIMCLIST_METER(uint32_t);
-SIMCLIST_METER(uint64_t);
+SIMCLIST_METER(uint8_t)
+SIMCLIST_METER(uint16_t)
+SIMCLIST_METER(uint32_t)
+SIMCLIST_METER(uint64_t)
 
-SIMCLIST_METER(float);
-SIMCLIST_METER(double);
+SIMCLIST_METER(float)
+SIMCLIST_METER(double)
 
 size_t list_meter_string(const void *el) { return strlen((const char *)el) + 1; }
 
