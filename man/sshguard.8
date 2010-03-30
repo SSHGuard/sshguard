@@ -1,4 +1,19 @@
-.Dd Dec 7, 2008
+.\"
+.\" Copyright (c) 2007,2008,2009,2010 Mij <mij@sshguard.net>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd Mar 31, 2010
 .Dt SSHGUARD 8
 .Sh NAME
 .Nm sshguard
@@ -9,10 +24,10 @@
 .Nm
 .Op Fl b Ar thr:filename
 .Op Fl v
-.Op Fl l Ar filename
-.Op Fl a Ar abuse_tresh
+.Op Fl l Ar source
+.Op Fl a Ar sAfety_thresh
 .Op Fl p Ar pardon_min_interval
-.Op Fl s Ar stale_tresh
+.Op Fl s Ar preScribe_interval
 .Op Fl w Ar addr/host/block/file
 .Op Fl f Ar srv:pidfile
 .\"
@@ -27,12 +42,16 @@ attacks, and evolved to an extensible log supervisor for blocking attacks to
 applications in real-time.
 .Pp
 .Nm
-can monitor a number of log files proactively, or receive log messages in its
-standard input. By means of a parser, it decides whether an entry is normal
-activity or attack; in the latter case, it remarks the author's
-address. After a number of attacks, the address is distinguished as an
-.Ar abuser ,
-and blocked with the firewall.
+can monitor a number of log sources proactively, or receive log messages in
+its standard input. By means of a parser, it decides whether an entry is
+normal activity or attack; in the latter case, it remarks the attacker's
+address. When
+.Nm
+determines that an attacker committed enough danger to the system to discern
+an
+.Ar abuse ,
+it blocks the attacker's address with the firewall. Abusers are released after
+an adequate period of time.
 .Pp
 .Nm
 supports the following firewalls:
@@ -52,13 +71,19 @@ portable across UNIX
 .It null
 portable do-nothing backend for running detection without prevention
 .El
+.Pp
+Some terms in this manual have a special meaning in the context.
+.Nm
+refers to them consistently throughout documentation, source code, and log
+messages. See
+.Ar http://www.sshguard.net/docs/terminology/
+to get acquainted with them.
 .\"
 .\"
 .Sh USAGE
 .Nm
-reads log entries to analyze by monitoring a number of log files, or
-from its standard input. It can interpret logs with all of the following
-formats:
+reads log entries to analyze by monitoring a number of log sources. It can
+interpret logs with all of the following formats:
 .Bl -bullet -compact -offset indent
 .It
 syslog
@@ -109,33 +134,43 @@ enable blacklisting: blacklist after
 See TOUCHINESS & BLACKLISTING below.
 .It Fl v
 print summary information on sshguard and exit.
-.It Fl l Ar filename
-add
-.Ar filename
-to the list of log files to monitor. This can be used multiple times. When no
-files are specified,
+.It Fl l Ar source
+enable the Log Sucker, and add
+.Ar source
+to the list of log sources to monitor.
+.Ar source
+is a filename, a FIFO name, or the magic symbol "-" to identify sshguard's
+standard input.
 .Nm
-expects log entries from its standard input. Otherwise, standard input is
-ignored, unless the magic "-" is indicated as filename.
-.It Fl a Ar num
-block an address after
-.Ar num
-attack attempts have been detected. (Default: 4)
+handles autonomously file-like sources disappearing, reappearing, or
+"rotating". This option can be used multiple times. When omitted,
+.Ar source
+defaults to standard input. Otherwise, standard input is ignored unless
+explicitly added.
+.It Fl a Ar sAfety_thresh
+block an attacker after it incurred a total dangerousness exceeding
+.Ar sAfety_thresh .
+Most attacks incur dangerousness 10. See
+.Ar http://www.sshguard.net/docs/reference/attack-signatures/
+for details.
+(Default: 40)
 .It Fl p Ar secs
-release a blocked address not sooner than
+release a blocked address no sooner than
 .Ar secs
-seconds after being blocked.
+seconds after being blocked for the first time.
 .Nm
-will release the address between X and 3/2 * X seconds. (Default: 7*60)
+will release the address between X and 3/2 * X seconds after blocking it.
+(Default: 7*60)
 .It Fl s Ar secs
 forget about an address after
 .Ar secs
 seconds. If host A issues one attack every this many seconds, it will never be
-blocked.  (Default: 20*60)
+blocked.
+(Default: 20*60)
 .It Fl w Ar addr/host/block/file
 see the WHITELISTING section.
 .It Fl f Ar servicecode:pidfile
-see the LOG MESSAGE AUTHENTICATION section.
+see the LOG VALIDATION section.
 .El
 .Pp
 When
@@ -150,9 +185,9 @@ When
 senses the SSHGUARD_DEBUG environment variable, it enables debugging mode: 
 logging is directed to standard error instead of syslog, and includes
 comprehensive details of the activity and parsing process. Debugging mode can
-help investigating patterns: once enabled, a pattern can be directly pasted
-into the tool from the console, and the behavior is immediately and minutely
-shown beneath.
+help investigating attack signatures: once enabled, a log message can be
+directly pasted into the tool from the console, and the behavior is
+immediately and minutely shown beneath.
 .\"
 .\"
 .Sh WHITELISTING
@@ -176,11 +211,11 @@ specify the host name directly, like:
 .Dl -w friendhost.enterprise.com
 or in multiple occurrences:
 .Dl -w friendhost.enterprise.com -w friend2.enterprise.com
-All IPv4 addresses that the host resolves to are whitelisted. Hosts are
-resolved to addresses once, when sshguard starts up.
+All IPv4 and IPv6 addresses that the host resolves to are whitelisted. Hosts
+are resolved to addresses once, when sshguard starts up.
 .It address blocks
-specify the address block in the usual CIDR notation:
-.Dl -w 192.168.0.0/24
+specify the IPv4 or IPv6 address block in the usual CIDR notation:
+.Dl -w 2002:836b:4179::836b:0000/126
 or in multiple occurrences:
 .Dl -w 192.168.0.0/24 -w 1.2.3.128/26
 .It file
@@ -203,6 +238,7 @@ This is a sample whitelist file (say /etc/friends):
 127.0.0.0/8
 10.11.128.0/17
 192.168.0.0/24
+2002:836b:4179::836b:0000/126
 #   hostnames
 rome-fw.enterprise.com
 hosts.friends.com
@@ -220,22 +256,22 @@ option can be used only once for files. For addresses, host names and address bl
 it can be used with any multiplicity, even with mixes of them.
 .\"
 .\"
-.Sh LOG MESSAGE AUTHENTICATION
+.Sh LOG VALIDATION
 Syslog and syslog-ng typically insert a PID of the generating process in every
-log line. This can be checked for authenticating the source of the message and
+log message. This can be checked for authenticating the source of the message and
 avoid false attacks to be detected because malicious local users inject crafted
-log lines. This way
+log messages. This way
 .Nm
 can be safely used even on hosts where this assumption does not hold.
 .Pp
-Log message authentication is only needed when
+Log validation is only needed when
 .Nm
 is fed log messages from syslog or from syslog-ng. When a process logs directly
 to a raw file and sshguard is configured for polling logs directly from it,
 you only need to adjust the log file permissions so that only root can write
 on it.
 .Pp
-For enabling log message authentication on a given service the
+For enabling log validation on a given service the
 .Fl f
 option is used as follows:
 .Dl -f 100:/var/run/sshd.pid
@@ -248,14 +284,14 @@ The
 option can be used multiple times for associating different services with their pidfile:
 .Dl sshguard -f 100:/var/run/sshd.pid -f 123:/var/run/mydaemon.pid
 .Pp
-Services that are not configured for log message authentication follow a default-allow
+Services that are not configured for log validation follow a default-allow
 policy (all of their log messages are accepted by default).
 .Pp
 PIDs are checked with the following policy:
 .Bl -enum -width
 .It
 the logging service is searched in the list of services configured for
-authentication. If not found, the entry is accepted.
+validation. If not found, the entry is accepted.
 .It
 the logged PID is compared with the pidfile. If it matches, the entry is accepted
 .It
@@ -279,7 +315,7 @@ To counteract these cases,
 .Nm
 by default behaves with
 .Ar touchiness .
-Besides observing abuses from the log activity, it monitors also the overall
+Besides observing abuses from the log activity, it also monitors the overall
 behavior of attackers. The decision on when and how to block is thus made
 respective to the entire history of the attacker as well. For example, if
 address A attacks repeatedly and the base blocking time is 420 seconds, A will
@@ -288,7 +324,7 @@ second, 2*2*420 (28 mins) the third ... and 2^(n-1)*420 the n-th time.
 .Pp
 Touchiness has two major benefits: to legitimate users, it grants forgiving
 blockings on failed logins; to real attackers, it effectively renders
-large scale attacks infeasible, because the time to perform it explodes with
+large scale attacks infeasible, because the time to perform one explodes with
 the number of attempts.
 .Pp
 Touchiness can be augmented with
@@ -318,19 +354,13 @@ command can be used to peek in it for listing the blacklisted addresses.
 .\"
 .Sh EXTENSIONS
 .Nm
-can be easily extended to support both more backends (systems blocking
-addresses, like firewalls) and to recognize more attack patterns.
+operates firewalls through a general interface, which enables easy extension,
+and allows back-ends to be non-local (e.g. remote appliances), and non-blocking
+(e.g. report tools). Additions can be suggested at
+.Ar http://www.sshguard.net/feedback/firewall/submit/ .
 .Pp
-Adding backends is extremely easy when the blocking and releasing operations
-can be controlled with system commands.
-.Nm
-provides a shell script for generating such extensions in few steps:
-.Ar sshguard_backendgen.sh .
-.Pp
-Adding more attack patterns needs some expertise with bison, as
-.Nm
-uses a grammar-based context-free parser for powerfulness. Thus, there is one
-tracker for user-proposed patterns at
+Extending attack signatures needs some expertise with context-free parsers;
+users are welcome to submit samples of the desired log messages to
 .Ar http://www.sshguard.net/support/attacks/submit/ .
 .\"
 .\"
