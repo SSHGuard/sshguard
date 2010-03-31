@@ -21,9 +21,10 @@
 #ifndef SSHGUARD_ADDRESSKIND_H
 #define SSHGUARD_ADDRESSKIND_H
 
-#include <netinet/in.h>
-
 /* maximum length of an address string */
+#ifndef INET6_ADDRSTRLEN
+#   define INET6_ADDRSTRLEN 46
+#endif
 #define ADDRLEN             INET6_ADDRSTRLEN
 
 /* address kind codes */

@@ -1,7 +1,6 @@
 * 1.5rc3
     - import newer SimCList solving possible saved blacklist inconsistency (thanks Richard Krakhofer)
-
-* 1.5rc2
+    - fix compilation problem on Solaris
     - fix hosts backend's logic for temporary files (thanks Cameos)
 
 * 1.5rc1
