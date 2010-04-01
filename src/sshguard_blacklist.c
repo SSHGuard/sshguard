@@ -24,6 +24,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
+/* for hton*() functions */
+#include <arpa/inet.h>
 #include <assert.h>
 
 #include "sshguard_addresskind.h"

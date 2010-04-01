@@ -21,6 +21,7 @@
 #ifndef SSHGUARD_LOGSUCK_H
 #define SSHGUARD_LOGSUCK_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef uint32_t sourceid_t;

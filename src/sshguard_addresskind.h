@@ -22,6 +22,9 @@
 #define SSHGUARD_ADDRESSKIND_H
 
 /* maximum length of an address string */
+#ifndef INET_ADDRSTRLEN
+#   define INET_ADDRSTRLEN  16
+#endif
 #ifndef INET6_ADDRSTRLEN
 #   define INET6_ADDRSTRLEN 46
 #endif

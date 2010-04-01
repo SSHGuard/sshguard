@@ -98,7 +98,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 					return -1;
                 } else if (opts.abuse_threshold < DEFAULT_ABUSE_THRESHOLD) {
                     fprintf(stderr, "Warning! Sshguard now uses *attack dangerousness*, not occurrences, to gauge threats.\n");
-                    fprintf(stderr, "Default dangerousness per attack is %u, default threshold is %d.\n", DEFAULT_ATTACKS_DANGEROUSNESS);
+                    fprintf(stderr, "Default dangerousness per attack is %u, default threshold is %d.\n", DEFAULT_ATTACKS_DANGEROUSNESS, DEFAULT_ABUSE_THRESHOLD);
                 }
                 break;
 
