@@ -160,7 +160,7 @@ static pid_t procauth_getprocpid(char *filename) {
     }
 
     if (fscanf(pf, "%d", &pid) != 1) {
-        sshguard_log(LOG_INFO, "pid file '%s' malformed. Expecting one pid.");
+        sshguard_log(LOG_INFO, "pid file '%s' malformed. Expecting one pid.", filename);
         return -1;
     }
     fclose(pf);
