@@ -50,8 +50,8 @@ address. When
 determines that an attacker committed enough danger to the system to discern
 an
 .Ar abuse ,
-it blocks the attacker's address with the firewall. Abusers are released after
-an adequate period of time.
+it blocks the attacker's address with the firewall. The attacker becomes offender,
+and is released after an adequate period of time.
 .Pp
 .Nm
 supports the following firewalls:
@@ -126,10 +126,10 @@ does not make use of any configuration file. Instead, a combination of optional
 arguments can be passed to its process on the command line, for modifying its
 default behaviour:
 .Bl -tag -width -indent
-.It Fl b Ar [num:]filename
+.It Fl b Ar [thresh:]filename
 enable blacklisting: blacklist after
-.Ar num
-(or 3) blocked abuses, and hold the permanent blacklist in
+.Ar thresh
+(or 40) dangerousness committed, and hold the permanent blacklist in
 .Ar filename .
 See TOUCHINESS & BLACKLISTING below.
 .It Fl v
@@ -306,7 +306,7 @@ mechanism. Changes in the pidfile value are handled transparently.
 .\"
 .Sh TOUCHINESS & BLACKLISTING
 In many cases, attacks against services are performed in bulk in an automated
-form. For example, the attacker goes trough a dictionary of 150
+form. For example, the attacker goes trough a dictionary of 1500
 username/password pairs and sequentially tries to violate the SSH service with
 any of them, continuing blindly while blocked, and re-appearing once the block
 expires.
@@ -317,7 +317,7 @@ by default behaves with
 .Ar touchiness .
 Besides observing abuses from the log activity, it also monitors the overall
 behavior of attackers. The decision on when and how to block is thus made
-respective to the entire history of the attacker as well. For example, if
+respective to the entire history of the offender as well. For example, if
 address A attacks repeatedly and the base blocking time is 420 seconds, A will
 be blocked for 420 seconds (7 mins) at the first abuse, 2*420 (14 mins) the
 second, 2*2*420 (28 mins) the third ... and 2^(n-1)*420 the n-th time.
@@ -329,13 +329,13 @@ the number of attempts.
 .Pp
 Touchiness can be augmented with
 .Ar blacklisting
-(-b). With this option, after a number of abuses, the address is added to a
-list of attackers to be blocked permanently. The list is intended to be
-loaded at each startup, and maintained/extended with new entries during
+(-b). With this option, after a certain total danger committed, the address is
+added to a list of offenders to be blocked permanently. The list is intended to
+be loaded at each startup, and maintained/extended with new entries during
 operation.
 .Nm
-inserts a new address after it exceeded a threshold of abuses. This threshold
-is configurable within the 
+inserts a new address after it exceeded a threshold of danger committed over
+recorded history. This threshold is configurable within the 
 .Fl b
 option argument. Blacklisted addresses are never scheduled for releasing.
 .Pp
@@ -344,10 +344,11 @@ The
 command line option enables blacklisting and requires the filename to use
 for permanent storage of the blacklist. Optionally, a custom blacklist
 threshold can be prefixed to this path, separated by ':'. For example,
-.Dl -b 5:/var/db/sshguard/blacklist.db
-requires to blacklist addresses after the 5th abuse, and store the blacklist
-in file /var/db/sshguard/blacklist.db. Although the blacklist file is not
-meant to be in human-readable format, the
+.Dl -b 50:/var/db/sshguard/blacklist.db
+requires to blacklist addresses after having committed attacks for danger 50
+(default per-attack danger is 10), and store the blacklist in file
+/var/db/sshguard/blacklist.db. Although the blacklist file is not meant to be
+in human-readable format, the
 .Xr strings 1
 command can be used to peek in it for listing the blacklisted addresses.
 .\"

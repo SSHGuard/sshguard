@@ -1,4 +1,5 @@
 * 1.5rc3
+    - fix man page's blacklisting section
     - make blacklisting work from first blocking
     - improve logging
 
