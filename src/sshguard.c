@@ -290,7 +290,7 @@ static void report_address(attack_t attack) {
 
     /* address already blocked? (can happen for 100 reasons) */
     pthread_mutex_lock(& list_mutex);
-    tmpent = list_seek(& hell, attack.address.value);
+    tmpent = list_seek(& hell, & attack.address);
     pthread_mutex_unlock(& list_mutex);
     if (tmpent != NULL) {
         sshguard_log(LOG_INFO, "Asked to block '%s', which was already blocked to my account.", attack.address.value);
@@ -304,20 +304,20 @@ static void report_address(attack_t attack) {
     }
     
     /* search entry in list */
-    tmpent = list_seek(& limbo, attack.address.value);
+    tmpent = list_seek(& limbo, & attack.address);
 
     if (tmpent == NULL) { /* entry not already in list, add it */
         /* otherwise: insert the new item */
         tmpent = malloc(sizeof(attacker_t));
         attackerinit(tmpent, & attack);
         list_append(&limbo, tmpent);
+    } else {
+        /* otherwise, the entry was already existing, update with new data */
+        tmpent->whenlast = time(NULL);
+        tmpent->numhits++;
+        tmpent->cumulated_danger += attack.dangerousness;
     }
 
-
-    /* otherwise, the entry was already existing */
-    /* update last hit */
-    tmpent->whenlast = time(NULL);
-    tmpent->cumulated_danger += attack.dangerousness;
     if (tmpent->cumulated_danger < opts.abuse_threshold) {
         /* do nothing now, just keep an eye on this guy */
         return;
@@ -333,52 +333,61 @@ static void report_address(attack_t attack) {
 
     if (offenderent == NULL) {
         /* first time we block this guy */
-        sshguard_log(LOG_DEBUG, "First sight of offender '%s:%d', adding to offenders list.", tmpent->attack.address.value, tmpent->attack.address.kind);
+        sshguard_log(LOG_DEBUG, "First abuse of '%s', adding to offenders list.", tmpent->attack.address.value);
         offenderent = (attacker_t *)malloc(sizeof(attacker_t));
+        /* copy everything from tmpent */
         memcpy(offenderent, tmpent, sizeof(attacker_t));
-        offenderent->cumulated_danger = tmpent->attack.dangerousness;
+        /* adjust number of hits */
+        offenderent->numhits = 1;
         list_prepend(& offenders, offenderent);
         assert(! list_empty(& offenders));
     } else {
-        /* this is a previous offender */
-        offenderent->cumulated_danger += tmpent->attack.dangerousness;
+        /* this is a previous offender, update dangerousness and last-hit timestamp */
+        offenderent->numhits++;
+        offenderent->cumulated_danger += tmpent->cumulated_danger;
         offenderent->whenlast = tmpent->whenlast;
+    }
 
-        if (offenderent->cumulated_danger >= opts.blacklist_threshold) {
-            /* this host must be blacklisted -- blocked and never unblocked */
-            tmpent->pardontime = 0;
+    /* At this stage, the guy (in tmpent) is offender, and we'll block it anyway. */
 
-            /* insert in the blacklisted db iff enabled */
-            if (opts.blacklist_filename != NULL) {
-                switch (blacklist_lookup_address(opts.blacklist_filename, & offenderent->attack.address)) {
-                    case 1:     /* in blacklist */
-                        /* do nothing */
-                        break;
-                    case 0:     /* not in blacklist */
-                        /* add it */
-                        sshguard_log(LOG_NOTICE, "Offender '%s:%d' scored %d danger (threshold %u) -> blacklisted.",
-                                tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger,
-                                opts.blacklist_threshold);
-                        if (blacklist_add(opts.blacklist_filename, offenderent) != 0) {
-                            sshguard_log(LOG_ERR, "Could not blacklist address: %s", strerror(errno));
-                        }
-                        break;
-                    default:    /* error while looking up */
-                        sshguard_log(LOG_ERR, "Error while looking up '%s:%d' in blacklist '%s'.", attack.address.value, attack.address.kind, opts.blacklist_filename);
-                }
+    /* Let's see if we _also_ need to blacklist it. */
+    if (offenderent->cumulated_danger >= opts.blacklist_threshold) {
+        /* this host must be blacklisted -- blocked and never unblocked */
+        tmpent->pardontime = 0;
+
+        /* insert in the blacklisted db iff enabled */
+        if (opts.blacklist_filename != NULL) {
+            switch (blacklist_lookup_address(opts.blacklist_filename, & offenderent->attack.address)) {
+                case 1:     /* in blacklist */
+                    /* do nothing */
+                    break;
+                case 0:     /* not in blacklist */
+                    /* add it */
+                    sshguard_log(LOG_NOTICE, "Offender '%s:%d' scored %d danger in %u abuses (threshold %u) -> blacklisted.",
+                            offenderent->attack.address.value, offenderent->attack.address.kind,
+                            offenderent->cumulated_danger, offenderent->numhits,
+                            opts.blacklist_threshold);
+                    if (blacklist_add(opts.blacklist_filename, offenderent) != 0) {
+                        sshguard_log(LOG_ERR, "Could not blacklist offender: %s", strerror(errno));
+                    }
+                    break;
+                default:    /* error while looking up */
+                    sshguard_log(LOG_ERR, "Error while looking up '%s:%d' in blacklist '%s'.", attack.address.value, attack.address.kind, opts.blacklist_filename);
             }
-        } else {
-            sshguard_log(LOG_INFO, "Offender '%s:%d' scored %u danger.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger);
-            /* compute blocking time wrt the "offensiveness" */
-            for (ret = 0; ret < offenderent->cumulated_danger; ret++) {
-                tmpent->pardontime *= 1.5;
-            }
+        }
+    } else {
+        sshguard_log(LOG_INFO, "Offender '%s:%d' scored %u danger in %u abuses.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger, offenderent->numhits);
+        /* compute blocking time wrt the "offensiveness" */
+        for (ret = 0; ret < offenderent->numhits; ret++) {
+            tmpent->pardontime *= 1.5;
         }
     }
     list_sort(& offenders, -1);
 
-    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u danger over %u seconds.\n", tmpent->attack.address.value,
-            tmpent->attack.address.kind, tmpent->pardontime, tmpent->cumulated_danger, tmpent->whenlast - tmpent->whenfirst);
+    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u danger in %u attacks over %u seconds (all: %ud in %d abuses over %us).\n",
+            tmpent->attack.address.value, tmpent->attack.address.kind, tmpent->pardontime,
+            tmpent->cumulated_danger, tmpent->numhits, tmpent->whenlast - tmpent->whenfirst,
+            offenderent->cumulated_danger, offenderent->numhits, offenderent->whenlast - offenderent->whenfirst);
     ret = fw_block(attack.address.value, attack.address.kind, attack.service);
     if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
 
@@ -396,7 +405,8 @@ static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restri
     ipe->attack.address.kind = attack->address.kind;
     ipe->attack.service = attack->service;
     ipe->whenfirst = ipe->whenlast = time(NULL);
-    ipe->cumulated_danger = 0;
+    ipe->numhits = 1;
+    ipe->cumulated_danger = attack->dangerousness;
 }
 
 static void purge_limbo_stale(void) {

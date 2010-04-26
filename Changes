@@ -1,3 +1,7 @@
+* 1.5rc3
+    - make blacklisting work from first blocking
+    - improve logging
+
 * 1.5rc2
     - import newer SimCList solving possible saved blacklist inconsistency (thanks Richard Krakhofer)
     - fix compilation problem on Solaris

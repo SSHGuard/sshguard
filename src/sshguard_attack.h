@@ -41,6 +41,7 @@ typedef struct {
     time_t whenfirst;               /* first time seen (or blocked) */
     time_t whenlast;                /* last time seen (or blocked) */
     time_t pardontime;              /* minimum seconds to wait before releasing address when blocked */
+    unsigned int numhits;           /* #attacks for attacker tracking; #abuses for offenders tracking */
     unsigned int cumulated_danger;  /* total danger incurred (before or after blocked) */
 } attacker_t;
 

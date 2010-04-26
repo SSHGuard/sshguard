@@ -57,8 +57,8 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
                 if (sscanf(optarg, "%u:%s", & opts.blacklist_threshold, opts.blacklist_filename) == 2) {
                     /* custom threshold specified */
-                    if (opts.blacklist_threshold < DEFAULT_ABUSE_THRESHOLD) {
-                        fprintf(stderr, "Doesn't make sense to have a blacklist threshold lower than one abuse (%u). Terminating.\n", DEFAULT_ABUSE_THRESHOLD);
+                    if (opts.blacklist_threshold < opts.abuse_threshold) {
+                        fprintf(stderr, "Doesn't make sense to have a blacklist threshold lower than one abuse (%u). Terminating.\n", opts.abuse_threshold);
 						usage();
 						return -1;
                     }

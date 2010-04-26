@@ -23,19 +23,9 @@
 
 #include <simclist.h>
 
-#include "sshguard.h"
-
 
 /* seeks an address (key) into a list element (el). Callback for SimCList */
-int seeker_addr(const void *el, const void *key) {
-    const sshg_address_t *adr = (const sshg_address_t *)key;
-    const attacker_t *atk = (const attacker_t *)el;
-
-    assert(atk != NULL && adr != NULL);
-    
-    if (atk->attack.address.kind != adr->kind) return 0;
-    return (strcmp(atk->attack.address.value, adr->value) == 0);
-}
+int seeker_addr(const void *el, const void *key);
 
 
 
