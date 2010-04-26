@@ -9407,7 +9407,7 @@ char yytext[YYLMAX];
 char *yytext_ptr;
 #line 1 "attack_scanner.l"
 /*
- * Copyright (c) 2007,2008,2009,2010 Mij <mij@bitchx.it>
+ * Copyright (c) 2007,2008,2009,2010 Mij <mij@sshguard.net>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
