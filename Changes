@@ -2,6 +2,7 @@
     - fix man page's blacklisting section
     - make blacklisting work from first blocking
     - improve logging
+    - fix process authentication possibly getting stuck on children
 
 * 1.5rc2
     - import newer SimCList solving possible saved blacklist inconsistency (thanks Richard Krakhofer)

@@ -25,6 +25,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <regex.h>
 #include <simclist.h>
 
 #include "sshguard_log.h"
@@ -169,62 +170,61 @@ static pid_t procauth_getprocpid(char *filename) {
 }
 
 static int procauth_ischildof(pid_t child, pid_t parent) {
-    char pattern[30];
-    int retA, retB;
-    pid_t pidA, pidB;
-    int ps2grep[2];
+    char mystring[100];
+    int ischild;
+    int ret;
+    int ps2me[2];
+    regex_t pschild_re;
+    pid_t pid;
+    FILE *psout;
 
-    sprintf(pattern, "%d[[:space:]]+%d", child, parent);
 
-    /* pipe from ps out to grep */
-    if (pipe(ps2grep) != 0) {
-        sshguard_log(LOG_ERR, "In pipe(): %s.", strerror(errno));
+    sprintf(mystring, "^%d[[:space:]]+%d[[:space:]]*$", child, parent);
+    regcomp(& pschild_re, mystring, REG_EXTENDED);
+    sshguard_log(LOG_DEBUG, "Testing if %d is child of %d.", child, parent);
+
+    pipe(ps2me);
+
+    /* execute ps command, pipe result to us */
+    if ((pid = fork()) == 0) {
+        /* child */
+        close(0);
+        dup2(ps2me[1], 1);
+
+        sshguard_log(LOG_ERR, "Running 'ps axo pid,ppid'.");
+        execlp("ps", "ps", "axo", "pid,ppid", NULL);
+
+        sshguard_log(LOG_ERR, "Unable to run 'ps axo pid,ppid': %s.", strerror(errno));
+        exit(-1);
+    }
+
+    /* father */
+    close(ps2me[1]);
+
+    /* read lines returned the ps' output, and match pschild_re */
+    psout = fdopen(ps2me[0], "r");
+    if (psout == NULL) return 0;
+
+    ischild = 0;
+    while (fgets(mystring, sizeof(mystring), psout) != NULL) {
+        if (regexec(& pschild_re, mystring, 0, NULL, 0) == 0) {
+            ischild = 1;
+            break;
+        }
+    }
+    regfree(& pschild_re);
+
+    waitpid(pid, & ret, 0);
+    if (! WIFEXITED(ret) || WEXITSTATUS(ret) != 0) {
+        sshguard_log(LOG_ERR, "ps command failed to run.");
         return 0;
     }
-
-    if ((pidA = fork()) == 0) {
-        /* in child A (for grep) */
-        close(0); close(1); close(2);
-            
-        dup2(ps2grep[0], 0);
-
-        /* "grep -qE '123[[:space:]]+456'" */
-        execlp("grep", "grep", "-qE", pattern, NULL);
-        sshguard_log(LOG_ERR, "Could not run grep: %s.", strerror(errno));
-        _Exit(250);
-    }
-
-    if ((pidB = fork()) == 0) {
-        /* in child B (for ps) */
-        close(0); close(1); close(2);
-
-        dup2(ps2grep[1], 1);
-
-        /* "ps axo pid,ppid" */
-        execlp("ps", "ps", "axo", "pid,ppid", NULL);
-        sshguard_log(LOG_ERR, "Could not run ps: %s.", strerror(errno));
-        _Exit(250);
-    }
-
-    /* parent: wait A and B */
-    waitpid(pidA, &retA, 0);
-    retA = WEXITSTATUS(retA);
-    waitpid(pidB, &retB, 0);
-    retB = WEXITSTATUS(retB);
-
-    sshguard_log(LOG_DEBUG, "Run \"ps axo pid,ppid\" -> \"grep -qE '%s'\", returned %d and %d.", pattern, retB, retA);
-
-    if (retA != 0 || retB > 2) return 0;    /* error executing a tool */
     
-    /* derive final value to return */
-    switch (retB) {
-        case 1: /* child-parent association NOT FOUND */
-            return -1;
-        case 0: /* child-parent assured FOUND */
-            return 1;
-    }
+    sshguard_log(LOG_INFO, "Process %d %s child of %d.", child, (ischild ? "is" : "is not"), parent);
+    /* return YES or NO answer */
+    if (ischild)
+        return 1;
 
-    /* an error occurred during verification */
-    return 0;
+    return -1;
 }
 
