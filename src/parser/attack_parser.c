@@ -584,9 +584,9 @@ static const yytype_uint16 yyrline[] =
 {
        0,   122,   122,   123,   124,   125,   138,   148,   153,   157,
      163,   165,   169,   170,   171,   172,   173,   174,   175,   176,
-     177,   178,   179,   184,   203,   207,   211,   263,   265,   266,
-     267,   268,   273,   275,   279,   280,   284,   288,   292,   297,
-     302,   306,   311,   316,   320,   325,   330,   335,   340
+     177,   178,   179,   184,   203,   207,   211,   262,   264,   265,
+     266,   267,   272,   274,   278,   279,   283,   287,   291,   296,
+     301,   305,   310,   315,   319,   324,   329,   334,   339
 };
 #endif
 
@@ -1747,7 +1747,6 @@ yyreduce:
                                 }
                             } else {
                                 sshguard_log(LOG_ERR, "Could not resolv '%s' in neither of IPv{4,6}. Giving up entry.", (yyvsp[(1) - (1)].str));
-                                freeaddrinfo(addrinfo_result);
                                 YYABORT;
                             }
                         }
@@ -1761,7 +1760,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1765 "attack_parser.c"
+#line 1764 "attack_parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1973,7 +1972,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 343 "attack_parser.y"
+#line 342 "attack_parser.y"
 
 
 static void yyerror(int source_id, const char *msg) { /* do nothing */ }

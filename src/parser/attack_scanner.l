@@ -182,7 +182,7 @@ IPV4MAPPED6 (((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})
 "]) - USER "{WORD}" (Login failed): ".*                         { BEGIN(INITIAL); return PROFTPD_LOGINERR_SUFF; }
 
  /* Pure-FTPd */
-"("[^@]+"@"                                                     { BEGIN(pureftpd_loginerr); return PUREFTPD_LOGINERR_PREF; }
+"pure-ftpd: "?"("("?"|{WORD}|{HOSTADDR})"@"                     { BEGIN(pureftpd_loginerr); return PUREFTPD_LOGINERR_PREF; }
 <pureftpd_loginerr>") [WARNING] Authentication failed for user ".+  { BEGIN(INITIAL); return PUREFTPD_LOGINERR_SUFF; }
 
  /* vsftpd */

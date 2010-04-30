@@ -4,6 +4,7 @@
     - improve logging
     - fix process authentication possibly getting stuck on children
     - fix a recognition problem for multilog files
+    - fix segfault from invalid free() when all DNS queries fail
 
 * 1.5rc2
     - import newer SimCList solving possible saved blacklist inconsistency (thanks Richard Krakhofer)

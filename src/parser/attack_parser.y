@@ -244,7 +244,6 @@ addr:
                                 }
                             } else {
                                 sshguard_log(LOG_ERR, "Could not resolv '%s' in neither of IPv{4,6}. Giving up entry.", $1);
-                                freeaddrinfo(addrinfo_result);
                                 YYABORT;
                             }
                         }
