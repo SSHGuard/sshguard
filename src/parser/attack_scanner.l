@@ -79,7 +79,8 @@ WORD        [a-zA-Z0-9][-_a-zA-Z0-9]+
 NUMBER      [1-9][0-9]*
 HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+
 
-TIMESTAMP_SYSLOG {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
+TIMESTAMP_SYSLOG    {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
+TIMESTAMP_TAI64     [0-9A-Fa-f]{24}
 
  /* all words but "sshguard" provided that posix regex don't support negation nor intersection:
   * 1) all words of 2 to 7 characters or 8-* chars
@@ -205,7 +206,8 @@ IPV4MAPPED6 (((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})
 {TIMESTAMP_SYSLOG}                                              { return TIMESTAMP_SYSLOG; }
 
  /* TAI64 timestamp */
-[0-9A-Fa-f]{8}                                                  { return TIMESTAMP_TAI64; }
+"@"{TIMESTAMP_TAI64}                                            { return AT_TIMESTAMP_TAI64; }
+{TIMESTAMP_TAI64}                                               { return TIMESTAMP_TAI64; }
 
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }

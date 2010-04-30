@@ -178,35 +178,36 @@ static struct {
      SYSLOG_BANNER = 265,
      TIMESTAMP_SYSLOG = 266,
      TIMESTAMP_TAI64 = 267,
-     METALOG_BANNER = 268,
-     SSH_INVALUSERPREF = 269,
-     SSH_NOTALLOWEDPREF = 270,
-     SSH_NOTALLOWEDSUFF = 271,
-     SSH_LOGINERR_PREF = 272,
-     SSH_LOGINERR_SUFF = 273,
-     SSH_LOGINERR_PAM = 274,
-     SSH_REVERSEMAP_PREF = 275,
-     SSH_REVERSEMAP_SUFF = 276,
-     SSH_NOIDENTIFSTR = 277,
-     SSH_BADPROTOCOLIDENTIF = 278,
-     DOVECOT_IMAP_LOGINERR_PREF = 279,
-     DOVECOT_IMAP_LOGINERR_SUFF = 280,
-     UWIMAP_LOGINERR = 281,
-     CYRUSIMAP_SASL_LOGINERR_PREF = 282,
-     CYRUSIMAP_SASL_LOGINERR_SUFF = 283,
-     CUCIPOP_AUTHFAIL = 284,
-     EXIM_ESMTP_AUTHFAIL_PREF = 285,
-     EXIM_ESMTP_AUTHFAIL_SUFF = 286,
-     SENDMAIL_RELAYDENIED_PREF = 287,
-     SENDMAIL_RELAYDENIED_SUFF = 288,
-     FREEBSDFTPD_LOGINERR_PREF = 289,
-     FREEBSDFTPD_LOGINERR_SUFF = 290,
-     PROFTPD_LOGINERR_PREF = 291,
-     PROFTPD_LOGINERR_SUFF = 292,
-     PUREFTPD_LOGINERR_PREF = 293,
-     PUREFTPD_LOGINERR_SUFF = 294,
-     VSFTPD_LOGINERR_PREF = 295,
-     VSFTPD_LOGINERR_SUFF = 296
+     AT_TIMESTAMP_TAI64 = 268,
+     METALOG_BANNER = 269,
+     SSH_INVALUSERPREF = 270,
+     SSH_NOTALLOWEDPREF = 271,
+     SSH_NOTALLOWEDSUFF = 272,
+     SSH_LOGINERR_PREF = 273,
+     SSH_LOGINERR_SUFF = 274,
+     SSH_LOGINERR_PAM = 275,
+     SSH_REVERSEMAP_PREF = 276,
+     SSH_REVERSEMAP_SUFF = 277,
+     SSH_NOIDENTIFSTR = 278,
+     SSH_BADPROTOCOLIDENTIF = 279,
+     DOVECOT_IMAP_LOGINERR_PREF = 280,
+     DOVECOT_IMAP_LOGINERR_SUFF = 281,
+     UWIMAP_LOGINERR = 282,
+     CYRUSIMAP_SASL_LOGINERR_PREF = 283,
+     CYRUSIMAP_SASL_LOGINERR_SUFF = 284,
+     CUCIPOP_AUTHFAIL = 285,
+     EXIM_ESMTP_AUTHFAIL_PREF = 286,
+     EXIM_ESMTP_AUTHFAIL_SUFF = 287,
+     SENDMAIL_RELAYDENIED_PREF = 288,
+     SENDMAIL_RELAYDENIED_SUFF = 289,
+     FREEBSDFTPD_LOGINERR_PREF = 290,
+     FREEBSDFTPD_LOGINERR_SUFF = 291,
+     PROFTPD_LOGINERR_PREF = 292,
+     PROFTPD_LOGINERR_SUFF = 293,
+     PUREFTPD_LOGINERR_PREF = 294,
+     PUREFTPD_LOGINERR_SUFF = 295,
+     VSFTPD_LOGINERR_PREF = 296,
+     VSFTPD_LOGINERR_SUFF = 297
    };
 #endif
 /* Tokens.  */
@@ -220,35 +221,36 @@ static struct {
 #define SYSLOG_BANNER 265
 #define TIMESTAMP_SYSLOG 266
 #define TIMESTAMP_TAI64 267
-#define METALOG_BANNER 268
-#define SSH_INVALUSERPREF 269
-#define SSH_NOTALLOWEDPREF 270
-#define SSH_NOTALLOWEDSUFF 271
-#define SSH_LOGINERR_PREF 272
-#define SSH_LOGINERR_SUFF 273
-#define SSH_LOGINERR_PAM 274
-#define SSH_REVERSEMAP_PREF 275
-#define SSH_REVERSEMAP_SUFF 276
-#define SSH_NOIDENTIFSTR 277
-#define SSH_BADPROTOCOLIDENTIF 278
-#define DOVECOT_IMAP_LOGINERR_PREF 279
-#define DOVECOT_IMAP_LOGINERR_SUFF 280
-#define UWIMAP_LOGINERR 281
-#define CYRUSIMAP_SASL_LOGINERR_PREF 282
-#define CYRUSIMAP_SASL_LOGINERR_SUFF 283
-#define CUCIPOP_AUTHFAIL 284
-#define EXIM_ESMTP_AUTHFAIL_PREF 285
-#define EXIM_ESMTP_AUTHFAIL_SUFF 286
-#define SENDMAIL_RELAYDENIED_PREF 287
-#define SENDMAIL_RELAYDENIED_SUFF 288
-#define FREEBSDFTPD_LOGINERR_PREF 289
-#define FREEBSDFTPD_LOGINERR_SUFF 290
-#define PROFTPD_LOGINERR_PREF 291
-#define PROFTPD_LOGINERR_SUFF 292
-#define PUREFTPD_LOGINERR_PREF 293
-#define PUREFTPD_LOGINERR_SUFF 294
-#define VSFTPD_LOGINERR_PREF 295
-#define VSFTPD_LOGINERR_SUFF 296
+#define AT_TIMESTAMP_TAI64 268
+#define METALOG_BANNER 269
+#define SSH_INVALUSERPREF 270
+#define SSH_NOTALLOWEDPREF 271
+#define SSH_NOTALLOWEDSUFF 272
+#define SSH_LOGINERR_PREF 273
+#define SSH_LOGINERR_SUFF 274
+#define SSH_LOGINERR_PAM 275
+#define SSH_REVERSEMAP_PREF 276
+#define SSH_REVERSEMAP_SUFF 277
+#define SSH_NOIDENTIFSTR 278
+#define SSH_BADPROTOCOLIDENTIF 279
+#define DOVECOT_IMAP_LOGINERR_PREF 280
+#define DOVECOT_IMAP_LOGINERR_SUFF 281
+#define UWIMAP_LOGINERR 282
+#define CYRUSIMAP_SASL_LOGINERR_PREF 283
+#define CYRUSIMAP_SASL_LOGINERR_SUFF 284
+#define CUCIPOP_AUTHFAIL 285
+#define EXIM_ESMTP_AUTHFAIL_PREF 286
+#define EXIM_ESMTP_AUTHFAIL_SUFF 287
+#define SENDMAIL_RELAYDENIED_PREF 288
+#define SENDMAIL_RELAYDENIED_SUFF 289
+#define FREEBSDFTPD_LOGINERR_PREF 290
+#define FREEBSDFTPD_LOGINERR_SUFF 291
+#define PROFTPD_LOGINERR_PREF 292
+#define PROFTPD_LOGINERR_SUFF 293
+#define PUREFTPD_LOGINERR_PREF 294
+#define PUREFTPD_LOGINERR_SUFF 295
+#define VSFTPD_LOGINERR_PREF 296
+#define VSFTPD_LOGINERR_SUFF 297
 
 
 
@@ -266,7 +268,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 270 "attack_parser.c"
+#line 272 "attack_parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -278,7 +280,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 282 "attack_parser.c"
+#line 284 "attack_parser.c"
 
 #ifdef short
 # undef short
@@ -493,7 +495,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  70
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   90
+#define YYLAST   82
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  45
@@ -502,11 +504,11 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  48
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  85
+#define YYNSTATES  84
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   296
+#define YYMAXUTOK   297
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -520,7 +522,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,    42,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,    43,     2,    44,     2,     2,     2,     2,     2,     2,
@@ -543,7 +545,7 @@ static const yytype_uint8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41
+      35,    36,    37,    38,    39,    40,    41,    42
 };
 
 #if YYDEBUG
@@ -551,30 +553,30 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     7,     9,    11,    14,    17,    21,
-      24,    26,    28,    30,    32,    34,    36,    38,    40,    42,
-      44,    46,    48,    50,    52,    54,    56,    58,    60,    62,
-      64,    66,    68,    71,    75,    79,    82,    86,    89,    92,
-      96,   101,   105,   108,   112,   116,   120,   124,   128
+       0,     0,     3,     5,     7,     9,    11,    14,    17,    20,
+      23,    25,    27,    29,    31,    33,    35,    37,    39,    41,
+      43,    45,    47,    49,    51,    53,    55,    57,    59,    61,
+      63,    65,    67,    70,    74,    78,    81,    85,    88,    91,
+      95,   100,   104,   107,   111,   115,   119,   123,   127
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
       46,     0,    -1,    47,    -1,    48,    -1,    49,    -1,    50,
-      -1,     8,    50,    -1,    10,    50,    -1,    42,    12,    50,
-      -1,    13,    50,    -1,    51,    -1,    52,    -1,    54,    -1,
-      60,    -1,    61,    -1,    62,    -1,    63,    -1,    64,    -1,
-      65,    -1,    66,    -1,    67,    -1,    68,    -1,    69,    -1,
-       9,    -1,     3,    -1,     4,    -1,     5,    -1,    55,    -1,
-      56,    -1,    57,    -1,    58,    -1,    59,    -1,    14,    53,
-      -1,    15,    53,    16,    -1,    17,    53,    18,    -1,    19,
-      53,    -1,    20,    53,    21,    -1,    22,    53,    -1,    23,
-      53,    -1,    24,    53,    25,    -1,    26,    43,    53,    44,
-      -1,    27,    53,    28,    -1,    29,    53,    -1,    30,    53,
-      31,    -1,    32,    53,    33,    -1,    34,    53,    35,    -1,
-      36,    53,    37,    -1,    38,    53,    39,    -1,    40,    53,
-      41,    -1
+      -1,     8,    50,    -1,    10,    50,    -1,    13,    50,    -1,
+      14,    50,    -1,    51,    -1,    52,    -1,    54,    -1,    60,
+      -1,    61,    -1,    62,    -1,    63,    -1,    64,    -1,    65,
+      -1,    66,    -1,    67,    -1,    68,    -1,    69,    -1,     9,
+      -1,     3,    -1,     4,    -1,     5,    -1,    55,    -1,    56,
+      -1,    57,    -1,    58,    -1,    59,    -1,    15,    53,    -1,
+      16,    53,    17,    -1,    18,    53,    19,    -1,    20,    53,
+      -1,    21,    53,    22,    -1,    23,    53,    -1,    24,    53,
+      -1,    25,    53,    26,    -1,    27,    43,    53,    44,    -1,
+      28,    53,    29,    -1,    30,    53,    -1,    31,    53,    32,
+      -1,    33,    53,    34,    -1,    35,    53,    36,    -1,    37,
+      53,    38,    -1,    39,    53,    40,    -1,    41,    53,    42,
+      -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
@@ -595,25 +597,26 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "IPv4", "IPv6", "HOSTADDR", "WORD",
   "INTEGER", "SYSLOG_BANNER_PID", "LAST_LINE_REPEATED_N_TIMES",
-  "SYSLOG_BANNER", "TIMESTAMP_SYSLOG", "TIMESTAMP_TAI64", "METALOG_BANNER",
-  "SSH_INVALUSERPREF", "SSH_NOTALLOWEDPREF", "SSH_NOTALLOWEDSUFF",
-  "SSH_LOGINERR_PREF", "SSH_LOGINERR_SUFF", "SSH_LOGINERR_PAM",
-  "SSH_REVERSEMAP_PREF", "SSH_REVERSEMAP_SUFF", "SSH_NOIDENTIFSTR",
-  "SSH_BADPROTOCOLIDENTIF", "DOVECOT_IMAP_LOGINERR_PREF",
-  "DOVECOT_IMAP_LOGINERR_SUFF", "UWIMAP_LOGINERR",
-  "CYRUSIMAP_SASL_LOGINERR_PREF", "CYRUSIMAP_SASL_LOGINERR_SUFF",
-  "CUCIPOP_AUTHFAIL", "EXIM_ESMTP_AUTHFAIL_PREF",
-  "EXIM_ESMTP_AUTHFAIL_SUFF", "SENDMAIL_RELAYDENIED_PREF",
-  "SENDMAIL_RELAYDENIED_SUFF", "FREEBSDFTPD_LOGINERR_PREF",
-  "FREEBSDFTPD_LOGINERR_SUFF", "PROFTPD_LOGINERR_PREF",
-  "PROFTPD_LOGINERR_SUFF", "PUREFTPD_LOGINERR_PREF",
-  "PUREFTPD_LOGINERR_SUFF", "VSFTPD_LOGINERR_PREF", "VSFTPD_LOGINERR_SUFF",
-  "'@'", "'['", "']'", "$accept", "text", "syslogent", "multilogent",
-  "metalogent", "logmsg", "msg_single", "msg_multiple", "addr", "sshmsg",
-  "ssh_illegaluser", "ssh_authfail", "ssh_reversemapping",
-  "ssh_noidentifstring", "ssh_badprotocol", "dovecotmsg", "uwimapmsg",
-  "cyrusimapmsg", "cucipopmsg", "eximmsg", "sendmailmsg", "freebsdftpdmsg",
-  "proftpdmsg", "pureftpdmsg", "vsftpdmsg", 0
+  "SYSLOG_BANNER", "TIMESTAMP_SYSLOG", "TIMESTAMP_TAI64",
+  "AT_TIMESTAMP_TAI64", "METALOG_BANNER", "SSH_INVALUSERPREF",
+  "SSH_NOTALLOWEDPREF", "SSH_NOTALLOWEDSUFF", "SSH_LOGINERR_PREF",
+  "SSH_LOGINERR_SUFF", "SSH_LOGINERR_PAM", "SSH_REVERSEMAP_PREF",
+  "SSH_REVERSEMAP_SUFF", "SSH_NOIDENTIFSTR", "SSH_BADPROTOCOLIDENTIF",
+  "DOVECOT_IMAP_LOGINERR_PREF", "DOVECOT_IMAP_LOGINERR_SUFF",
+  "UWIMAP_LOGINERR", "CYRUSIMAP_SASL_LOGINERR_PREF",
+  "CYRUSIMAP_SASL_LOGINERR_SUFF", "CUCIPOP_AUTHFAIL",
+  "EXIM_ESMTP_AUTHFAIL_PREF", "EXIM_ESMTP_AUTHFAIL_SUFF",
+  "SENDMAIL_RELAYDENIED_PREF", "SENDMAIL_RELAYDENIED_SUFF",
+  "FREEBSDFTPD_LOGINERR_PREF", "FREEBSDFTPD_LOGINERR_SUFF",
+  "PROFTPD_LOGINERR_PREF", "PROFTPD_LOGINERR_SUFF",
+  "PUREFTPD_LOGINERR_PREF", "PUREFTPD_LOGINERR_SUFF",
+  "VSFTPD_LOGINERR_PREF", "VSFTPD_LOGINERR_SUFF", "'['", "']'", "$accept",
+  "text", "syslogent", "multilogent", "metalogent", "logmsg", "msg_single",
+  "msg_multiple", "addr", "sshmsg", "ssh_illegaluser", "ssh_authfail",
+  "ssh_reversemapping", "ssh_noidentifstring", "ssh_badprotocol",
+  "dovecotmsg", "uwimapmsg", "cyrusimapmsg", "cucipopmsg", "eximmsg",
+  "sendmailmsg", "freebsdftpdmsg", "proftpdmsg", "pureftpdmsg",
+  "vsftpdmsg", 0
 };
 #endif
 
@@ -626,7 +629,7 @@ static const yytype_uint16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,    64,    91,    93
+     295,   296,   297,    91,    93
 };
 # endif
 
@@ -643,7 +646,7 @@ static const yytype_uint8 yyr1[] =
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     1,     1,     2,     2,     3,     2,
+       0,     2,     1,     1,     1,     1,     2,     2,     2,     2,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     2,     3,     3,     2,     3,     2,     2,     3,
@@ -659,43 +662,43 @@ static const yytype_uint8 yydefact[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     2,     3,     4,     5,    10,    11,
       12,    27,    28,    29,    30,    31,    13,    14,    15,    16,
-      17,    18,    19,    20,    21,    22,     6,     7,     9,    24,
-      25,    26,    32,     0,     0,    35,     0,    37,    38,     0,
-       0,     0,    42,     0,     0,     0,     0,     0,     0,     0,
+      17,    18,    19,    20,    21,    22,     6,     7,     8,     9,
+      24,    25,    26,    32,     0,     0,    35,     0,    37,    38,
+       0,     0,     0,    42,     0,     0,     0,     0,     0,     0,
        1,    33,    34,    36,    39,     0,    41,    43,    44,    45,
-      46,    47,    48,     8,    40
+      46,    47,    48,    40
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,    23,    24,    25,    26,    27,    28,    29,    52,    30,
+      -1,    23,    24,    25,    26,    27,    28,    29,    53,    30,
       31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
       41,    42,    43,    44,    45
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -43
+#define YYPACT_NINF -37
 static const yytype_int8 yypact[] =
 {
-      12,    47,   -43,    47,    47,    85,    85,    85,    85,    85,
-      85,    85,    85,   -42,    85,    85,    85,    85,    85,    85,
-      85,    85,    11,    24,   -43,   -43,   -43,   -43,   -43,   -43,
-     -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,
-     -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,
-     -43,   -43,   -43,    -5,    10,   -43,     9,   -43,   -43,     8,
-      85,    15,   -43,     6,     7,    14,    16,    18,     4,    47,
-     -43,   -43,   -43,   -43,   -43,     3,   -43,   -43,   -43,   -43,
-     -43,   -43,   -43,   -43,   -43
+       8,    35,   -37,    35,    35,    35,    77,    77,    77,    77,
+      77,    77,    77,    77,   -36,    77,    77,    77,    77,    77,
+      77,    77,    77,    19,   -37,   -37,   -37,   -37,   -37,   -37,
+     -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,
+     -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,
+     -37,   -37,   -37,   -37,     3,     6,   -37,     5,   -37,   -37,
+       4,    77,    11,   -37,     2,    12,     1,    10,    17,     0,
+     -37,   -37,   -37,   -37,   -37,    20,   -37,   -37,   -37,   -37,
+     -37,   -37,   -37,   -37
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -43,   -43,   -43,   -43,   -43,    -1,   -43,   -43,    -2,   -43,
-     -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,   -43,
-     -43,   -43,   -43,   -43,   -43
+     -37,   -37,   -37,   -37,   -37,    74,   -37,   -37,    -7,   -37,
+     -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,   -37,
+     -37,   -37,   -37,   -37,   -37
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -705,45 +708,43 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      46,    60,    47,    48,    53,    54,    55,    56,    57,    58,
-      59,    71,    61,    62,    63,    64,    65,    66,    67,    68,
-       1,     2,     3,    69,    70,     4,     5,     6,    72,     7,
-      73,     8,     9,    74,    10,    11,    12,    77,    13,    14,
-      78,    15,    16,    76,    17,    82,    18,    84,    19,    79,
-      20,     0,    21,    80,    22,     0,     2,    81,    75,     0,
-       0,     5,     6,     0,     7,     0,     8,     9,    83,    10,
-      11,    12,     0,    13,    14,     0,    15,    16,     0,    17,
-       0,    18,     0,    19,     0,    20,     0,    21,    49,    50,
-      51
+      54,    55,    56,    57,    58,    59,    60,    61,    62,    63,
+      64,    65,    66,    67,    68,    69,     1,     2,     3,    70,
+      71,     4,     5,     6,     7,    72,     8,    73,     9,    10,
+      74,    11,    12,    13,    77,    14,    15,    79,    16,    17,
+      76,    18,    82,    19,     2,    20,    78,    21,    80,    22,
+       6,     7,     0,     8,    75,     9,    10,    81,    11,    12,
+      13,     0,    14,    15,    83,    16,    17,     0,    18,     0,
+      19,     0,    20,     0,    21,    46,    22,    47,    48,    49,
+      50,    51,    52
 };
 
 static const yytype_int8 yycheck[] =
 {
-       1,    43,     3,     4,     6,     7,     8,     9,    10,    11,
-      12,    16,    14,    15,    16,    17,    18,    19,    20,    21,
-       8,     9,    10,    12,     0,    13,    14,    15,    18,    17,
-      21,    19,    20,    25,    22,    23,    24,    31,    26,    27,
-      33,    29,    30,    28,    32,    41,    34,    44,    36,    35,
-      38,    -1,    40,    37,    42,    -1,     9,    39,    60,    -1,
-      -1,    14,    15,    -1,    17,    -1,    19,    20,    69,    22,
-      23,    24,    -1,    26,    27,    -1,    29,    30,    -1,    32,
-      -1,    34,    -1,    36,    -1,    38,    -1,    40,     3,     4,
-       5
+       7,     8,     9,    10,    11,    12,    13,    43,    15,    16,
+      17,    18,    19,    20,    21,    22,     8,     9,    10,     0,
+      17,    13,    14,    15,    16,    19,    18,    22,    20,    21,
+      26,    23,    24,    25,    32,    27,    28,    36,    30,    31,
+      29,    33,    42,    35,     9,    37,    34,    39,    38,    41,
+      15,    16,    -1,    18,    61,    20,    21,    40,    23,    24,
+      25,    -1,    27,    28,    44,    30,    31,    -1,    33,    -1,
+      35,    -1,    37,    -1,    39,     1,    41,     3,     4,     5,
+       3,     4,     5
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     8,     9,    10,    13,    14,    15,    17,    19,    20,
-      22,    23,    24,    26,    27,    29,    30,    32,    34,    36,
-      38,    40,    42,    46,    47,    48,    49,    50,    51,    52,
+       0,     8,     9,    10,    13,    14,    15,    16,    18,    20,
+      21,    23,    24,    25,    27,    28,    30,    31,    33,    35,
+      37,    39,    41,    46,    47,    48,    49,    50,    51,    52,
       54,    55,    56,    57,    58,    59,    60,    61,    62,    63,
-      64,    65,    66,    67,    68,    69,    50,    50,    50,     3,
-       4,     5,    53,    53,    53,    53,    53,    53,    53,    53,
-      43,    53,    53,    53,    53,    53,    53,    53,    53,    12,
-       0,    16,    18,    21,    25,    53,    28,    31,    33,    35,
-      37,    39,    41,    50,    44
+      64,    65,    66,    67,    68,    69,    50,    50,    50,    50,
+       3,     4,     5,    53,    53,    53,    53,    53,    53,    53,
+      53,    43,    53,    53,    53,    53,    53,    53,    53,    53,
+       0,    17,    19,    22,    26,    53,    29,    32,    34,    36,
+      38,    40,    42,    44
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1760,7 +1761,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1764 "attack_parser.c"
+#line 1765 "attack_parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
