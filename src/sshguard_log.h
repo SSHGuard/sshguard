@@ -23,6 +23,7 @@
 #define SSHGUARD_LOG_H
 
 #include <syslog.h>
+#include <stdarg.h>
 
 /**
  * Cut messages under this value, except when debugging enabled.
@@ -65,7 +66,12 @@ int sshguard_log_debug(int use_debug);
  *
  * @return 0 iff successful
  */
-int sshguard_log(int prio, char *fmt, ...);
+int sshguard_log(int prio, char *fmt, ...)
+#ifdef __GNUC__
+    /* thanks kate` :) */
+    __attribute__ ((format (printf, 2, 3)))
+#endif
+    ;
 
 
 /**

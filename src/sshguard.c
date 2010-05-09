@@ -384,10 +384,10 @@ static void report_address(attack_t attack) {
     }
     list_sort(& offenders, -1);
 
-    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%dsecs: %u danger in %u attacks over %u seconds (all: %ud in %d abuses over %us).\n",
-            tmpent->attack.address.value, tmpent->attack.address.kind, tmpent->pardontime,
-            tmpent->cumulated_danger, tmpent->numhits, tmpent->whenlast - tmpent->whenfirst,
-            offenderent->cumulated_danger, offenderent->numhits, offenderent->whenlast - offenderent->whenfirst);
+    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%lldsecs: %u danger in %u attacks over %lld seconds (all: %ud in %d abuses over %llds).\n",
+            tmpent->attack.address.value, tmpent->attack.address.kind, (long long int)tmpent->pardontime,
+            tmpent->cumulated_danger, tmpent->numhits, (long long int)(tmpent->whenlast - tmpent->whenfirst),
+            offenderent->cumulated_danger, offenderent->numhits, (long long int)(offenderent->whenlast - offenderent->whenfirst));
     ret = fw_block(attack.address.value, attack.address.kind, attack.service);
     if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
 
@@ -415,6 +415,7 @@ static void purge_limbo_stale(void) {
     unsigned int pos = 0;
 
 
+    sshguard_log(LOG_DEBUG, "Purging stale attackers.");
     now = time(NULL);
     for (pos = 0; pos < list_size(&limbo); pos++) {
         tmpent = list_get_at(&limbo, pos);
@@ -444,7 +445,7 @@ static void *pardonBlocked(void *par) {
             /* process hosts with finite pardon time */
             if (now - tmpel->whenlast > tmpel->pardontime) {
                 /* pardon time passed, release block */
-                sshguard_log(LOG_INFO, "Releasing %s after %u seconds.\n", tmpel->attack.address.value, now - tmpel->whenlast);
+                sshguard_log(LOG_INFO, "Releasing %s after %lld seconds.\n", tmpel->attack.address.value, (long long int)(now - tmpel->whenlast));
                 ret = fw_release(tmpel->attack.address.value, tmpel->attack.address.kind, tmpel->attack.service);
                 if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Release command failed. Exited: %d", ret);
                 list_delete_at(&hell, pos);
@@ -529,7 +530,7 @@ static void process_blacklisted_addresses() {
     /* blacklist enabled */
     assert(blacklist != NULL);
     size_t num_blacklisted = list_size(blacklist);
-    sshguard_log(LOG_INFO, "Blacklist loaded, blocking %d addresses.", num_blacklisted);
+    sshguard_log(LOG_INFO, "Blacklist loaded, blocking %ld addresses.", num_blacklisted);
     /* prepare to call fw_block_list() to block in bulk */
     /* two runs, one for each address kind (but allocate arrays once) */
     addresses = (const char **)malloc(sizeof(const char *) * (num_blacklisted+1));

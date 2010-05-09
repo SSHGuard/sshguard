@@ -18,7 +18,6 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -114,7 +113,10 @@ int sshguard_log(int prio, char *fmt, ...) {
     va_start(ap, fmt);
     if (sshg_log_debugging) {
         vfprintf(stderr, fmt, ap);
-        if (fmt[strlen(fmt)-1] != '\n') fprintf(stderr, "\n");
+        fflush(stderr);
+        if (fmt[strlen(fmt)-1] != '\n')
+            fprintf(stderr, "\n");
+        fflush(stderr);
     } else {
         /* avoid the more convenient vsyslog() for portability reasons.. */
         while (vsnprintf(msgbuf, msgbuf_len, fmt, ap) >= msgbuf_len) {
