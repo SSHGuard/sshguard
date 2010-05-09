@@ -191,7 +191,7 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
         close(0);
         dup2(ps2me[1], 1);
 
-        sshguard_log(LOG_ERR, "Running 'ps axo pid,ppid'.");
+        sshguard_log(LOG_DEBUG, "Running 'ps axo pid,ppid'.");
         execlp("ps", "ps", "axo", "pid,ppid", NULL);
 
         sshguard_log(LOG_ERR, "Unable to run 'ps axo pid,ppid': %s.", strerror(errno));
@@ -219,6 +219,7 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
         sshguard_log(LOG_ERR, "ps command failed to run.");
         return 0;
     }
+    fclose(psout);
     
     sshguard_log(LOG_INFO, "Process %d %s child of %d.", child, (ischild ? "is" : "is not"), parent);
     /* return YES or NO answer */
