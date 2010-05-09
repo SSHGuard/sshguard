@@ -183,7 +183,10 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
     regcomp(& pschild_re, mystring, REG_EXTENDED);
     sshguard_log(LOG_DEBUG, "Testing if %d is child of %d.", child, parent);
 
-    pipe(ps2me);
+    if (pipe(ps2me) == -1) {
+        sshguard_log(LOG_ERR, "Can't create pipe! %s.", strerror(errno));
+        return 0;
+    }
 
     /* execute ps command, pipe result to us */
     if ((pid = fork()) == 0) {
