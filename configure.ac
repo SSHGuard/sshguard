@@ -33,7 +33,7 @@ AC_TYPE_SIZE_T
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol])
+AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol kqueue])
 # Solaris provides these functions in separate libraries
 AC_SEARCH_LIBS([socket], [socket])
 AC_SEARCH_LIBS([gethostbyname], [nsl])

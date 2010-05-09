@@ -1,6 +1,7 @@
 * 1.5rc3
     - fix man page's blacklisting section
     - make blacklisting work from first blocking
+    - performance and responsiveness improvements to the Log Sucker
     - improve logging
     - fix process authentication possibly getting stuck on children
     - fix a recognition problem for multilog files
