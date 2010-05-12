@@ -25,7 +25,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <regex.h>
 #include <simclist.h>
 
 #include "sshguard_log.h"
@@ -170,17 +169,15 @@ static pid_t procauth_getprocpid(char *filename) {
 }
 
 static int procauth_ischildof(pid_t child, pid_t parent) {
-    char mystring[100];
     int ischild;
     int ret;
+    int curchild, curparent;
+    char mystring[20];
     int ps2me[2];
-    regex_t pschild_re;
     pid_t pid;
     FILE *psout;
 
 
-    sprintf(mystring, "^%d[[:space:]]+%d[[:space:]]*$", child, parent);
-    regcomp(& pschild_re, mystring, REG_EXTENDED);
     sshguard_log(LOG_DEBUG, "Testing if %d is child of %d.", child, parent);
 
     if (pipe(ps2me) == -1) {
@@ -210,12 +207,13 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
 
     ischild = 0;
     while (fgets(mystring, sizeof(mystring), psout) != NULL) {
-        if (regexec(& pschild_re, mystring, 0, NULL, 0) == 0) {
+        /* sshguard_log(LOG_DEBUG, "Testing child/parent line: '%s' --> %d@%d", mystring, curchild, curparent); */
+        sscanf(mystring, " %d %d ", & curchild, & curparent);
+        if (curchild == child && curparent == parent) {
             ischild = 1;
             break;
         }
     }
-    regfree(& pschild_re);
 
     waitpid(pid, & ret, 0);
     if (! WIFEXITED(ret) || WEXITSTATUS(ret) != 0) {
