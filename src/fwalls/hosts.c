@@ -55,7 +55,8 @@ list_t hosts_blockedaddrs;
 FILE *hosts_file;
 
 /* buffer to hold the name of temporary configuration files. Set once, in fw_init() */
-static char tempflname[40] = "";
+#define MAX_TEMPFILE_NAMELEN        60
+static char tempflname[MAX_TEMPFILE_NAMELEN] = "";
 
 size_t addr_service_meter(const void *el) { return sizeof(addr_service_t); }
 int addr_service_comparator(const void *a, const void *b) {
@@ -82,7 +83,10 @@ int fw_init() {
     FILE *tmp, *deny;
 
     /* set the filename of the temporary configuration file */
-    sprintf(tempflname, "%s-sshguard.%u", HOSTSFILE_PATH, getpid());
+    if (snprintf(tempflname, MAX_TEMPFILE_NAMELEN, "%s-sshguard.%u", HOSTSFILE_PATH, getpid()) >= MAX_TEMPFILE_NAMELEN) {
+        sshguard_log(LOG_ERR, "'tempflname' buffer too small to hold '%s-sshguard.%u!'", HOSTSFILE_PATH, getpid());
+        return FWALL_ERR;
+    }
 
     hosts_clearsshguardblocks();
 
@@ -170,7 +174,6 @@ int fw_flush(void) {
 
 int hosts_updatelist() {
     char buf[HOSTS_MAXCMDLEN];
-    char tempflname[30];
     FILE *tmp, *deny;
 
     /* open hosts.allow file */
