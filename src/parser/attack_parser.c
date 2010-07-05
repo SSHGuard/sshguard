@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.2.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,7 +45,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.1"
+#define YYBISON_VERSION "2.4.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -141,7 +140,7 @@ static struct {
 
 
 /* Line 189 of yacc.c  */
-#line 145 "attack_parser.c"
+#line 144 "attack_parser.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -268,7 +267,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 272 "attack_parser.c"
+#line 271 "attack_parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -280,7 +279,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 284 "attack_parser.c"
+#line 283 "attack_parser.c"
 
 #ifdef short
 # undef short
@@ -330,7 +329,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if YYENABLE_NLS
+# if defined YYENABLE_NLS && YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -759,9 +758,18 @@ static const yytype_uint8 yystos[] =
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  */
+   Once GCC version 2 has supplanted version 1, this can go.  However,
+   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
+   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
+   discussed.  */
 
 #define YYFAIL		goto yyerrlab
+#if defined YYFAIL
+  /* This is here to suppress warnings from the GCC cpp's
+     -Wunused-macros.  Normally we don't worry about that warning, but
+     some users do, and we want to make it easy for users to remove
+     YYFAIL uses, which will produce warnings from Bison 2.5.  */
+#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
@@ -818,7 +826,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if YYLTYPE_IS_TRIVIAL
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -1563,7 +1571,7 @@ yyreduce:
     {
         case 6:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 138 "attack_parser.y"
     {
                         /* reject to accept if the pid has been forged */
@@ -1577,98 +1585,98 @@ yyreduce:
 
   case 10:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 163 "attack_parser.y"
     {   parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity = 1;    }
     break;
 
   case 11:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 165 "attack_parser.y"
     {   parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity = (yyvsp[(1) - (1)].num); }
     break;
 
   case 12:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 169 "attack_parser.y"
     {   parsed_attack.service = SERVICES_SSH; }
     break;
 
   case 13:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 170 "attack_parser.y"
     {   parsed_attack.service = SERVICES_DOVECOT; }
     break;
 
   case 14:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 171 "attack_parser.y"
     {   parsed_attack.service = SERVICES_UWIMAP; }
     break;
 
   case 15:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 172 "attack_parser.y"
     {   parsed_attack.service = SERVICES_CYRUSIMAP; }
     break;
 
   case 16:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 173 "attack_parser.y"
     {   parsed_attack.service = SERVICES_CUCIPOP; }
     break;
 
   case 17:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 174 "attack_parser.y"
     {   parsed_attack.service = SERVICES_EXIM; }
     break;
 
   case 18:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 175 "attack_parser.y"
     {   parsed_attack.service = SERVICES_SENDMAIL; }
     break;
 
   case 19:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 176 "attack_parser.y"
     {   parsed_attack.service = SERVICES_FREEBSDFTPD; }
     break;
 
   case 20:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 177 "attack_parser.y"
     {   parsed_attack.service = SERVICES_PROFTPD; }
     break;
 
   case 21:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 178 "attack_parser.y"
     {   parsed_attack.service = SERVICES_PUREFTPD; }
     break;
 
   case 22:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 179 "attack_parser.y"
     {   parsed_attack.service = SERVICES_VSFTPD; }
     break;
 
   case 23:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 184 "attack_parser.y"
     {
                         /* the message repeated, was it an attack? */
@@ -1689,7 +1697,7 @@ yyreduce:
 
   case 24:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 203 "attack_parser.y"
     {
                         parsed_attack.address.kind = ADDRKIND_IPv4;
@@ -1699,7 +1707,7 @@ yyreduce:
 
   case 25:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 207 "attack_parser.y"
     {
                         parsed_attack.address.kind = ADDRKIND_IPv6;
@@ -1709,7 +1717,7 @@ yyreduce:
 
   case 26:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 211 "attack_parser.y"
     {
                         struct addrinfo addrinfo_hints;
@@ -1759,8 +1767,8 @@ yyreduce:
 
 
 
-/* Line 1455 of yacc.c  */
-#line 1764 "attack_parser.c"
+/* Line 1464 of yacc.c  */
+#line 1772 "attack_parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1971,7 +1979,7 @@ yyreturn:
 
 
 
-/* Line 1675 of yacc.c  */
+/* Line 1684 of yacc.c  */
 #line 342 "attack_parser.y"
 
 

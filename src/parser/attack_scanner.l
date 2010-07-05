@@ -110,13 +110,13 @@ IPV4MAPPED6 (((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})
   */
 
  /* handle entries with PID and without PID from processes other than sshguard */
-{TIMESTAMP_SYSLOG}[ ]+({WORD}|{HOSTADDR})[ ]+{PROCESSNAME}"["{NUMBER}"]:" {
+{TIMESTAMP_SYSLOG}[ ]+([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+{PROCESSNAME}"["{NUMBER}"]:" {
         /* extract PID */
         yylval.num = getsyslogpid(yytext, yyleng);
         return SYSLOG_BANNER_PID;
         }
 
-{TIMESTAMP_SYSLOG}[ ]+({WORD}|{HOSTADDR})[ ]+({PROCESSNAME}":")?   { return SYSLOG_BANNER; }
+{TIMESTAMP_SYSLOG}[ ]+([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+({PROCESSNAME}":")?   { return SYSLOG_BANNER; }
 
  /* syslog style  "last message repeated N times" */
 "last message repeated "([1-9][0-9]*)" times"                   {
