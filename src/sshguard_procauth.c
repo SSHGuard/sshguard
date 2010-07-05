@@ -216,11 +216,11 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
     }
 
     waitpid(pid, & ret, 0);
+    fclose(psout);
     if (! WIFEXITED(ret) || WEXITSTATUS(ret) != 0) {
         sshguard_log(LOG_ERR, "ps command failed to run.");
         return 0;
     }
-    fclose(psout);
     
     sshguard_log(LOG_INFO, "Process %d %s child of %d.", child, (ischild ? "is" : "is not"), parent);
     /* return YES or NO answer */
