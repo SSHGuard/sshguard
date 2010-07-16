@@ -338,37 +338,31 @@ int logsuck_fin() {
 
 
 static int read_from(const source_entry_t *restrict source, char *restrict buf, size_t buflen) {
-    int i, ret, fd;
-    int old_flags;
-
-    /* extract file descriptor to read from */
-    fd = source->current_descriptor;
-
-    /* make blocking, to read rest of the line */
-    old_flags = fcntl(fd, F_GETFL, 0);
-    fcntl(fd, F_SETFL, old_flags ^ O_NONBLOCK);
+    int i, ret, bullets;
 
     /* read until error, newline reached, or buffer exhausted */
     i = 0;
+    bullets = 10;   /* 10 bullets for the writer to not make us wait */
     do {
-        ret = read(fd, & buf[i++], 1);
-    } while (ret == 1 && buf[i-1] != '\n' && i < buflen-2);
-    assert(ret != 0);
+        ret = read(source->current_descriptor, & buf[i++], 1);
+        if (ret == 0) {
+            /* if we're reading ahead of the writer, sit down wait some times */
+            usleep(20 * 1000);
+            --bullets;
+        }
+    } while (ret >= 0 && buf[i-1] != '\n' && i < buflen-2 && bullets > 0);
     buf[i] = '\0';
-    /* restore non-blocking flag */
-    ret = errno;
-    fcntl(fd, F_SETFL, old_flags);
+    if (bullets == 0) {
+        /* what's up with the writer? read() patiented forever! Discard this entry. */
+        sshguard_log(LOG_INFO, "Discarding partial log entry '%s': source %u cannot starve the others.", buf, source->source_id);
+        buf[0] = '\0';
+        return -1;
+    }
     /* check result */
     if (i >= buflen) {
         sshguard_log(LOG_ERR, "Increase buffer, %ld was insufficient for '%s'.", buflen, buf);
         return -1;
     }
-    /*
-    if (buf[i-1] != '\n') {
-        sshguard_log(LOG_ERR, "Unable to read full line from '%s': %s.", source->filename, strerror(ret));
-        return -1;
-    }
-    */
 
     return 0;
 }
