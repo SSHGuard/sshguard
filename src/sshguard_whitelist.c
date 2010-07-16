@@ -393,6 +393,7 @@ int whitelist_match(const char *restrict addr, int addrkind) {
                 if (entry->addrkind != ADDRKIND_IPv4)
                     continue;
                 if (match_ip4(addrent, entry->address.ip4.address, entry->address.ip4.mask)) {
+                    list_iterator_stop(&whitelist);
                     return 1;
                 }
             }
@@ -411,6 +412,7 @@ int whitelist_match(const char *restrict addr, int addrkind) {
                 if (entry->addrkind != ADDRKIND_IPv6)
                     continue;
                 if (match_ip6(&addrent6, &entry->address.ip6.address, &entry->address.ip6.mask)) {
+                    list_iterator_stop(&whitelist);
                     return 1;
                 }
             }

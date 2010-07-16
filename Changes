@@ -2,6 +2,7 @@
     - accept single-letter and single-digit hostnames
     - complete fix to hosts backend's logic for temporary files (thanks Cameos)
     - fix file descriptor leak if "ps" command fails to run
+    - fix whitelist module allowing some entries to be skipped (thanks Andrea Dal Farra)
 
 * 1.5rc3
     - performance and responsiveness improvements to the Log Sucker
