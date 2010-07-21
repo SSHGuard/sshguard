@@ -46,12 +46,13 @@ int get_options_cmdline(int argc, char *argv[]) {
     int optch;
 
     opts.blacklist_filename = NULL;
+    opts.my_pidfile = NULL;
     opts.blacklist_threshold = DEFAULT_BLACKLIST_THRESHOLD;
     opts.pardon_threshold = DEFAULT_PARDON_THRESHOLD;
     opts.stale_threshold = DEFAULT_STALE_THRESHOLD;
     opts.abuse_threshold = DEFAULT_ABUSE_THRESHOLD;
     opts.has_polled_files = 0;
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:vdh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:vdh")) != -1) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
@@ -128,7 +129,7 @@ int get_options_cmdline(int argc, char *argv[]) {
                 }
                 break;
 
-            case 'l':
+            case 'l':   /* add source for log sucker */
                 if (! opts.has_polled_files) {
                     logsuck_init();
                 }
@@ -137,6 +138,10 @@ int get_options_cmdline(int argc, char *argv[]) {
                     return -1;
                 }
                 opts.has_polled_files = 1;
+                break;
+
+            case 'i':   /* specify pidfile for my PID */
+                opts.my_pidfile = optarg;
                 break;
 
 			case 'v': 	/* version */
@@ -154,14 +159,16 @@ int get_options_cmdline(int argc, char *argv[]) {
 }
 
 static void usage(void) {
-    fprintf(stderr, "Usage:\nsshguard [-d] [-b <thr:file>] [-a num] [-p sec] [-w <whlst>]{0,n} [-s sec] [-l c] [-f srv:pidfile]{0,n}\n");
+    fprintf(stderr, "Usage:\nsshguard [-b <thr:file>] [-w <whlst>]{0,n} [-a num] [-p sec] [-s sec]\n\t[-l <source>] [-f <srv:pidfile>]{0,n} [-i <pidfile>] [-v]\n");
     /* fprintf(stderr, "\t-d\tDebugging mode: don't fork to background, and dump activity to stderr.\n"); */
     fprintf(stderr, "\t-b\tBlacklist: thr = number of abuses before blacklisting, file = blacklist filename.\n");
     fprintf(stderr, "\t-a\tNumber of hits after which blocking an address (%d)\n", DEFAULT_ABUSE_THRESHOLD);
     fprintf(stderr, "\t-p\tSeconds after which unblocking a blocked address (%d)\n", DEFAULT_PARDON_THRESHOLD);
     fprintf(stderr, "\t-w\tWhitelisting of addr/host/block, or take from file if starts with \"/\" or \".\" (repeatable)\n");
     fprintf(stderr, "\t-s\tSeconds after which forgetting about a cracker candidate (%d)\n", DEFAULT_STALE_THRESHOLD);
+    fprintf(stderr, "\t-l\tAdd the given log source to Log Sucker's monitored sources (off)\n");
     fprintf(stderr, "\t-f\t\"authenticate\" service's logs through its process pid, as in pidfile\n");
+    fprintf(stderr, "\t-i\tWhen started, save PID in the given file; useful for startup scripts (off)\n");
     fprintf(stderr, "\t-v\tDump version message to stderr, supply this when reporting bugs\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "\tThe SSHGUARD_DEBUG environment variable enables debugging mode (verbosity + interactivity).\n");

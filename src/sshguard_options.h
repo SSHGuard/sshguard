@@ -27,6 +27,7 @@ typedef struct {
     time_t stale_threshold;             /* time after which suspicious entries remained idle are forgiven */
     unsigned int abuse_threshold;       /* number of attacks before raising an abuse */
     unsigned int blacklist_threshold;   /* number of abuses after which blacklisting the attacker */
+    char *my_pidfile;                   /* NULL if disabled, or string with filename where user wants my PID tracked */
     char *blacklist_filename;           /* NULL to disable blacklist, or path of the blacklist file */
     int has_polled_files;               /* true if we are polling log any file, false if reading from stdin */
 } sshg_opts;
