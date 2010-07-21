@@ -11,6 +11,9 @@ AM_CONFIG_HEADER([src/config.h])
 AC_PROG_CC
 AC_PROG_RANLIB
 AC_PROG_YACC
+# for some command backends, as OSes like Solaris have odd default implementations
+AC_PROG_EGREP
+AC_PROG_AWK
 
 AM_PROG_LEX
 
@@ -290,6 +293,10 @@ AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$iptablespath", [path for the iptables comman
 AC_DEFINE_UNQUOTED(IPFPATH, "$ipfpath", [path for the ipf command])
 # define $pfctlpath in config.h
 AC_DEFINE_UNQUOTED(PFCTL_PATH, "$pfctlpath", [path for the pfctl command])
+# define a suitable "grep -E" in config.h
+AC_DEFINE_UNQUOTED(EGREP, $EGREP, [path and filename for a grep tool supporting -E])
+# define a suitable awk
+AC_DEFINE_UNQUOTED(AWK, $AWK, [path and filename for a suitable awk tool])
 
 # user feedback on options
 if test x$useaix = xtrue ; then

@@ -1,5 +1,11 @@
 /* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* path and filename for a suitable awk tool */
+#undef AWK
+
+/* path and filename for a grep tool supporting -E */
+#undef EGREP
+
 /* path for the genfilt command */
 #undef FILT_PATH
 

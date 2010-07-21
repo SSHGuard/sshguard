@@ -1,4 +1,5 @@
 * 1.5rc4
+    - detect a POSIX grep in system, so IPFilter backend works on Solaris too
     - accept single-letter and single-digit hostnames
     - complete fix to hosts backend's logic for temporary files (thanks Cameos)
     - fix file descriptor leak if "ps" command fails to run
