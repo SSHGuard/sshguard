@@ -204,7 +204,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = parser fwalls
-AM_CFLAGS = -I. -std=c99 -Wall -D_XOPEN_SOURCE=600 $(am__append_1)
+AM_CFLAGS = -I. -std=c99 -Wall -D_XOPEN_SOURCE $(am__append_1)
 sshguard_SOURCES = sshguard.c seekers.c sshguard_whitelist.c sshguard_log.c sshguard_procauth.c sshguard_blacklist.c sshguard_options.c sshguard_logsuck.c simclist.c hash_32a.c
 sshguard_LDADD = parser/libparser.a fwalls/libfwall.a
 all: config.h
