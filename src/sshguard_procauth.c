@@ -178,7 +178,7 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
     FILE *psout;
 
 
-    sshguard_log(LOG_DEBUG, "Testing if %d is child of %d.", child, parent);
+    sshguard_log(LOG_DEBUG, "Testing if %d is child of %d.", (int)child, (int)parent);
 
     if (pipe(ps2me) == -1) {
         sshguard_log(LOG_ERR, "Can't create pipe! %s.", strerror(errno));
@@ -222,7 +222,7 @@ static int procauth_ischildof(pid_t child, pid_t parent) {
         return 0;
     }
     
-    sshguard_log(LOG_INFO, "Process %d %s child of %d.", child, (ischild ? "is" : "is not"), parent);
+    sshguard_log(LOG_INFO, "Process %d %s child of %d.", (int)child, (ischild ? "is" : "is not"), (int)parent);
     /* return YES or NO answer */
     if (ischild)
         return 1;

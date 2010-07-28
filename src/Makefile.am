@@ -1,6 +1,13 @@
 SUBDIRS = parser fwalls
 
-AM_CFLAGS=-I. -std=c99 -Wall -D_XOPEN_SOURCE #-D_POSIX_C_SOURCE=200112L
+AM_CFLAGS=-I. -std=c99 -Wall
+
+if SOLARIS
+# on solaris, the compiler refuses to use C99 for compiling pre-POSIX.1-2001 stuff (ew!)
+AM_CFLAGS+= -D_XOPEN_SOURCE=600 
+else
+AM_CFLAGS+= -D_XOPEN_SOURCE
+endif
 
 if DEBUG
 AM_CFLAGS+= -g

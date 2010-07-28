@@ -541,7 +541,7 @@ static void process_blacklisted_addresses() {
     /* blacklist enabled */
     assert(blacklist != NULL);
     size_t num_blacklisted = list_size(blacklist);
-    sshguard_log(LOG_INFO, "Blacklist loaded, blocking %ld addresses.", num_blacklisted);
+    sshguard_log(LOG_INFO, "Blacklist loaded, blocking %lu addresses.", (long unsigned int)num_blacklisted);
     /* prepare to call fw_block_list() to block in bulk */
     /* two runs, one for each address kind (but allocate arrays once) */
     addresses = (const char **)malloc(sizeof(const char *) * (num_blacklisted+1));
@@ -586,7 +586,7 @@ static int my_pidfile_create() {
         sshguard_log(LOG_ERR, "Could not create pidfile '%s': %s.", opts.my_pidfile, strerror(errno));
         return -1;
     }
-    fprintf(p, "%d\n", getpid());
+    fprintf(p, "%d\n", (int)getpid());
     fclose(p);
 
     return 0;

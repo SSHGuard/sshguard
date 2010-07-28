@@ -21,7 +21,10 @@
 #include "config.h"
 
 #if defined(HAVE_KQUEUE)
-// #define _BSD_SOURCE
+/* doing this is nasty, but for the few calls we need there should be
+ * no conflict in the semantics with POSIX */
+#undef _XOPEN_SOURCE
+#define _BSD_SOURCE
 #   include <sys/types.h>
 #   include <sys/event.h>
 #   include <sys/time.h>
@@ -360,7 +363,7 @@ static int read_from(const source_entry_t *restrict source, char *restrict buf, 
     }
     /* check result */
     if (i >= buflen) {
-        sshguard_log(LOG_ERR, "Increase buffer, %ld was insufficient for '%s'.", buflen, buf);
+        sshguard_log(LOG_ERR, "Increase buffer, %lu was insufficient for '%s'.", (long unsigned int)buflen, buf);
         return -1;
     }
 

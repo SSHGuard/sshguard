@@ -6,6 +6,14 @@ AC_INIT(sshguard, 1.4, mij@bitchx.it)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/simclist.c])
 AM_CONFIG_HEADER([src/config.h])
+# test if we are on Solaris, which requires outstanding practices
+AC_CANONICAL_BUILD
+AS_CASE([$build_os], 
+        [solaris*], [on_solaris=yes])
+AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
+
+
+
 
 # Checks for programs.
 AC_PROG_CC
