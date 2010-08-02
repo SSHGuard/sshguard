@@ -1,5 +1,6 @@
 * 1.5rc4
     - add -i command line option for saving PID file, useful for startup scripts
+    - add support for solaris Message ID tags
     - address compilation issues on Solaris (thanks Florian Dufner and the OpenCSW.org project)
     - detect a POSIX grep in system, so IPFilter backend works on Solaris too
     - accept single-letter and single-digit hostnames
