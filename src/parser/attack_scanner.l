@@ -91,14 +91,10 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
 
  /* IPv4 address (used in IPv6 address too, for IPv4 encapsulation) */
 IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)){3})
- /* IPv6 addresses including compressed and IPv4-embedded variants (RFC 2373) */
- /* Nota bene:
-  *     a:b:c:d::f:g:h is not allowed by RFC 2373, but since tools use it, we support it.
-  */
-IPV6ATOM    ([a-fA-F0-9]{1,4})
-IPV6        (::|({IPV6ATOM}:){7}({IPV6ATOM})|(:(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){1,6}:)|(({IPV6ATOM}:)(:{IPV6ATOM}){1,6})|(({IPV6ATOM}:){2}(:{IPV6ATOM}){1,5})|(({IPV6ATOM}:){3}(:{IPV6ATOM}){1,4})|(({IPV6ATOM}:){4}(:{IPV6ATOM}){1,3})|(({IPV6ATOM}:){5}(:{IPV6ATOM}){1,2}))
-IPV4MAPPED6 (((0:){5}(0|[fF]{4})|:(:[fF]{4})?):{IPV4})
-  
+ /* IPv6 addresses including compressed variants (RFC 2373) */
+IPV6        (::|:(:[0-9A-F]{1,4}){1,7}|[0-9A-F]{1,4}:([0-9A-F]{1,4}:(:[0-9A-F]{1,4}){1,5}|(:[0-9A-F]{1,4}){1,6})|([0-9A-F]{1,4}:){3}([0-9A-F]{1,4}:(:[0-9A-F]{1,4}){1,3}|(:[0-9A-F]{1,4}){1,4})|([0-9A-F]{1,4}:){5}([0-9A-F]{1,4}:[0-9A-F]{0,4}:[0-9A-F]{1,4}|(:[0-9A-F]{1,4}){1,2})|([0-9A-F]{1,4}:){1,7}:)
+ /* an IPv4 packed in IPv6 as IPv4-mapped IPv6 address */
+IPV4MAPPED6 ((:(:0{1,4}){0,4}|0{1,4}:(:0{1,4}){1,3}|(0{1,4}:){2}(0{1,4}:0{0,4}:0{1,4}|(:0{1,4}){1,2})|(0{1,4}:){1,4}):F{4}:(((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5])\.){3}((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5]))
 %%
 
 
