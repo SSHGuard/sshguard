@@ -1,6 +1,6 @@
 SUBDIRS = parser fwalls
 
-AM_CFLAGS=-I. -std=c99 -Wall
+AM_CFLAGS=-I. @OPTIMIZER_CFLAGS@ @WARNING_CFLAGS@ @STD99_CFLAGS@
 
 if SOLARIS
 # on solaris, the compiler refuses to use C99 for compiling pre-POSIX.1-2001 stuff (ew!)

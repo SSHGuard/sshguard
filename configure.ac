@@ -32,6 +32,8 @@ AC_CHECK_LIB(pthread, pthread_create)
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([arpa/inet.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h getopt.h])
+# Sun Studio?
+AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -325,6 +327,24 @@ fi
 if test x$usepf = xtrue ; then
     AC_MSG_NOTICE([Using $pfctlpath as location for pfctl])
 fi
+
+# compiler options
+if test "$SUNCC" = "yes"
+then
+    # sun compiler
+    OPTIMIZER_CFLAGS="-xO4 -xlibmil -xdepend"
+    WARNING_CFLAGS="-v"
+    STD99_CFLAGS="-xc99"
+else
+    # other compiler (assume gcc-compatibile :( )
+    OPTIMIZER_CFLAGS="-O2"
+    WARNING_CFLAGS="-Wall"
+    STD99_CFLAGS="-std=c99"
+fi
+
+AC_SUBST(OPTIMIZER_CFLAGS)
+AC_SUBST(WARNING_CFLAGS)
+AC_SUBST(STD99_CFLAGS)
 
 AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile])
 
