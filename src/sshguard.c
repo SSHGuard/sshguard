@@ -295,6 +295,7 @@ static void report_address(attack_t attack) {
     int ret;
 
     assert(attack.address.value != NULL);
+    assert(memchr(attack.address.value, '\0', sizeof(attack.address.value)) != NULL);
 
     /* clean list from stale entries */
     purge_limbo_stale();
