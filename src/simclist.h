@@ -32,7 +32,7 @@ extern "C" {
 #include <sys/types.h>
 
 /* Be friend of both C90 and C99 compilers */
-#if __STDC_VERSION__ >= 199901L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
     /* "inline" and "restrict" are keywords */
 #else
 #   define inline           /* inline */
@@ -69,6 +69,17 @@ typedef struct {
  * It is responsability of the function to handle possible NULL values.
  */
 typedef int (*element_comparator)(const void *a, const void *b);
+
+/**
+ * an element synthesizer / sort key generator.
+ *
+ * Takes an element and returns an integer key suitable to direct sorting.
+ * Elements are sorted by key of increasing value. To invert the sorting
+ * direction, invert the sign of the key.
+ *
+ * @see list_sort()
+ */
+typedef long int (*element_keymaker)(const void *el);
 
 /**
  * a seeker of elements.
@@ -155,6 +166,8 @@ struct list_entry_s {
 struct list_attributes_s {
     /* user-set routine for comparing list elements */
     element_comparator comparator;
+    /* user-set routine for synthesizing an element into an int value for sorting */
+    element_keymaker keymaker;
     /* user-set routing for seeking elements */
     element_seeker seeker;
     /* user-set routine for determining the length of an element */
@@ -226,6 +239,17 @@ void list_destroy(list_t *restrict l);
  * @see element_comparator()
  */
 int list_attributes_comparator(list_t *restrict l, element_comparator comparator_fun);
+
+/**
+ * set the keymaker functions for list elements.
+ *
+ * @see element_keymaker
+ *
+ * @param l     list to operate
+ * @param keymaker_fun    pointer to the actual keymaker function
+ * @return      0 if the attribute was successfully set; -1 otherwise
+ */
+int list_attributes_keymaker(list_t *restrict l, element_keymaker keymaker_fun);
 
 /**
  * set a seeker function for list elements.
@@ -427,6 +451,23 @@ void *list_extract_at(list_t *restrict l, unsigned int pos);
 int list_insert_at(list_t *restrict l, const void *data, unsigned int pos);
 
 /**
+ * expunge the first found given element from the list.
+ *
+ * Inspects the given list looking for the given element; if the element
+ * is found, it is removed. Only the first occurence is removed.
+ * If a comparator function was not set, elements are compared by reference.
+ * Otherwise, the comparator is used to match the element.
+ *
+ * @param l     list to operate
+ * @param data  reference of the element to search for
+ * @return      0 on success. Negative value on failure
+ *
+ * @see list_attributes_comparator()
+ * @see list_delete_at()
+ */
+int list_delete(list_t *restrict l, const void *data);
+
+/**
  * expunge an element at a given position from the list.
  *
  * @param l     list to operate
@@ -564,6 +605,7 @@ int list_concat(const list_t *l1, const list_t *l2, list_t *restrict dest);
  * @return      0: sorting went OK      non-0: errors happened
  *
  * @see list_attributes_comparator()
+ * @see list_attributes_keymaker()
  */
 int list_sort(list_t *restrict l, int versus);
 

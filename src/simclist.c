@@ -19,12 +19,11 @@
  * SimCList library. See http://mij.oltrelinux.com/devel/simclist
  */
 
-/* SimCList implementation, version 1.4.4rc3 */
+/* SimCList implementation, version 1.4.4rc4 */
 
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>      /* for setting errno */
-#include <inttypes.h>   /* (u)int*_t */
 #include <sys/types.h>
 #include <sys/uio.h>    /* for READ_ERRCHECK() and write() */
 #include <fcntl.h>      /* for open() etc */
@@ -37,11 +36,21 @@
 #include <stdint.h>
 
 
-/* use rand() in place of srand()? */
-#ifndef _BSD_SOURCE
-#   define random       rand
-#   define srandom      srand
+/* work around lack of inttypes.h support in broken Microsoft Visual Studio compilers */
+#if !defined(WIN32) || !defined(_MSC_VER)
+#   include <inttypes.h>   /* (u)int*_t */
+#else
+#   include <basetsd.h>
+typedef UINT8   uint8_t;
+typedef UINT16  uint16_t;
+typedef ULONG32 uint32_t;
+typedef UINT64  uint64_t;
+typedef INT8    int8_t;
+typedef INT16   int16_t;
+typedef LONG32  int32_t;
+typedef INT64   int64_t;
 #endif
+ 
 
 
 #ifndef SIMCLIST_NO_DUMPRESTORE
@@ -181,12 +190,54 @@ static inline struct list_entry_s *list_findpos(const list_t *restrict l, int po
                                                     }                                                   \
                                                 } while (0);
 
+/*
+ * Random Number Generator
+ * 
+ * The user is expected to seed the RNG (ie call srand()) if 
+ * SIMCLIST_SYSTEM_RNG is defined.
+ *
+ * Otherwise, a self-contained RNG based on LCG is used; see
+ * http://en.wikipedia.org/wiki/Linear_congruential_generator .
+ *
+ * Facts pro local RNG:
+ * 1. no need for the user to call srand() on his own
+ * 2. very fast, possibly faster than OS
+ * 3. avoid interference with user's RNG
+ *
+ * Facts pro system RNG:
+ * 1. may be more accurate (irrelevant for SimCList randno purposes)
+ * 2. why reinvent the wheel
+ *
+ * Default to local RNG for user's ease of use.
+ */
+
+#ifdef SIMCLIST_SYSTEM_RNG
+/* keep track whether we initialized already (non-0) or not (0) */
+static unsigned random_seed = 0;
+
+/* use local RNG */
+static inline void seed_random() {
+    if (random_seed == 0)
+        random_seed = (unsigned)getpid() ^ (unsigned)time(NULL);
+}
+
+static inline long get_random() {
+    random_seed = (1664525 * random_seed + 1013904223);
+    return random_seed;
+}
+
+#else
+/* use OS's random generator */
+#   define  seed_random()
+#   define  get_random()        (rand())
+#endif
+
 
 /* list initialization */
 int list_init(list_t *restrict l) {
     if (l == NULL) return -1;
 
-    srandom((unsigned long)time(NULL));
+    seed_random();
 
     l->numels = 0;
 
@@ -258,6 +309,16 @@ int list_attributes_comparator(list_t *restrict l, element_comparator comparator
 
     assert(list_attrOk(l));
     
+    return 0;
+}
+
+int list_attributes_keymaker(list_t *restrict l, element_keymaker keymaker_fun) {
+    if (l == NULL) return -1;
+
+    l->attrs.keymaker = keymaker_fun;
+
+    assert(list_attrOk(l));
+
     return 0;
 }
 
@@ -359,6 +420,11 @@ static inline struct list_entry_s *list_findpos(const list_t *restrict l, int po
 
     /* accept 1 slot overflow for fetching head and tail sentinels */
     if (posstart < -1 || posstart > (int)l->numels) return NULL;
+    if (l->numels == 0) {
+        /* fetching either head (-1) or tail (0) sentinels */
+        if (posstart == -1) return l->head_sentinel;
+        return l->tail_sentinel;
+    }
 
     x = (float)(posstart+1) / l->numels;
     if (x <= 0.25) {
@@ -681,7 +747,7 @@ int list_concat(const list_t *l1, const list_t *l2, list_t *restrict dest) {
 }
 
 int list_sort(list_t *restrict l, int versus) {
-    if (l->iter_active || l->attrs.comparator == NULL) /* cannot modify list in the middle of an iteration */
+    if (l->iter_active || (l->attrs.comparator == NULL && l->attrs.keymaker == NULL)) /* cannot modify list in the middle of an iteration */
         return -1;
 
     if (l->numels <= 1)
@@ -708,6 +774,21 @@ static void *list_sort_quicksort_threadwrapper(void *wrapped_params) {
 }
 #endif
 
+static inline int el_compare(const list_t *l, const void *a, const void *b) {
+    if (l->attrs.keymaker != NULL) {
+        /* keymaker function available */
+        long int na, nb;
+        na = l->attrs.keymaker(a);
+        nb = l->attrs.keymaker(b);
+        return (na - nb) - (nb - na);
+    }
+
+    /* use comparator function */
+    assert(l->comparator != NULL);
+
+    return l->attrs.comparator(a, b);
+}
+
 static inline void list_sort_selectionsort(list_t *restrict l, int versus, 
         unsigned int first, struct list_entry_s *fel,
         unsigned int last, struct list_entry_s *lel) {
@@ -720,7 +801,7 @@ static inline void list_sort_selectionsort(list_t *restrict l, int versus,
     for (firstunsorted = fel; firstunsorted != lel; firstunsorted = firstunsorted->next) {
         /* find min or max in the remainder of the list */
         for (toswap = firstunsorted, cursor = firstunsorted->next; cursor != lel->next; cursor = cursor->next)
-            if (l->attrs.comparator(toswap->data, cursor->data) * -versus > 0) toswap = cursor;
+            if (el_compare(l, toswap->data, cursor->data) * -versus > 0) toswap = cursor;
         if (toswap != firstunsorted) { /* swap firstunsorted with toswap */
             tmpdata = firstunsorted->data;
             firstunsorted->data = toswap->data;
@@ -754,7 +835,7 @@ static void list_sort_quicksort(list_t *restrict l, int versus,
     /* base of iteration: one element list */
     if (! (last > first)) return;
 
-    pivotid = (random() % (last - first + 1));
+    pivotid = (get_random() % (last - first + 1));
     /* pivotid = (last - first + 1) / 2; */
 
     /* find pivot */
@@ -769,9 +850,9 @@ static void list_sort_quicksort(list_t *restrict l, int versus,
     right = lel;
     /* iterate     --- left ---> PIV <--- right --- */
     while (left != pivot && right != pivot) {
-        for (; left != pivot && (l->attrs.comparator(left->data, pivot->data) * -versus <= 0); left = left->next);
+        for (; left != pivot && (el_compare(l, left->data, pivot->data) * -versus <= 0); left = left->next);
         /* left points to a smaller element, or to pivot */
-        for (; right != pivot && (l->attrs.comparator(right->data, pivot->data) * -versus >= 0); right = right->prev);
+        for (; right != pivot && (el_compare(l, right->data, pivot->data) * -versus >= 0); right = right->prev);
         /* right points to a bigger element, or to pivot */
         if (left != pivot && right != pivot) {
             /* swap, then move iterators */
@@ -787,7 +868,7 @@ static void list_sort_quicksort(list_t *restrict l, int versus,
     /* now either left points to pivot (end run), or right */
     if (right == pivot) {    /* left part longer */
         while (left != pivot) {
-            if (l->attrs.comparator(left->data, pivot->data) * -versus > 0) {
+            if (el_compare(l, left->data, pivot->data) * -versus > 0) {
                 tmpdata = left->data;
                 left->data = pivot->prev->data;
                 pivot->prev->data = pivot->data;
@@ -801,7 +882,7 @@ static void list_sort_quicksort(list_t *restrict l, int versus,
         }
     } else {                /* right part longer */
         while (right != pivot) {
-            if (l->attrs.comparator(right->data, pivot->data) * -versus < 0) {
+            if (el_compare(l, right->data, pivot->data) * -versus < 0) {
                 /* move current right before pivot */
                 tmpdata = right->data;
                 right->data = pivot->next->data;
@@ -1030,7 +1111,7 @@ int list_dump_filedescriptor(const list_t *restrict l, int fd, size_t *restrict 
     header.timestamp = (int64_t)timeofday.tv_sec * 1000000 + (int64_t)timeofday.tv_usec;
     header.timestamp = hton64(header.timestamp);
 
-    header.rndterm = htonl((int32_t)random());
+    header.rndterm = htonl((int32_t)get_random());
 
     /* total list size is postprocessed afterwards */
 
@@ -1294,9 +1375,11 @@ int list_restore_file(list_t *restrict l, const char *restrict filename, size_t 
 static int list_drop_elem(list_t *restrict l, struct list_entry_s *tmp, unsigned int pos) {
     if (tmp == NULL) return -1;
 
-    /* fix mid pointer */
+    /* fix mid pointer. This is wrt the PRE situation */
     if (l->numels % 2) {    /* now odd */
-        if (pos >= l->numels/2) l->mid = l->mid->prev;
+        /* sort out the base case by hand */
+        if (l->numels == 1) l->mid = NULL;
+        else if (pos >= l->numels/2) l->mid = l->mid->prev;
     } else {                /* now even */
         if (pos < l->numels/2) l->mid = l->mid->next;
     }
@@ -1320,18 +1403,18 @@ static int list_drop_elem(list_t *restrict l, struct list_entry_s *tmp, unsigned
 /* ready-made comparators and meters */
 #define SIMCLIST_NUMBER_COMPARATOR(type)     int list_comparator_##type(const void *a, const void *b) { return( *(type *)a < *(type *)b) - (*(type *)a > *(type *)b); } 
 
-SIMCLIST_NUMBER_COMPARATOR(int8_t);
-SIMCLIST_NUMBER_COMPARATOR(int16_t);
-SIMCLIST_NUMBER_COMPARATOR(int32_t);
-SIMCLIST_NUMBER_COMPARATOR(int64_t);
+SIMCLIST_NUMBER_COMPARATOR(int8_t)
+SIMCLIST_NUMBER_COMPARATOR(int16_t)
+SIMCLIST_NUMBER_COMPARATOR(int32_t)
+SIMCLIST_NUMBER_COMPARATOR(int64_t)
 
-SIMCLIST_NUMBER_COMPARATOR(uint8_t);
-SIMCLIST_NUMBER_COMPARATOR(uint16_t);
-SIMCLIST_NUMBER_COMPARATOR(uint32_t);
-SIMCLIST_NUMBER_COMPARATOR(uint64_t);
+SIMCLIST_NUMBER_COMPARATOR(uint8_t)
+SIMCLIST_NUMBER_COMPARATOR(uint16_t)
+SIMCLIST_NUMBER_COMPARATOR(uint32_t)
+SIMCLIST_NUMBER_COMPARATOR(uint64_t)
 
-SIMCLIST_NUMBER_COMPARATOR(float);
-SIMCLIST_NUMBER_COMPARATOR(double);
+SIMCLIST_NUMBER_COMPARATOR(float)
+SIMCLIST_NUMBER_COMPARATOR(double)
 
 int list_comparator_string(const void *a, const void *b) { return strcmp((const char *)b, (const char *)a); }
 
@@ -1356,18 +1439,18 @@ size_t list_meter_string(const void *el) { return strlen((const char *)el) + 1; 
 /* ready-made hashing functions */
 #define SIMCLIST_HASHCOMPUTER(type)    list_hash_t list_hashcomputer_##type(const void *el) { return (list_hash_t)(*(type *)el); }
 
-SIMCLIST_HASHCOMPUTER(int8_t);
-SIMCLIST_HASHCOMPUTER(int16_t);
-SIMCLIST_HASHCOMPUTER(int32_t);
-SIMCLIST_HASHCOMPUTER(int64_t);
+SIMCLIST_HASHCOMPUTER(int8_t)
+SIMCLIST_HASHCOMPUTER(int16_t)
+SIMCLIST_HASHCOMPUTER(int32_t)
+SIMCLIST_HASHCOMPUTER(int64_t)
 
-SIMCLIST_HASHCOMPUTER(uint8_t);
-SIMCLIST_HASHCOMPUTER(uint16_t);
-SIMCLIST_HASHCOMPUTER(uint32_t);
-SIMCLIST_HASHCOMPUTER(uint64_t);
+SIMCLIST_HASHCOMPUTER(uint8_t)
+SIMCLIST_HASHCOMPUTER(uint16_t)
+SIMCLIST_HASHCOMPUTER(uint32_t)
+SIMCLIST_HASHCOMPUTER(uint64_t)
 
-SIMCLIST_HASHCOMPUTER(float);
-SIMCLIST_HASHCOMPUTER(double);
+SIMCLIST_HASHCOMPUTER(float)
+SIMCLIST_HASHCOMPUTER(double)
 
 list_hash_t list_hashcomputer_string(const void *el) {
     size_t l;
