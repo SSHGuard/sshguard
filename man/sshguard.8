@@ -126,14 +126,18 @@ does not make use of any configuration file. Instead, a combination of optional
 arguments can be passed to its process on the command line, for modifying its
 default behaviour:
 .Bl -tag -width -indent
+.It Fl v
+print summary information on sshguard and exit.
+.It Fl i Ar pidfile
+store my PID in file
+.Ar pidfile
+at startup (for control scripts).
 .It Fl b Ar [thresh:]filename
 enable blacklisting: blacklist after
 .Ar thresh
 (or 40) dangerousness committed, and hold the permanent blacklist in
 .Ar filename .
 See TOUCHINESS & BLACKLISTING below.
-.It Fl v
-print summary information on sshguard and exit.
 .It Fl l Ar source
 enable the Log Sucker, and add
 .Ar source
