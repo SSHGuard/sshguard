@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
 
     /* initialization successful */
     
-    sshguard_log(LOG_INFO, "Started successfully [(a,p,s)=(%u, %u, %u)], now ready to scan.", \
+    sshguard_log(LOG_NOTICE, "Started successfully [(a,p,s)=(%u, %u, %u)], now ready to scan.", \
             opts.abuse_threshold, (unsigned int)opts.pardon_threshold, (unsigned int)opts.stale_threshold);
 
 
@@ -479,7 +479,7 @@ static void *pardonBlocked(void *par) {
 /* finalization routine */
 static void finishup(void) {
     /* flush blocking rules */
-    sshguard_log(LOG_INFO, "Got exit signal, flushing blocked addresses and exiting...");
+    sshguard_log(LOG_NOTICE, "Got exit signal, flushing blocked addresses and exiting...");
     fw_flush();
     if (fw_fin() != FWALL_OK) sshguard_log(LOG_ERR, "Cound not finalize firewall.");
     if (whitelist_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the whitelisting system.");
