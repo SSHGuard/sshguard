@@ -1,55 +1,21 @@
-* 1.5rc4
-    - add -i command line option for saving PID file, useful for startup scripts
-    - update IPv6 scanner regex for compliance to RFC 4291
-    - change ssh attack signatures to better accommodate patterns from different OSes
-    - add support for solaris Message ID tags
-    - address compilation issues on Solaris (thanks Florian Dufner and the OpenCSW.org project)
-    - detect a POSIX grep in system, so IPFilter backend works on Solaris too
-    - accept single-letter and single-digit hostnames
-    - complete fix to hosts backend's logic for temporary files (thanks Cameos)
+* 1.5       Feb 2011
+    - logsucker: sshguard polls multiple log files at once
+    - recognize syslog's "last message repeated N times" contextually and per-source
+    - attackers now gauged with attack *dangerousness* instead of count (adjust your -a !)
+    - improve IPv6 support
+    - add detection for: Exim, vsftpd, Sendmail, Cucipop
+    - improve Solaris support (thanks OpenCSW.org folks)
+    - handle huge blacklists efficiently
+    - improve logging granularity and descriptiveness
+    - add -i command line option for saving PID file as an aid for startup scripts
+    - update some attack signatures
+    - many other improvements, see 1.5beta and 1.5rc changelogs for complete credits
+    - fix a recognition problem for multilog files
+    - fix log filtering on OSes with inverted priority declarations
     - fix file descriptor leak if "ps" command fails to run
     - fix whitelist module allowing some entries to be skipped (thanks Andrea Dal Farra)
-    - fix rare assertion failure when logsucker is notified before the logging completes (thanks Colin Keith)
-
-* 1.5rc3
-    - performance and responsiveness improvements to the Log Sucker
-    - fix process authentication possibly getting stuck on children
-    - make blacklisting work from first blocking
-    - fix a recognition problem for multilog files
-    - improve logging
-    - fix segfault from invalid free() when all DNS queries fail
-    - fix man page's blacklisting section
-
-* 1.5rc2
-    - import newer SimCList solving possible saved blacklist inconsistency (thanks Richard Krakhofer)
-    - fix compilation problem on Solaris
-    - fix hosts backend's logic for temporary files (thanks Cameos)
-
-* 1.5rc1
-    - treat IPv4-mapped IPv6 addresses as IPv4
-    - add support for IPv6 CIDR blocks (thanks Dimitry Andric) in whitelists
-    - whitelist hosts in both the IPv4 and IPv6 addresses they map to
-
-* 1.5beta3
-    - recognize "last message repeated N times" contextually and per-source
-    - attackers now gauged with *dangerousness* instead of attack counts (adjust your -a !)
-    - support for Sendmail relaying abuse messages
-    - support for vsftpd authentication failure messages
-    - recognize messages of Gentoo's PAM implementation for authentication failure
-
-* 1.5beta2  Jan 2010
-    - support for Cucipop authentication failure messages
-    - support for Exim ESMTP authentication failure messages
-    - logsucker: handle files disappearing and reappearing at runtime
-    - fix recognition of some IPv6 addresses
-
-* 1.5beta1  Dec 2009
-    - logsucker: sshguard can now get logs from many files at once
-    - autonomously cut logging when not in debug mode
-    - limit per-line addresses in hosts backend (thanks Petr Lampa)
-    - fix possible race stimulated when many addresses are blocked (thanks Petr Lampa)
-    - explicitly handle when firewall allows blocked hosts to keep producing traffic
-    - fix log filtering on OSes with inverted priority declarations
+    - fix segfault from invalid free() when all DNS lookups fail
+    - fix assertion failure when logsucker is notified before the logging completes (thanks Colin Keith)
 
 * 1.4       Aug 2009
     - add touchiness: block repeated abusers for longer
