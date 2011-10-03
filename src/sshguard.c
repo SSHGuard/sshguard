@@ -564,6 +564,7 @@ static void process_blacklisted_addresses() {
             ++i;
         }
         list_iterator_stop(blacklist);
+        if (i == 0) continue;
         /* terminate array list */
         addresses[i] = NULL;
         /* do block addresses of this kind */

@@ -129,6 +129,8 @@ int fw_block_list(const char *restrict addresses[], int addrkind, const int serv
     assert(addresses != NULL);
     assert(service_codes != NULL);
 
+    if (addresses[0] == NULL) return FWALL_OK;
+
     ruleno = ipfwmod_getrulenumber();
     /* insert rules under this rule number (in chunks of max_addresses_per_rule) */
     if (ipfwmod_buildblockcommand(ruleno, addresses, addrkind, command, args) != FWALL_OK)
