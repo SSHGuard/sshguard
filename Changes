@@ -1,3 +1,6 @@
+* 1.6
+    - blacklist: blacklist file is now human-readable/editable (thanks Armando Miraglia)
+
 * 1.5       Feb 2011
     - logsucker: sshguard polls multiple log files at once
     - recognize syslog's "last message repeated N times" contextually and per-source
