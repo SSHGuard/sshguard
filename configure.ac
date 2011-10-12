@@ -17,6 +17,7 @@ AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CC_C99
 AC_PROG_RANLIB
 AC_PROG_YACC
 # for some command backends, as OSes like Solaris have odd default implementations
@@ -339,7 +340,14 @@ else
     # other compiler (assume gcc-compatibile :( )
     OPTIMIZER_CFLAGS="-O2"
     WARNING_CFLAGS="-Wall"
-    STD99_CFLAGS="-std=c99"
+    # enable or disable C99 constructs based on compiler capabilities
+    if test "x$ac_cv_prog_cc_c99" != xno ; then
+        # AC_PROG_CC_C99 has already changed $CC to make it compile c99
+        STD99_CFLAGS=""
+    else
+        # disable flag and null constructs in code
+        STD99_CFLAGS="-Drestrict= -Dinline="
+    fi
 fi
 
 AC_SUBST(OPTIMIZER_CFLAGS)
