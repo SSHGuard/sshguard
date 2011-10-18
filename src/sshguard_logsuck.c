@@ -70,7 +70,7 @@ typedef struct {
     /* current situation */
     int active;                         /* is the source active? 0/1 */
     int current_descriptor;             /* current file descriptor, if active */
-    int current_serial_number;          /* current serial number of the source, if active */
+    unsigned long int current_serial_number;          /* current serial number of the source, if active */
 } source_entry_t;
 
 /* list of source_entry_t elements */
@@ -201,7 +201,7 @@ int logsuck_add_logsource(const char *restrict filename) {
     set_kevs();
 #endif
 
-    sshguard_log(LOG_DEBUG, "File '%s' added, fd %d, serial %u.", filename, cursource.current_descriptor, cursource.current_serial_number);
+    sshguard_log(LOG_DEBUG, "File '%s' added, fd %d, serial %lu.", filename, cursource.current_descriptor, cursource.current_serial_number);
 
     return 0;
 }
