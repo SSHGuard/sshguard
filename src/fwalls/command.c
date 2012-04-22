@@ -176,7 +176,10 @@ static void prepare_cmd_environment(const char *restrict action_name, const char
     setenv(COMMAND_ENVNAME_PID, tmpstr, 1);
 
     /* firewall command to execute */
-    setenv(COMMAND_ENVNAME_FWCMD, command, 1);
+    if (command != NULL)
+        setenv(COMMAND_ENVNAME_FWCMD, command, 1);
+    else
+        setenv(COMMAND_ENVNAME_FWCMD, "true", 1);
 
     /* any block-specific information? */
     if (addr == NULL) {
@@ -216,22 +219,23 @@ static void clear_cmd_environment() {
 
 static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
     int ret;
+    const char *ultimate_cmd;
 
     /* prepare environment */
     prepare_cmd_environment(action_name, command, addr, addrkind, service);
 
     if (extra_command == NULL) {
         /* run backend command directly */
-        /* sanity check */
         if (command == NULL || strlen(command) == 0) return 0;
-        ret = system(command);
+        ultimate_cmd = command;
     } else {
         /* extra command specified; run this in place of backend command */
-        ret = system(extra_command);
+        ultimate_cmd = extra_command;
     }
     
+    ret = system(ultimate_cmd);
     ret = WEXITSTATUS(ret);
-    sshguard_log(LOG_DEBUG, "Run command \"%s\": exited %d.", command, ret);
+    sshguard_log(LOG_DEBUG, "Run command \"%s\": exited %d.", ultimate_cmd, ret);
 
     clear_cmd_environment();
 
