@@ -126,6 +126,10 @@ does not make use of any configuration file. Instead, a combination of optional
 arguments can be passed to its process on the command line, for modifying its
 default behaviour:
 .Bl -tag -width -indent
+.It Fl e Ar filename
+execute extra external program
+.Ar filename
+whenever an event is triggered. See EXTERNAL PROGRAMS below.
 .It Fl v
 print summary information on sshguard and exit.
 .It Fl i Ar pidfile
@@ -192,6 +196,81 @@ comprehensive details of the activity and parsing process. Debugging mode can
 help investigating attack signatures: once enabled, a log message can be
 directly pasted into the tool from the console, and the behavior is
 immediately and minutely shown beneath.
+.\"
+.\"
+.Sh EXTERNAL PROGRAMS
+.Nm
+can be instructed to execute an external program whenever an event relevant
+to the firewall is triggered.
+.Pp
+The logic and capabilities of external programs are similar to those of a
+database trigger. When an event is triggered, the external program can:
+.Bl -bullet -compact
+.It
+add behavior to the firewall action (e.g. custom notifications)
+.It
+change behavior of the firewall action (e.g. block different address)
+.It
+cancel the firewall action (e.g. custom whitelisting)
+.El
+.Pp
+External programs are run on
+.Ar all firewall events .
+Every external program has these responsibilities:
+.Bl -bullet -compact
+.It
+to define the behavior associated with every event
+.Ar (action) ,
+and especially to not behave on events of disinterest.
+.It
+to run the final firewall intended firewall action (or not).
+.It
+to exit with a relevant status for 
+.Ar success (0)
+or
+.Ar failure (non-0) .
+.El
+.Pp
+The action that the external process is called to carry out determines the
+information passed to it. All information passed from
+.Nm
+to external programs is via environment variables:
+.Bl -tag -width
+.It SSHG_ACTION
+(all actions) The name of the trigger event: one value amongst:
+.Bl -bullet -compact
+.It
+init
+.It
+fin
+.It
+block (*)
+.It
+block_list (*)
+.It
+release (*)
+.It
+flush
+.El
+.It SSHG_PID
+(all actions) The PID of the sshguard process running the program.
+.It SSHG_FWCMD
+(all actions) The firewall command that
+.Nm
+intended to run if no extra program were given. The external program
+shall run this within a shell.
+.It SSHG_ADDR
+(marked actions) The address, or the comma-separated list
+of addresses, to operate.
+.It SSHG_ADDRKIND
+(marked actions) The type of the address(es) to operate:
+\'4' for IPv4, '6' for IPv6.
+.It SSHG_SERVICE
+(marked actions) The service target of the event, expressed as service code.
+See
+.Ar http://www.sshguard.net/docs/reference/service-codes/ .
+.El
+.Pp
 .\"
 .\"
 .Sh WHITELISTING

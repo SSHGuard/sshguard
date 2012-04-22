@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h> /* stat() function and stat structure */
 
 #include "config.h"
 
@@ -43,6 +44,8 @@ static void usage(void);
 static void version(void);
 
 int get_options_cmdline(int argc, char *argv[]) {
+    struct stat event_script_buf;
+    int status;
     int optch;
 
     opts.blacklist_filename = NULL;
@@ -52,7 +55,7 @@ int get_options_cmdline(int argc, char *argv[]) {
     opts.stale_threshold = DEFAULT_STALE_THRESHOLD;
     opts.abuse_threshold = DEFAULT_ABUSE_THRESHOLD;
     opts.has_polled_files = 0;
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:vdh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vdh")) != -1) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
@@ -144,6 +147,16 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.my_pidfile = optarg;
                 break;
 
+			case 'e': 	/* provide a script executed each time a firewall
+                           event is risen */
+                status = stat(optarg, &event_script_buf);
+                /* check the existence of the file */
+                if (status == 0)
+                    setenv("SSHGUARD_EVENT_EXECUTE", optarg, 1);
+                else
+                    fprintf(stderr, "Unable to access file %s. Ignoring hook.\n", optarg);
+                break;
+
 			case 'v': 	/* version */
 				version();
 				return -1;
@@ -169,6 +182,7 @@ static void usage(void) {
     fprintf(stderr, "\t-l\tAdd the given log source to Log Sucker's monitored sources (off)\n");
     fprintf(stderr, "\t-f\t\"authenticate\" service's logs through its process pid, as in pidfile\n");
     fprintf(stderr, "\t-i\tWhen started, save PID in the given file; useful for startup scripts (off)\n");
+    fprintf(stderr, "\t-e\tEvent script that is executed each time a firewall event is risen (it must be the absolute path if the script is not in the system path).\n");
     fprintf(stderr, "\t-v\tDump version message to stderr, supply this when reporting bugs\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "\tThe SSHGUARD_DEBUG environment variable enables debugging mode (verbosity + interactivity).\n");

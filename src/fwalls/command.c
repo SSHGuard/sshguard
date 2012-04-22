@@ -40,23 +40,74 @@
 
 #define MAX_ADDRESSES_PER_LIST      2500
 
+/* names of environment variables to pass to external commands */
+#define COMMAND_ENVNAME_ACTION      "SSHG_ACTION"
+#define COMMAND_ENVNAME_PID         "SSHG_PID"
+#define COMMAND_ENVNAME_FWCMD       "SSHG_FWCMD"
 #define COMMAND_ENVNAME_ADDR        "SSHG_ADDR"
 #define COMMAND_ENVNAME_ADDRKIND    "SSHG_ADDRKIND"
 #define COMMAND_ENVNAME_SERVICE     "SSHG_SERVICE"
 
-static int run_command(const char *restrict command, const char *restrict addr, int addrkind, int service);
+/* names of actions to pass to external commands */
+#define ACTION_NAME_INIT            "init"
+#define ACTION_NAME_FIN             "fin"
+#define ACTION_NAME_BLOCK           "block"
+#define ACTION_NAME_BLOCK_LIST      "block_list"
+#define ACTION_NAME_RELEASE         "release"
+#define ACTION_NAME_FLUSH           "flush"
+
+
+/*
+ * If getenv("SSHGUARD_EVENT_EXECUTE") is available, this takes it as a command
+ * string to execute on every event, before the actual backend command is run.
+ *
+ * This works trigger-like: if extra_command exits successfully, the actual
+ * backend command is executed after it. If extra_command exits with failure,
+ * the actual backend command is skipped.
+ *
+ * The extra command program is passed data through the following environment
+ * variables:
+ *
+ * SSHG_ACTION      --  the name of the action being run
+ * SSHG_ADDR        --  address, or CSV list of addresses to operate
+ * SSHG_ADDRKIND    --  '4' or '6', for type of addresses in $SSHG_ADDR
+ * SSHG_SERVICE     --  code of service target of the event, see sshguard_services.h
+ */
+const char *extra_command;
+
+/*
+ * Prepare the environment variables to execute a command.
+ */
+static void prepare_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
+
+/* Run a command for a given event. Takes care of running extra_command before, if any is set. */
+static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
 
 
 int fw_init() {
-    return (run_command(COMMAND_INIT, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
+    extra_command = getenv("SSHGUARD_EVENT_EXECUTE");
+    return (run_command(ACTION_NAME_INIT, COMMAND_INIT, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
 }
 
 int fw_fin() {
-    return (run_command(COMMAND_FIN, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
+    int ret;
+
+    ret = run_command(ACTION_NAME_FIN, COMMAND_FIN, NULL, 0, 0);
+
+    /* clean up environment variables for external-commands */
+    unsetenv(COMMAND_ENVNAME_ACTION);
+    unsetenv(COMMAND_ENVNAME_PID);
+    unsetenv(COMMAND_ENVNAME_ADDR);
+    unsetenv(COMMAND_ENVNAME_ADDRKIND);
+    unsetenv(COMMAND_ENVNAME_SERVICE);
+
+    extra_command = NULL;
+
+    return (ret == 0 ? FWALL_OK : FWALL_ERR);
 }
 
 int fw_block(const char *restrict addr, int addrkind, int service) {
-    return (run_command(COMMAND_BLOCK, addr, addrkind, service) == 0 ? FWALL_OK : FWALL_ERR);
+    return (run_command(ACTION_NAME_BLOCK, COMMAND_BLOCK, addr, addrkind, service) == 0 ? FWALL_OK : FWALL_ERR);
 }
 
 int fw_block_list(const char *restrict addresses[], int addrkind, const int service_codes[]) {
@@ -90,7 +141,7 @@ int fw_block_list(const char *restrict addresses[], int addrkind, const int serv
     address_list[first_free_char] = '\0';
 
     /* FIXME: we are blocking all addresses as they were to the same service */
-    return run_command(COMMAND_BLOCK_LIST, address_list, addrkind, service_codes[0]);
+    return run_command(ACTION_NAME_BLOCK_LIST, COMMAND_BLOCK_LIST, address_list, addrkind, service_codes[0]);
 
 #else
     int err = FWALL_OK;
@@ -110,50 +161,70 @@ int fw_block_list(const char *restrict addresses[], int addrkind, const int serv
 }
 
 int fw_release(const char *restrict addr, int addrkind, int service) {
-    return (run_command(COMMAND_RELEASE, addr, addrkind, service) == 0 ? FWALL_OK : FWALL_ERR);
+    return (run_command(ACTION_NAME_RELEASE, COMMAND_RELEASE, addr, addrkind, service) == 0 ? FWALL_OK : FWALL_ERR);
 }
 
 int fw_flush(void) {
-    return (run_command(COMMAND_FLUSH, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
+    return (run_command(ACTION_NAME_FLUSH, COMMAND_FLUSH, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
 }
 
-    
-static int run_command(const char *restrict command, const char *restrict addr, int addrkind, int service) {
-    int ret;
-    char *addrks, *servs;
+static void prepare_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
+    char tmpstr[50] = "";
 
+    /* env vars are overwritten at each execution, and ultimately cleaned up at firewall finalization time */
 
-    /* sanity check */
-    if (command == NULL || strlen(command) == 0) return 0;
+    /* action name */
+    setenv(COMMAND_ENVNAME_ACTION, action_name, 1);
 
-    if (addr != NULL) {
-        assert(addrkind == ADDRKIND_IPv4 || addrkind == ADDRKIND_IPv6);
+    /* PID of sshguard / parent */
+    snprintf(tmpstr, sizeof(tmpstr), "%d", getpid());
+    setenv(COMMAND_ENVNAME_PID, tmpstr, 1);
 
-        /* export information to the environment */
-        addrks = malloc(5);
-        servs = malloc(5);
+    /* firewall command to execute */
+    setenv(COMMAND_ENVNAME_FWCMD, command, 1);
 
-        snprintf(addrks, 5, "%d", addrkind);
-        snprintf(servs, 5, "%d", service);
-
-        setenv(COMMAND_ENVNAME_ADDR, addr, 1);
-        setenv(COMMAND_ENVNAME_ADDRKIND, addrks, 1);
-        setenv(COMMAND_ENVNAME_SERVICE, servs, 1);
-
-        sshguard_log(LOG_DEBUG, "Setting environment: " COMMAND_ENVNAME_ADDR "=%s;" COMMAND_ENVNAME_ADDRKIND "=%s;" COMMAND_ENVNAME_SERVICE "=%s.", addr, addrks, servs);
-
-        ret = system(command);
-
-        /* cleanup the environment */
-        unsetenv(COMMAND_ENVNAME_ADDR);
-        unsetenv(COMMAND_ENVNAME_ADDRKIND);
-        unsetenv(COMMAND_ENVNAME_SERVICE);
+    /* any block-specific information? */
+    if (addr == NULL) {
+        sshguard_log(LOG_DEBUG, "Set environment: " COMMAND_ENVNAME_ACTION
+                "=%s;" COMMAND_ENVNAME_PID "=%s", action_name,
+                getenv(COMMAND_ENVNAME_PID));
     } else {
+        assert(addrkind == ADDRKIND_IPv4 || addrkind == ADDRKIND_IPv6);
+        /* addresses */
+        setenv(COMMAND_ENVNAME_ADDR, addr, 1);
+        /* address kind */
+        snprintf(tmpstr, sizeof(tmpstr), "%d", addrkind);
+        setenv(COMMAND_ENVNAME_ADDRKIND, tmpstr, 1);
+        /* service */
+        snprintf(tmpstr, sizeof(tmpstr), "%d", service);
+        setenv(COMMAND_ENVNAME_SERVICE, tmpstr, 1);
+
+        sshguard_log(LOG_DEBUG, "Set environment: " COMMAND_ENVNAME_ACTION "=%s;"
+                COMMAND_ENVNAME_PID "=%s;" COMMAND_ENVNAME_ADDR "=%s;"
+                COMMAND_ENVNAME_ADDRKIND "=%s;" COMMAND_ENVNAME_SERVICE "=%s.",
+                action_name,
+                getenv(COMMAND_ENVNAME_PID), addr,
+                getenv(COMMAND_ENVNAME_ADDRKIND), getenv(COMMAND_ENVNAME_SERVICE));
+    }
+}
+
+static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
+    int ret;
+
+    /* prepare environment */
+    prepare_environment(action_name, command, addr, addrkind, service);
+
+    if (extra_command == NULL) {
+        /* run backend command directly */
+        /* sanity check */
+        if (command == NULL || strlen(command) == 0) return 0;
         ret = system(command);
+    } else {
+        /* extra command specified; run this in place of backend command */
+        ret = system(extra_command);
     }
     
     ret = WEXITSTATUS(ret);
-
     sshguard_log(LOG_DEBUG, "Run command \"%s\": exited %d.", command, ret);
 
     return ret;
