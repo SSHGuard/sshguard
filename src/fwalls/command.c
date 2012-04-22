@@ -75,10 +75,10 @@
  */
 const char *extra_command;
 
-/*
- * Prepare the environment variables to execute a command.
- */
-static void prepare_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
+/* Prepare the environment variables to execute a command. */
+static void prepare_cmd_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
+/* Clean up the environment variables set to execute a command. */
+static void clear_cmd_environment();
 
 /* Run a command for a given event. Takes care of running extra_command before, if any is set. */
 static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
@@ -94,12 +94,7 @@ int fw_fin() {
 
     ret = run_command(ACTION_NAME_FIN, COMMAND_FIN, NULL, 0, 0);
 
-    /* clean up environment variables for external-commands */
-    unsetenv(COMMAND_ENVNAME_ACTION);
-    unsetenv(COMMAND_ENVNAME_PID);
-    unsetenv(COMMAND_ENVNAME_ADDR);
-    unsetenv(COMMAND_ENVNAME_ADDRKIND);
-    unsetenv(COMMAND_ENVNAME_SERVICE);
+    clear_cmd_environment();
 
     extra_command = NULL;
 
@@ -168,7 +163,7 @@ int fw_flush(void) {
     return (run_command(ACTION_NAME_FLUSH, COMMAND_FLUSH, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
 }
 
-static void prepare_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
+static void prepare_cmd_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
     char tmpstr[50] = "";
 
     /* env vars are overwritten at each execution, and ultimately cleaned up at firewall finalization time */
@@ -208,11 +203,22 @@ static void prepare_environment(const char *restrict action_name, const char *re
     }
 }
 
+static void clear_cmd_environment() {
+    /* clean up environment variables for external-commands */
+    unsetenv(COMMAND_ENVNAME_ACTION);
+    unsetenv(COMMAND_ENVNAME_PID);
+    unsetenv(COMMAND_ENVNAME_FWCMD);
+    unsetenv(COMMAND_ENVNAME_ADDR);
+    unsetenv(COMMAND_ENVNAME_ADDRKIND);
+    unsetenv(COMMAND_ENVNAME_SERVICE);
+
+}
+
 static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
     int ret;
 
     /* prepare environment */
-    prepare_environment(action_name, command, addr, addrkind, service);
+    prepare_cmd_environment(action_name, command, addr, addrkind, service);
 
     if (extra_command == NULL) {
         /* run backend command directly */
@@ -226,6 +232,8 @@ static int run_command(const char *action_name, const char *restrict command, co
     
     ret = WEXITSTATUS(ret);
     sshguard_log(LOG_DEBUG, "Run command \"%s\": exited %d.", command, ret);
+
+    clear_cmd_environment();
 
     return ret;
 }
