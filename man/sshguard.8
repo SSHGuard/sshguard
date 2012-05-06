@@ -1,319 +1,366 @@
-.\"
+.\" Man page generated from reStructuredText.
+.
+.TH SSHGUARD 8 "Mar 31, 2010" "1.5" "BSD System Manager's Manual"
+.SH NAME
+sshguard \- monitors daemon activity
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
 .\" Copyright (c) 2007,2008,2009,2010 Mij <mij@sshguard.net>
-.\"
+.
 .\" Permission to use, copy, modify, and distribute this software for any
+.
 .\" purpose with or without fee is hereby granted, provided that the above
+.
 .\" copyright notice and this permission notice appear in all copies.
-.\"
+.
 .\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.
 .\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.
 .\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.
 .\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.\"
-.Dd Mar 31, 2010
-.Dt SSHGUARD 8
-.Sh NAME
-.Nm sshguard
-.Nd monitors daemon activity 
-.\"
-.\"
-.Sh SYNOPSIS
-.Nm
-.Op Fl b Ar thr:filename
-.Op Fl v
-.Op Fl l Ar source
-.Op Fl a Ar sAfety_thresh
-.Op Fl p Ar pardon_min_interval
-.Op Fl s Ar preScribe_interval
-.Op Fl w Ar addr/host/block/file
-.Op Fl f Ar srv:pidfile
-.\"
-.\"
-.Sh DESCRIPTION
-.Nm
-monitors logging activity and reacts to attacks by blocking their source addresses.
-.Pp
-.Nm
-was born for protecting SSH servers from the today's widespread brute force
-attacks, and evolved to an extensible log supervisor for blocking attacks to
-applications in real-time.
-.Pp
-.Nm
-can monitor a number of log sources proactively, or receive log messages in
-its standard input. By means of a parser, it decides whether an entry is
-normal activity or attack; in the latter case, it remarks the attacker's
-address. When
-.Nm
-determines that an attacker committed enough danger to the system to discern
-an
-.Ar abuse ,
-it blocks the attacker's address with the firewall. The attacker becomes offender,
-and is released after an adequate period of time.
-.Pp
-.Nm
-supports the following firewalls:
-.Bl -tag -width
-.It AIX native firewall
+.
+.SH SYNOPSIS
+.nf
+\fBsshguard\fP [\-b thr:filename] [\-v] [\-l source] [\-a sAfety_thresh] [\-p pardon_min_interval]
+.in +2
+[\-s preScribe_interval] [\-w addr/host/block/file] [\-f srv:pidfile]
+.in -2
+.fi
+.sp
+.SH DESCRIPTION
+.sp
+\fBsshguard\fP monitors logging activity and reacts to attacks by blocking their
+source addresses.
+.sp
+\fBsshguard\fP was born for protecting SSH servers from the today\(aqs widespread
+brute force attacks, and evolved to an extensible log supervisor for blocking
+attacks to applications in real\-time.
+.sp
+\fBsshguard\fP can monitor a number of log sources proactively, or receive log
+messages in its standard input. By means of a parser, it decides whether an
+entry is normal activity or attack; in the latter case, it remarks the
+attacker\(aqs address. When sshguard determines that an attacker committed enough
+danger to the system to discern an abuse, it blocks the attacker\(aqs address with
+the firewall. The attacker becomes offender, and is released after an adequate
+period of time.
+.sp
+\fBsshguard\fP supports the following firewalls:
+.INDENT 0.0
+.TP
+.B AIX native firewall
 for IBM AIX operating systems
-.It netfilter/iptables
-for Linux-based operating systems
-.It Packet Filter (PF)
-for BSD operating systems (Open, Free, Net, DragonFly -BSD)
-.It IPFirewall (IPFW)
+.TP
+.B netfilter/iptables
+for Linux\-based operating systems
+.TP
+.B Packet Filter (PF)
+for BSD operating systems (Open, Free, Net, DragonFly \-BSD)
+.TP
+.B IPFirewall (IPFW)
 for FreeBSD and Mac OS X
-.It IP Filter (IPFILTER)
+.TP
+.B IP Filter (IPFILTER)
 for FreeBSD, NetBSD and Solaris
-.It tcpd's hosts_access (/etc/hosts.allow)
+.TP
+.B tcpd\(aqs hosts_access (/etc/hosts.allow)
 portable across UNIX
-.It null
-portable do-nothing backend for running detection without prevention
-.El
-.Pp
-Some terms in this manual have a special meaning in the context.
-.Nm
+.TP
+.B null
+portable do\-nothing backend for running detection without prevention
+.UNINDENT
+.sp
+Some terms in this manual have a special meaning in the context. \fBsshguard\fP
 refers to them consistently throughout documentation, source code, and log
-messages. See
-.Ar http://www.sshguard.net/docs/terminology/
-to get acquainted with them.
-.\"
-.\"
-.Sh USAGE
-.Nm
-reads log entries to analyze by monitoring a number of log sources. It can
-interpret logs with all of the following formats:
-.Bl -bullet -compact -offset indent
-.It
+messages. See \fI\%http://www.sshguard.net/docs/terminology/\fP to get acquainted with
+them.
+.SH USAGE
+.sp
+\fBsshguard\fP reads log entries to analyze by monitoring a number of log sources.
+It can interpret logs with all of the following formats:
+.INDENT 0.0
+.IP \(bu 2
 syslog
-.It
-syslog-ng
-.It
+.IP \(bu 2
+syslog\-ng
+.IP \(bu 2
 metalog
-.It
+.IP \(bu 2
 multilog
-.It
+.IP \(bu 2
 raw messages
-.El
-.Pp
-.Nm
-can interface with the following blocking systems to block attackers:
-.Bl -bullet -compact -offset indent
-.It
+.UNINDENT
+.sp
+\fBsshguard\fP can interface with the following blocking systems to block
+attackers:
+.INDENT 0.0
+.IP \(bu 2
 IBM AIX firewall
-.It
+.IP \(bu 2
 PF
-.It
+.IP \(bu 2
 netfilter/iptables
-.It
+.IP \(bu 2
 IPFW
-.It
+.IP \(bu 2
 IP Filter
-.It
+.IP \(bu 2
 /etc/hosts.allow
-.It
+.IP \(bu 2
 null firewall
-.El
-.Pp
-Depending on the way chosen for giving logs to sshguard, and depending on the
-chosen blocking system, some setup may be needed. Instructions are documented
-at
-.Ar http://www.sshguard.net/docs/setup/ .
-.Pp
-.Nm
-does not make use of any configuration file. Instead, a combination of optional
-arguments can be passed to its process on the command line, for modifying its
-default behaviour:
-.Bl -tag -width -indent
-.It Fl e Ar filename
-execute extra external program
-.Ar filename
-whenever an event is triggered. See EXTERNAL PROGRAMS below.
-.It Fl v
-print summary information on sshguard and exit.
-.It Fl i Ar pidfile
-store my PID in file
-.Ar pidfile
-at startup (for control scripts).
-.It Fl b Ar [thresh:]filename
-enable blacklisting: blacklist after
-.Ar thresh
-(or 120) dangerousness committed, and hold the permanent blacklist in
-.Ar filename .
-See TOUCHINESS & BLACKLISTING below.
-.It Fl l Ar source
-enable the Log Sucker, and add
-.Ar source
-to the list of log sources to monitor.
-.Ar source
-is a filename, a FIFO name, or the magic symbol "-" to identify sshguard's
-standard input.
-.Nm
-handles autonomously file-like sources disappearing, reappearing, or
-"rotating". This option can be used multiple times. When omitted,
-.Ar source
-defaults to standard input. Otherwise, standard input is ignored unless
-explicitly added.
-.It Fl a Ar sAfety_thresh
-block an attacker after it incurred a total dangerousness exceeding
-.Ar sAfety_thresh .
-Most attacks incur dangerousness 10. See
-.Ar http://www.sshguard.net/docs/reference/attack-signatures/
-for details.
-(Default: 40)
-.It Fl p Ar secs
-release a blocked address no sooner than
-.Ar secs
-seconds after being blocked for the first time.
-.Nm
-will release the address between X and 3/2 * X seconds after blocking it.
+.UNINDENT
+.sp
+Depending on the way chosen for giving logs to \fBsshguard\fP, and depending on the
+chosen blocking system, some setup may be needed. Instructions are documented at
+\fI\%http://www.sshguard.net/docs/setup/\fP.
+.sp
+\fBsshguard\fP does not make use of any configuration file. Instead, a combination
+of optional arguments can be passed to its process on the command line, for
+modifying its default behaviour:
+.INDENT 0.0
+.TP
+.BI \-a \ sAfety_thresh
+block an attacker after it incurred a total dangerousness
+exceeding sAfety_thresh. Most attacks incur dangerousness 10.
+See \fI\%http://www.sshguard.net/docs/reference/attack\-signatures/\fP
+for details. (Default: 40)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-b [thresh:]filename
+enable blacklisting: blacklist after thresh (or 120)
+dangerousness committed, and hold the permanent blacklist in
+filename.  See TOUCHINESS & BLACKLISTING below.
+.UNINDENT
+.INDENT 0.0
+.TP
+.BI \-e \ filename
+execute extra external program filename whenever an event is
+triggered. See EXTERNAL PROGRAMS below.
+.TP
+.B \-v
+print summary information on \fBsshguard\fP and exit.
+.TP
+.BI \-i \ pidfile
+store my PID in file pidfile at startup (for control scripts).
+.TP
+.BI \-l \ source
+enable the Log Sucker, and add source to the list of log sources
+to monitor. source is a filename, a FIFO name, or the magic
+symbol "\-" to identify \fBsshguard\fP\(aqs standard input. \fBsshguard\fP
+handles autonomously file\-like sources disappearing,
+reappearing, or "rotating". This option can be used multiple
+times. When omitted, source defaults to standard input.
+Otherwise, standard input is ignored unless explicitly added.
+.TP
+.BI \-p \ secs
+release a blocked address no sooner than secs seconds after
+being blocked for the first time. \fBsshguard\fP will release the
+address between X and 3/2 * X seconds after blocking it.
 (Default: 7*60)
-.It Fl s Ar secs
-forget about an address after
-.Ar secs
-seconds. If host A issues one attack every this many seconds, it will never be
-blocked.
+.TP
+.BI \-s \ secs
+forget about an address after secs seconds. If host A issues one
+attack every this many seconds, it will never be blocked.
 (Default: 20*60)
-.It Fl w Ar addr/host/block/file
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-w addr/host/block/file
 see the WHITELISTING section.
-.It Fl f Ar servicecode:pidfile
+.TP
+.B \-f servicecode:pidfile
 see the LOG VALIDATION section.
-.El
-.Pp
-When
-.Nm
-is signalled with SIGTSTP, it suspends activity. When
-.Nm
-is signalled with SIGCONT, it resumes monitoring. During suspension, log
-entries are discarded without being analyzed.
-.Pp
-When
-.Nm
-senses the SSHGUARD_DEBUG environment variable, it enables debugging mode: 
-logging is directed to standard error instead of syslog, and includes
-comprehensive details of the activity and parsing process. Debugging mode can
-help investigating attack signatures: once enabled, a log message can be
-directly pasted into the tool from the console, and the behavior is
+.UNINDENT
+.sp
+When \fBsshguard\fP is signalled with SIGTSTP, it suspends activity. When \fBsshguard\fP
+is signalled with SIGCONT, it resumes monitoring. During suspension, log entries
+are discarded without being analyzed.
+.sp
+When \fBsshguard\fP senses the SSHGUARD_DEBUG environment variable, it enables
+debugging mode: logging is directed to standard error instead of syslog, and
+includes comprehensive details of the activity and parsing process. Debugging
+mode can help investigating attack signatures: once enabled, a log message can
+be directly pasted into the tool from the console, and the behavior is
 immediately and minutely shown beneath.
-.\"
-.\"
-.Sh EXTERNAL PROGRAMS
-.Nm
-can be instructed to execute an external program whenever an event relevant
-to the firewall is triggered.
-.Pp
+.SH EXTERNAL PROGRAMS
+.sp
+\fBsshguard\fP can be instructed to execute an external program whenever an event
+relevant to the firewall is triggered.
+.sp
 The logic and capabilities of external programs are similar to those of a
 database trigger. When an event is triggered, the external program can:
-.Bl -bullet -compact
-.It
+.INDENT 0.0
+.IP \(bu 2
 add behavior to the firewall action (e.g. custom notifications)
-.It
+.IP \(bu 2
 change behavior of the firewall action (e.g. block different address)
-.It
+.IP \(bu 2
 cancel the firewall action (e.g. custom whitelisting)
-.El
-.Pp
-External programs are run on
-.Ar all firewall events .
-Every external program has these responsibilities:
-.Bl -bullet -compact
-.It
-to define the behavior associated with every event
-.Ar (action) ,
-and especially to not behave on events of disinterest.
-.It
+.UNINDENT
+.sp
+External programs are run on all firewall events. Every external program has
+these responsibilities:
+.INDENT 0.0
+.IP \(bu 2
+to define the behavior associated with every event (action), and especially to
+not behave on events of disinterest.
+.IP \(bu 2
 to run the final firewall intended firewall action (or not).
-.It
-to exit with a relevant status for 
-.Ar success (0)
-or
-.Ar failure (non-0) .
-.El
-.Pp
+.IP \(bu 2
+to exit with a relevant status for success (0) or failure (non\-0).
+.UNINDENT
+.sp
 The action that the external process is called to carry out determines the
-information passed to it. All information passed from
-.Nm
-to external programs is via environment variables:
-.Bl -tag -width
-.It SSHG_ACTION
+information passed to it. All information passed from \fBsshguard\fP to external
+programs is via environment variables:
+.INDENT 0.0
+.TP
+.B SSHG_ACTION
 (all actions) The name of the trigger event: one value amongst:
-.Bl -bullet -compact
-.It
+.INDENT 7.0
+.IP \(bu 2
 init
-.It
+.IP \(bu 2
 fin
-.It
+.IP \(bu 2
 block (*)
-.It
+.IP \(bu 2
 block_list (*)
-.It
+.IP \(bu 2
 release (*)
-.It
+.IP \(bu 2
 flush
-.El
-.It SSHG_PID
-(all actions) The PID of the sshguard process running the program.
-.It SSHG_FWCMD
-(all actions) The firewall command that
-.Nm
-intended to run if no extra program were given. The external program
-shall run this within a shell.
-.It SSHG_ADDR
-(marked actions) The address, or the comma-separated list
-of addresses, to operate.
-.It SSHG_ADDRKIND
-(marked actions) The type of the address(es) to operate:
-\'4' for IPv4, '6' for IPv6.
-.It SSHG_SERVICE
+.UNINDENT
+.TP
+.B SSHG_PID
+(all actions) The PID of the \fBsshguard\fP process running the program.
+.TP
+.B SSHG_FWCMD
+(all actions) The firewall command that \fBsshguard\fP intended to run if no
+extra program were given. The external program shall run this within a shell.
+.TP
+.B SSHG_ADDR
+(marked actions) The address, or the comma\-separated list of addresses, to
+operate.
+.TP
+.B SSHG_ADDRKIND
+(marked actions) The type of the address(es) to operate: \(aq4\(aq for IPv4, \(aq6\(aq
+for IPv6.
+.TP
+.B SSHG_SERVICE
 (marked actions) The service target of the event, expressed as service code.
-See
-.Ar http://www.sshguard.net/docs/reference/service-codes/ .
-.El
-.Pp
-.\"
-.\"
-.Sh WHITELISTING
-.Nm
-supports address whitelisting. Whitelisted addresses are not blocked even if
-they appear to generate attacks. This is useful for protecting lame LAN users
-(or external friendly users) from being incidentally blocked.
-.Pp
-Whitelist addresses are controlled through the
-.Fl w
-command-line option. This option can add explicit addresses, host names and
-address blocks:
-.Bl -tag -width
-.It addresses
+See \fI\%http://www.sshguard.net/docs/reference/service\-codes/\fP.
+.UNINDENT
+.SH WHITELISTING
+.sp
+\fBsshguard\fP supports address whitelisting. Whitelisted addresses are not
+blocked even if they appear to generate attacks. This is useful for protecting
+lame LAN users (or external friendly users) from being incidentally blocked.
+.sp
+Whitelist addresses are controlled through the \-w command\-line option. This
+option can add explicit addresses, host names and address blocks:
+.INDENT 0.0
+.TP
+.B addresses
 specify the numeric IPv4 or IPv6 address directly, like:
-.Dl -w 192.168.1.10
+.sp
+.nf
+.ft C
+\-w 192.168.1.10
+.ft P
+.fi
+.sp
 or in multiple occurrences:
-.Dl -w 192.168.1.10 -w 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-.It host names
+.sp
+.nf
+.ft C
+\-w 192.168.1.10 \-w 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+.ft P
+.fi
+.TP
+.B host names
 specify the host name directly, like:
-.Dl -w friendhost.enterprise.com
+.sp
+.nf
+.ft C
+\-w friendhost.enterprise.com
+.ft P
+.fi
+.sp
 or in multiple occurrences:
-.Dl -w friendhost.enterprise.com -w friend2.enterprise.com
+.sp
+.nf
+.ft C
+\-w friendhost.enterprise.com \-w friend2.enterprise.com
+.ft P
+.fi
+.sp
 All IPv4 and IPv6 addresses that the host resolves to are whitelisted. Hosts
-are resolved to addresses once, when sshguard starts up.
-.It address blocks
+are resolved to addresses once, when \fBsshguard\fP starts up.
+.TP
+.B address blocks
 specify the IPv4 or IPv6 address block in the usual CIDR notation:
-.Dl -w 2002:836b:4179::836b:0000/126
+.sp
+.nf
+.ft C
+\-w 2002:836b:4179::836b:0000/126
+.ft P
+.fi
+.sp
 or in multiple occurrences:
-.Dl -w 192.168.0.0/24 -w 1.2.3.128/26
-.It file
-When longer lists are needed for whitelisting, they can be wrapped into a plain
-text file, one address/hostname/block per line, with the same syntax given
-above.
-.Pp
-.Nm
-can take whitelists from files when the
-.Fl w
-option argument begins with a `.' (dot) or `/' (slash).
-.Pp
+.sp
+.nf
+.ft C
+\-w 192.168.0.0/24 \-w 1.2.3.128/26
+.ft P
+.fi
+.TP
+.B file
+When longer lists are needed for whitelisting, they can be wrapped into a
+plain text file, one address/hostname/block per line, with the same syntax
+given above.
+.sp
+\fBsshguard\fP can take whitelists from files when the \-w option argument begins
+with a \(aq.\(aq (dot) or \(aq/\(aq (slash).
+.sp
 This is a sample whitelist file (say /etc/friends):
-.Bd -literal -offset indent
-# comment line (a '#' as very first character)
+.sp
+.nf
+.ft C
+# comment line (a \(aq#\(aq as very first character)
 #   a single IPv4 and IPv6 address
 1.2.3.4
 2001:0db8:85a3:08d3:1319:8a2e:0370:7344
@@ -323,135 +370,136 @@ This is a sample whitelist file (say /etc/friends):
 192.168.0.0/24
 2002:836b:4179::836b:0000/126
 #   hostnames
-rome-fw.enterprise.com
+rome\-fw.enterprise.com
 hosts.friends.com
-.Ed
-.Pp
-And this is how
-.Nm
-is told to make a whitelist up from the /etc/friends file:
-.Dl sshguard -w /etc/friends
-.El
-.Pp
-The
-.Fl w
-option can be used only once for files. For addresses, host names and address blocks
-it can be used with any multiplicity, even with mixes of them.
-.\"
-.\"
-.Sh LOG VALIDATION
-Syslog and syslog-ng typically insert a PID of the generating process in every
-log message. This can be checked for authenticating the source of the message and
-avoid false attacks to be detected because malicious local users inject crafted
-log messages. This way
-.Nm
-can be safely used even on hosts where this assumption does not hold.
-.Pp
-Log validation is only needed when
-.Nm
-is fed log messages from syslog or from syslog-ng. When a process logs directly
-to a raw file and sshguard is configured for polling logs directly from it,
-you only need to adjust the log file permissions so that only root can write
-on it.
-.Pp
-For enabling log validation on a given service the
-.Fl f
-option is used as follows:
-.Dl -f 100:/var/run/sshd.pid
-which associates the given pidfile to the ssh service (code 100). A list of well-known
-service codes is available at
-.Ar http://www.sshguard.net/docs/reference/service-codes/ .
-.Pp
-The
-.Fl f
-option can be used multiple times for associating different services with their pidfile:
-.Dl sshguard -f 100:/var/run/sshd.pid -f 123:/var/run/mydaemon.pid
-.Pp
-Services that are not configured for log validation follow a default-allow
+.ft P
+.fi
+.sp
+And this is how \fBsshguard\fP is told to make a whitelist up from the
+/etc/friends file:
+.sp
+.nf
+.ft C
+sshguard \-w /etc/friends
+.ft P
+.fi
+.UNINDENT
+.sp
+The \-w option can be used only once for files. For addresses, host names and
+address blocks it can be used with any multiplicity, even with mixes of them.
+.SH LOG VALIDATION
+.sp
+Syslog and syslog\-ng typically insert a PID of the generating process in every
+log message. This can be checked for authenticating the source of the message
+and avoid false attacks to be detected because malicious local users inject
+crafted log messages. This way \fBsshguard\fP can be safely used even on hosts
+where this assumption does not hold.
+.sp
+Log validation is only needed when \fBsshguard\fP is fed log messages from syslog
+or from syslog\-ng. When a process logs directly to a raw file and sshguard is
+configured for polling logs directly from it, you only need to adjust the log
+file permissions so that only root can write on it.
+.sp
+For enabling log validation on a given service the \-f option is used as
+follows:
+.sp
+.nf
+.ft C
+\-f 100:/var/run/sshd.pid
+.ft P
+.fi
+.sp
+which associates the given pidfile to the ssh service (code 100). A list of
+well\-known service codes is available at
+\fI\%http://www.sshguard.net/docs/reference/service\-codes/\fP.
+.sp
+The \-f option can be used multiple times for associating different services with
+their pidfile:
+.sp
+.nf
+.ft C
+sshguard \-f 100:/var/run/sshd.pid \-f 123:/var/run/mydaemon.pid
+.ft P
+.fi
+.sp
+Services that are not configured for log validation follow a default\-allow
 policy (all of their log messages are accepted by default).
-.Pp
+.sp
 PIDs are checked with the following policy:
-.Bl -enum -width
-.It
+.INDENT 0.0
+.IP 1. 3
 the logging service is searched in the list of services configured for
 validation. If not found, the entry is accepted.
-.It
-the logged PID is compared with the pidfile. If it matches, the entry is accepted
-.It
-the PID is checked for being a direct child of the authoritative process. If it
-is, the entry is accepted.
-.It
+.IP 2. 3
+the logged PID is compared with the pidfile. If it matches, the entry is
+accepted
+.IP 3. 3
+the PID is checked for being a direct child of the authoritative process. If
+it is, the entry is accepted.
+.IP 4. 3
 the entry is ignored.
-.El
+.UNINDENT
+.sp
 Low I/O load is committed to the operating system because of an internal caching
 mechanism. Changes in the pidfile value are handled transparently.
-.\"
-.\"
-.Sh TOUCHINESS & BLACKLISTING
+.SH TOUCHINESS & BLACKLISTING
+.sp
 In many cases, attacks against services are performed in bulk in an automated
 form. For example, the attacker goes trough a dictionary of 1500
 username/password pairs and sequentially tries to violate the SSH service with
-any of them, continuing blindly while blocked, and re-appearing once the block
+any of them, continuing blindly while blocked, and re\-appearing once the block
 expires.
-.Pp
-To counteract these cases,
-.Nm
-by default behaves with
-.Ar touchiness .
+.sp
+To counteract these cases, \fBsshguard\fP by default behaves with touchiness.
 Besides observing abuses from the log activity, it also monitors the overall
 behavior of attackers. The decision on when and how to block is thus made
 respective to the entire history of the offender as well. For example, if
 address A attacks repeatedly and the base blocking time is 420 seconds, A will
 be blocked for 420 seconds (7 mins) at the first abuse, 2*420 (14 mins) the
-second, 2*2*420 (28 mins) the third ... and 2^(n-1)*420 the n-th time.
-.Pp
+second, 2*2*420 (28 mins) the third ... and 2^(n\-1)*420 the n\-th time.
+.sp
 Touchiness has two major benefits: to legitimate users, it grants forgiving
-blockings on failed logins; to real attackers, it effectively renders
-large scale attacks infeasible, because the time to perform one explodes with
-the number of attempts.
-.Pp
-Touchiness can be augmented with
-.Ar blacklisting
-(-b). With this option, after a certain total danger committed, the address is
-added to a list of offenders to be blocked permanently. The list is intended to
-be loaded at each startup, and maintained/extended with new entries during
-operation.
-.Nm
-inserts a new address after it exceeded a threshold of danger committed over
-recorded history. This threshold is configurable within the 
-.Fl b
-option argument. Blacklisted addresses are never scheduled for releasing.
-.Pp
-The
-.Fl b
-command line option enables blacklisting and requires the filename to use
+blockings on failed logins; to real attackers, it effectively renders large
+scale attacks infeasible, because the time to perform one explodes with the
+number of attempts.
+.sp
+Touchiness can be augmented with blacklisting (\-b). With this option, after a
+certain total danger committed, the address is added to a list of offenders to
+be blocked permanently. The list is intended to be loaded at each startup, and
+maintained/extended with new entries during operation. \fBsshguard\fP inserts a
+new address after it exceeded a threshold of danger committed over recorded
+history. This threshold is configurable within the \-b option argument.
+Blacklisted addresses are never scheduled for releasing.
+.sp
+The \-b command line option enables blacklisting and requires the filename to use
 for permanent storage of the blacklist. Optionally, a custom blacklist
-threshold can be prefixed to this path, separated by ':'. For example,
-.Dl -b 50:/var/db/sshguard/blacklist.db
+threshold can be prefixed to this path, separated by \(aq:\(aq. For example,
+.sp
+.nf
+.ft C
+\-b 50:/var/db/sshguard/blacklist.db
+.ft P
+.fi
+.sp
 requires to blacklist addresses after having committed attacks for danger 50
-(default per-attack danger is 10), and store the blacklist in file
+(default per\-attack danger is 10), and store the blacklist in file
 /var/db/sshguard/blacklist.db. Although the blacklist file is not meant to be
-in human-readable format, the
-.Xr strings 1
-command can be used to peek in it for listing the blacklisted addresses.
-.\"
-.\"
-.Sh EXTENSIONS
-.Nm
-operates firewalls through a general interface, which enables easy extension,
-and allows back-ends to be non-local (e.g. remote appliances), and non-blocking
-(e.g. report tools). Additions can be suggested at
-.Ar http://www.sshguard.net/feedback/firewall/submit/ .
-.Pp
-Extending attack signatures needs some expertise with context-free parsers;
+in human\-readable format, the strings(1) command can be used to peek in it for
+listing the blacklisted addresses.
+.SH EXTENSIONS
+.sp
+\fBsshguard\fP operates firewalls through a general interface, which enables easy
+extension, and allows back\-ends to be non\-local (e.g. remote appliances), and
+non\-blocking (e.g. report tools). Additions can be suggested at
+\fI\%http://www.sshguard.net/feedback/firewall/submit/\fP.
+.sp
+Extending attack signatures needs some expertise with context\-free parsers;
 users are welcome to submit samples of the desired log messages to
-.Ar http://www.sshguard.net/support/attacks/submit/ .
-.\"
-.\"
-.Sh SEE ALSO
-.Xr syslog 1 ,
-.Xr syslog.conf 5
-.Pp
-.Nm
-website at:
-.Ar http://www.sshguard.net/
+\fI\%http://www.sshguard.net/support/attacks/submit/\fP.
+.SH SEE ALSO
+.sp
+syslog(1), syslog.conf(5)
+.sp
+\fBsshguard\fP website at: \fI\%http://www.sshguard.net/\fP
+.\" Generated by docutils manpage writer.
+.
