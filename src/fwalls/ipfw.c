@@ -176,10 +176,10 @@ int fw_release(const char *restrict addr, int addrkind, int service) {
         case ADDRKIND_IPv6:
 #ifdef FWALL_HAS_IP6FW
             /* use ip6fw if found */
-	    	sprintf(command, IPFW_PATH "/ip6fw");
+            sprintf(command, IPFW_PATH "/ip6fw");
 #else
             /* use ipfw, assume it supports IPv6 rules as well */
-	    	sprintf(command, IPFW_PATH "/ipfw");
+            sprintf(command, IPFW_PATH "/ipfw");
 #endif
             break;
         default:
@@ -313,10 +313,10 @@ static int ipfwmod_buildblockcommand(ipfw_rulenumber_t ruleno, const char *restr
         case ADDRKIND_IPv6:
 #ifdef FWALL_HAS_IP6FW
             /* use ip6fw if found */
-	    	sprintf(command, IPFW_PATH "/ip6fw");
+            sprintf(command, IPFW_PATH "/ip6fw");
 #else
             /* use ipfw, assume it supports IPv6 rules as well */
-	    	sprintf(command, IPFW_PATH "/ipfw");
+            sprintf(command, IPFW_PATH "/ipfw");
 #endif
             sprintf(args, "add %u drop ipv6", ruleno);
             break;

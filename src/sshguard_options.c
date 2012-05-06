@@ -63,8 +63,8 @@ int get_options_cmdline(int argc, char *argv[]) {
                     /* custom threshold specified */
                     if (opts.blacklist_threshold < opts.abuse_threshold) {
                         fprintf(stderr, "Doesn't make sense to have a blacklist threshold lower than one abuse (%u). Terminating.\n", opts.abuse_threshold);
-						usage();
-						return -1;
+                        usage();
+                        return -1;
                     }
                 } else {
                     /* argument contains only the blacklist filename */
@@ -80,8 +80,8 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.pardon_threshold = strtol(optarg, (char **)NULL, 10);
                 if (opts.pardon_threshold < 1) {
                     fprintf(stderr, "Doesn't make sense to have a pardon time lower than 1 second. Terminating.\n");
-					usage();
-					return -1;
+                    usage();
+                    return -1;
                 }
                 break;
 
@@ -89,8 +89,8 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.stale_threshold = strtol(optarg, (char **)NULL, 10);
                 if (opts.stale_threshold < 1) {
                     fprintf(stderr, "Doesn't make sense to have a stale threshold lower than 1 second. Terminating.\n");
-					usage();
-					return -1;
+                    usage();
+                    return -1;
                 }
                 break;
 
@@ -98,8 +98,8 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.abuse_threshold = strtol(optarg, (char **)NULL, 10);
                 if (opts.abuse_threshold < 1) {
                     fprintf(stderr, "Doesn't make sense to have an abuse threshold lower than 1 attempt. Terminating.\n");
-					usage();
-					return -1;
+                    usage();
+                    return -1;
                 } else if (opts.abuse_threshold < DEFAULT_ABUSE_THRESHOLD) {
                     fprintf(stderr, "Warning! Sshguard now uses *attack dangerousness*, not occurrences, to gauge threats.\n");
                     fprintf(stderr, "Default dangerousness per attack is %u, default threshold is %d.\n", DEFAULT_ATTACKS_DANGEROUSNESS, DEFAULT_ABUSE_THRESHOLD);
@@ -111,15 +111,15 @@ int get_options_cmdline(int argc, char *argv[]) {
                     /* add from file */
                     if (whitelist_file(optarg) != 0) {
                         fprintf(stderr, "Could not handle whitelisting for %s.\n", optarg);
-						usage();
-						return -1;
+                        usage();
+                        return -1;
                     }
                 } else {
                     /* add raw content */
                     if (whitelist_add(optarg) != 0) {
                         fprintf(stderr, "Could not handle whitelisting for %s.\n", optarg);
-						usage();
-						return -1;
+                        usage();
+                        return -1;
                     }
                 }
                 break;
@@ -127,8 +127,8 @@ int get_options_cmdline(int argc, char *argv[]) {
             case 'f':   /* process pid authorization */
                 if (procauth_addprocess(optarg) != 0) {
                     fprintf(stderr, "Could not parse service pid configuration '%s'.\n", optarg);
-					usage();
-					return -1;
+                    usage();
+                    return -1;
                 }
                 break;
 
@@ -147,7 +147,7 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.my_pidfile = optarg;
                 break;
 
-			case 'e': 	/* provide a script executed each time a firewall
+            case 'e':     /* provide a script executed each time a firewall
                            event is risen */
                 status = stat(optarg, &event_script_buf);
                 /* check the existence of the file */
@@ -157,14 +157,14 @@ int get_options_cmdline(int argc, char *argv[]) {
                     fprintf(stderr, "Unable to access file %s. Ignoring hook.\n", optarg);
                 break;
 
-			case 'v': 	/* version */
-				version();
-				return -1;
+            case 'v':     /* version */
+                version();
+                return -1;
 
             case 'h':   /* help */
             default:    /* or anything else: print help */
-				usage();
-				return -1;
+                usage();
+                return -1;
         }
     }
 
@@ -189,7 +189,7 @@ static void usage(void) {
 }
 
 static void version(void) {
-	fprintf(stderr, "sshguard %d.%d.%d\n\n", MAJOR_VERSION, MINOR_VERSION, BUILD_VERSION);
-	fprintf(stderr, "Copyright (c) 2007,2008 Mij <mij@sshguard.net>\n");
-	fprintf(stderr, "This is free software; see the source for conditions on copying.\n");
+    fprintf(stderr, "sshguard %d.%d.%d\n\n", MAJOR_VERSION, MINOR_VERSION, BUILD_VERSION);
+    fprintf(stderr, "Copyright (c) 2007,2008 Mij <mij@sshguard.net>\n");
+    fprintf(stderr, "This is free software; see the source for conditions on copying.\n");
 }

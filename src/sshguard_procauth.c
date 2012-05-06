@@ -79,7 +79,7 @@ int procauth_addprocess(char *conf) {
 
     /* ensure the filename length is within system limit */ 
     if (memchr(conf, '\0', FILENAME_MAX) == NULL)
-	return -1;
+    return -1;
 
     /* conf format:     service_code:pid_filename   */
     if (sscanf(conf, "%d:%s", &srvcode, pidfilename) != 2)

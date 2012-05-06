@@ -455,9 +455,9 @@ static int refresh_files() {
 #if defined(HAVE_KQUEUE)
         if (myentry->current_descriptor != STDIN_FILENO) {
             /* this is a file. Monitor deletion/renaming as well */
-			EV_SET(& kevs[kevs_num], myentry->current_descriptor, EVFILT_VNODE,
-			    EV_ADD | EV_ENABLE | EV_CLEAR,
-			    NOTE_DELETE | NOTE_RENAME, 0, 0);
+            EV_SET(& kevs[kevs_num], myentry->current_descriptor, EVFILT_VNODE,
+                EV_ADD | EV_ENABLE | EV_CLEAR,
+                NOTE_DELETE | NOTE_RENAME, 0, 0);
             ++kevs_num;
         }
         EV_SET(& kevs[kevs_num], myentry->current_descriptor, EVFILT_READ,
@@ -530,9 +530,9 @@ static void set_kevs() {
 
         if (source->current_descriptor != STDIN_FILENO) {
             /* this is a file. Monitor deletion/renaming as well */
-			EV_SET(& kevs[kevs_num], source->current_descriptor, EVFILT_VNODE,
-			    EV_ADD | EV_ENABLE | EV_CLEAR,
-			    NOTE_DELETE | NOTE_RENAME, 0, 0);
+            EV_SET(& kevs[kevs_num], source->current_descriptor, EVFILT_VNODE,
+                EV_ADD | EV_ENABLE | EV_CLEAR,
+                NOTE_DELETE | NOTE_RENAME, 0, 0);
             ++kevs_num;
         }
         EV_SET(& kevs[kevs_num], source->current_descriptor, EVFILT_READ,
@@ -547,9 +547,9 @@ static void set_kevs() {
     
     /* configure kqueue with the given events */
     sshguard_log(LOG_DEBUG, "Setting %u events for %u (act+inact) files.", kevs_num, i);
-	if (kevent(kq, kevs, kevs_num, NULL, 0, NULL) < 0) {
+    if (kevent(kq, kevs, kevs_num, NULL, 0, NULL) < 0) {
         sshguard_log(LOG_ERR, "Cannot configure kqueue() events! %s.", strerror(errno));
-	}
+    }
 }
 
 
