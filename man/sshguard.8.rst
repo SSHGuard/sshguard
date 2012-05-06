@@ -28,8 +28,9 @@ monitors daemon activity
 SYNOPSIS
 ========
 
-| **sshguard** [-b thr:filename] [-v] [-l source] [-a sAfety_thresh] [-p pardon_min_interval]
-|              [-s preScribe_interval] [-w addr/host/block/file] [-f srv:pidfile]
+| **sshguard** [-b thr:filename] [-w addr/host/block/file] [-a sAfety_thresh]
+|              [-p pardon_min_interval] [-s preScribe_interval] [-l source]
+|              [-f srv:pidfile] [-i pidfile] [-v]
 
 DESCRIPTION
 ===========
@@ -106,24 +107,29 @@ http://www.sshguard.net/docs/setup/.
 of optional arguments can be passed to its process on the command line, for
 modifying its default behaviour:
 
+-b [thresh:]filename
+                enable blacklisting: blacklist after thresh (or 120)
+                dangerousness committed, and hold the permanent blacklist in
+                filename. See TOUCHINESS & BLACKLISTING below.
+
 -a sAfety_thresh
                 block an attacker after it incurred a total dangerousness
                 exceeding sAfety_thresh. Most attacks incur dangerousness 10.
                 See http://www.sshguard.net/docs/reference/attack-signatures/
                 for details. (Default: 40)
 
--b [thresh:]filename
-                enable blacklisting: blacklist after thresh (or 120)
-                dangerousness committed, and hold the permanent blacklist in
-                filename.  See TOUCHINESS & BLACKLISTING below.
+-p secs         release a blocked address no sooner than secs seconds after
+                being blocked for the first time. **sshguard** will release the
+                address between X and 3/2 * X seconds after blocking it.
+                (Default: 7*60)
 
+-w addr/host/block/file
+                Whitelisting of addr/host/block, or take the triples from the
+                specified file. See the WHITELISTING section for more details.
 
--e filename     execute extra external program filename whenever an event is
-                triggered. See EXTERNAL PROGRAMS below.
-
--v              print summary information on **sshguard** and exit.
-
--i pidfile      store my PID in file pidfile at startup (for control scripts).
+-s secs         forget about an address after secs seconds. If host A issues one
+                attack every this many seconds, it will never be blocked.
+                (Default: 20*60)
 
 -l source       enable the Log Sucker, and add source to the list of log sources
                 to monitor. source is a filename, a FIFO name, or the magic
@@ -133,21 +139,15 @@ modifying its default behaviour:
                 times. When omitted, source defaults to standard input.
                 Otherwise, standard input is ignored unless explicitly added.
 
-
--p secs         release a blocked address no sooner than secs seconds after
-                being blocked for the first time. **sshguard** will release the
-                address between X and 3/2 * X seconds after blocking it.
-                (Default: 7*60)
-
--s secs         forget about an address after secs seconds. If host A issues one
-                attack every this many seconds, it will never be blocked.
-                (Default: 20*60)
-
--w addr/host/block/file
-                see the WHITELISTING section.
-
 -f servicecode:pidfile
                 see the LOG VALIDATION section.
+
+-i pidfile      store my PID in file pidfile at startup (for control scripts).
+
+-e filename     execute extra external program filename whenever an event is
+                triggered. See EXTERNAL PROGRAMS below.
+
+-v              print summary information on **sshguard** and exit.
 
 When **sshguard** is signalled with SIGTSTP, it suspends activity. When **sshguard**
 is signalled with SIGCONT, it resumes monitoring. During suspension, log entries
