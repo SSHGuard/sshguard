@@ -201,6 +201,7 @@ int whitelist_add(const char *str) {
         unsigned int masklen;
 
         strncpy(buf, str, sizeof(buf));
+        buf[sizeof(buf)-1] = '\0';
         pos = strrchr(buf, '/');
         *pos = '\0';
         masklen = (unsigned int)strtol(pos+1, (char **)NULL, 10);
