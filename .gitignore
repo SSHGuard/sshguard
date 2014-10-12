@@ -1,0 +1,17 @@
+*.[ao]
+*.swp
+Makefile
+autom4te.cache/
+config.log
+config.status
+man/Makefile
+src/.deps/
+src/Makefile
+src/config.h
+src/fwalls/.deps/
+src/fwalls/Makefile
+src/fwalls/command.h
+src/parser/.deps/
+src/parser/Makefile
+src/sshguard
+src/stamp-h1
