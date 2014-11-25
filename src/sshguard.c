@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
 
     /* whitelisting system */
     if (whitelist_init() != 0 || whitelist_conf_init() != 0) {
-        fprintf(stderr, "Could not nitialize the whitelist engine.\n");
+        fprintf(stderr, "Could not initialize the whitelist engine.\n");
         exit(1);
     }
 
