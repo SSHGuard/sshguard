@@ -64,7 +64,7 @@ int filtersyslogprocess(char *syslogbanner) {
 
  /* Start Conditions */
  /* for Login services */
-%s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect
+%s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto
  /* for Mail services */
 %s dovecot_loginerr  cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied
  /* for FTP services */
@@ -157,7 +157,8 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 <ssh_disconnect>[: ].*"[preauth]"                               { BEGIN(INITIAL); return SSH_PREAUTH_SUFF; }
 
  /* SSH: clients connecting with other application protocols */
-"Bad protocol version identification".*" from "                 { return SSH_BADPROTOCOLIDENTIF; }
+"Bad protocol version identification".*" from "                 { BEGIN(ssh_badproto); return SSH_BADPROTOCOLIDENTIF; }
+<ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
 
  /* Cucipop */
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
