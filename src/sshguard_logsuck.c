@@ -20,16 +20,6 @@
 
 #include "config.h"
 
-#if defined(HAVE_KQUEUE)
-/* doing this is nasty, but for the few calls we need there should be
- * no conflict in the semantics with POSIX */
-#undef _XOPEN_SOURCE
-#define _BSD_SOURCE
-#   include <sys/types.h>
-#   include <sys/event.h>
-#   include <sys/time.h>
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 #include <errno.h>
@@ -76,20 +66,6 @@ typedef struct {
 /* list of source_entry_t elements */
 static list_t sources_list;
 
-#if defined(HAVE_KQUEUE)
-static int kq;
-/* configured or returned events. 2* because files have 2 events (read + delete/rename) */
-static struct kevent kevs[2*MAX_FILES_POLLED];
-/* timeout for kevent() polling */
-static struct timespec kev_timeout;
-
-/* refresh inactive files that possibly reappeared. This is cheaper than refresh_files() */
-static int refresh_inactive_files();
-/* sets events to be monitored. kq must be set before calling this */
-static void set_kevs();
-#endif
-
-
 /* how many files we are actively polling (may decrease at runtime if some "disappear" */
 static int num_sources_active = 0;
 
@@ -111,38 +87,9 @@ static size_t list_meter_sourceentry(const void *el) {
     return sizeof(source_entry_t);
 }
 
-#if defined(HAVE_KQUEUE)
-/* seeker for file descriptors for SimCList */
-static int list_seeker_filedescriptor(const void *el, const void *key) {
-    const source_entry_t *elc = (const source_entry_t *)el;
-    assert(el != NULL);
-    assert(key != NULL);
-
-    return elc->current_descriptor == *(int *)key;
-}
-#endif
-
-
 int logsuck_init() {
     list_init(& sources_list);
     list_attributes_copy(& sources_list, list_meter_sourceentry, 1);
-
-#if defined(HAVE_KQUEUE)
-    /* will need file descriptor seeker to look up source items from fds */
-    list_attributes_seeker(& sources_list, list_seeker_filedescriptor);
-#endif
-
-#if defined(HAVE_KQUEUE)
-    /* initialize kqueue */
-    if ((kq = kqueue()) == -1) {
-        sshguard_log(LOG_CRIT, "Unable to create kqueue! %s.", strerror(errno));
-        return -1;
-    }
-    /* re-test sources every this interval */
-    kev_timeout.tv_sec = 1;
-    kev_timeout.tv_nsec = 500 * 1000 * 1000;
-#endif
-
     return 0;
 }
 
@@ -197,10 +144,6 @@ int logsuck_add_logsource(const char *restrict filename) {
     /* do add */
     list_append(& sources_list, & cursource);
 
-#if defined(HAVE_KQUEUE)
-    set_kevs();
-#endif
-
     sshguard_log(LOG_DEBUG, "File '%s' added, fd %d, serial %lu.", filename, cursource.current_descriptor, cursource.current_serial_number);
 
     return 0;
@@ -208,11 +151,9 @@ int logsuck_add_logsource(const char *restrict filename) {
 
 int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source, sourceid_t *restrict whichsource) {
     int ret;
-#if ! defined(HAVE_KQUEUE)
     /* use active poll through non-blocking read()s */
     int sleep_interval;
     struct timeval sleepstruct;
-#endif
     source_entry_t *restrict readentry;
 
 
@@ -228,41 +169,6 @@ int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source
         sshguard_log(LOG_ERR, "Source '%s' no longer active; can't insist reading from it.", readentry->filename);
     }
 
-#if defined(HAVE_KQUEUE)
-    /* continually wait for read events, but take breaks
-     * to check for source rotations every once in a while */
-    refresh_files();
-    sshguard_log(LOG_DEBUG, "Start polling.");
-    while (1) {
-        if (num_sources_active == list_size(& sources_list)) {
-            ret = kevent(kq, NULL, 0, kevs, 1, NULL);
-        } else {
-            ret = kevent(kq, NULL, 0, kevs, 1, & kev_timeout);
-        }
-        if (ret > 0) {
-            if (kevs[0].filter == EVFILT_READ) {
-                /* got data on this one. Read from it */
-                sshguard_log(LOG_DEBUG, "Searching for fd %lu in list.", kevs[0].ident);
-                readentry = list_seek(& sources_list, & kevs[0].ident);
-                assert(readentry != NULL);
-                assert(readentry->active);
-                return read_from(readentry, buf, buflen);
-            } else {
-                /* some source deleted or rotated: test all sources */
-                refresh_files();
-            }
-        } else {
-            /* timeout: test only inactive sources */
-            if (num_sources_active != list_size(& sources_list)) {
-                refresh_inactive_files();
-            }
-        }
-        sshguard_log(LOG_DEBUG, "Polling. Last value: %d.", ret);
-    }
-
-    sshguard_log(LOG_ERR, "Error in kevent(): %s.", strerror(errno));
-
-#else
     /* poll all files until some stuff is read (in random order, until data is found) */
     sleep_interval = 20;
     while (1) {
@@ -316,7 +222,6 @@ int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source
         }
         refresh_files();
     }
-#endif
 
     /* we shouldn't be here, or there is an error */
     return -1;
@@ -370,51 +275,10 @@ static int read_from(const source_entry_t *restrict source, char *restrict buf, 
     return 0;
 }
 
-
-#if defined(HAVE_KQUEUE)
-/* refresh only inactive files. When active ones change, kqueue() will notify for complete call */
-static int refresh_inactive_files() {
-    struct stat fileinfo;
-    source_entry_t *myentry;
-    int numchanged;
-
-    sshguard_log(LOG_DEBUG, "Checking for inactive sources...");
-
-    numchanged = 0;
-    list_iterator_start(& sources_list);
-    while (list_iterator_hasnext(& sources_list)) {
-        myentry = (source_entry_t *)list_iterator_next(& sources_list);
-
-        if (myentry->active) continue;
-
-        if (stat(myentry->filename, & fileinfo) == 0) {
-            /* source is back! */
-            sshguard_log(LOG_NOTICE, "Source '%s' reappeared. Reloading.", myentry->filename);
-            if (activate_source(myentry, & fileinfo) == 0)
-                ++numchanged;
-        }
-    }
-    list_iterator_stop(& sources_list);
-
-    sshguard_log(LOG_INFO, "Quick refresh showed %u redeemable sources.", numchanged);
-
-    if (numchanged > 0) {
-        /* update kqueue events to reflect new source configuration */
-        set_kevs();
-    }
-
-    return 0;
-}
-#endif
-
-
 static int refresh_files() {
     struct stat fileinfo;
     source_entry_t *myentry;
     unsigned int numchanged = 0;
-#if defined(HAVE_KQUEUE)
-    unsigned int kevs_num = 0;
-#endif
 
     sshguard_log(LOG_DEBUG, "Checking to refresh sources...");
 
@@ -452,37 +316,10 @@ static int refresh_files() {
         activate_source(myentry, & fileinfo);
 
         /* descriptor and source ready! */
-#if defined(HAVE_KQUEUE)
-        if (myentry->current_descriptor != STDIN_FILENO) {
-            /* this is a file. Monitor deletion/renaming as well */
-            EV_SET(& kevs[kevs_num], myentry->current_descriptor, EVFILT_VNODE,
-                EV_ADD | EV_ENABLE | EV_CLEAR,
-                NOTE_DELETE | NOTE_RENAME, 0, 0);
-            ++kevs_num;
-        }
-        EV_SET(& kevs[kevs_num], myentry->current_descriptor, EVFILT_READ,
-                EV_ADD | EV_ENABLE | EV_CLEAR,
-                0,
-                0, 0);
-        /* sshguard_log(LOG_DEBUG, "Setting event for %s.", myentry->filename); */
-
-        ++kevs_num;
-#endif
     }
     list_iterator_stop(& sources_list);
 
     sshguard_log(LOG_INFO, "Refreshing sources showed %u changes.", numchanged);
-
-#if defined(HAVE_KQUEUE)
-    if (numchanged > 0) {
-        /* register filters for new sources */
-        sshguard_log(LOG_DEBUG, "Setting %u events for %u active sources.", kevs_num, num_sources_active);
-        if (kevent(kq, kevs, kevs_num, NULL, 0, NULL) < 0) {
-            sshguard_log(LOG_ERR, "Cannot configure kqueue() events! %s.", strerror(errno));
-        }
-    }
-#endif
-
     return 0;
 }
 
@@ -511,46 +348,3 @@ static void deactivate_source(source_entry_t *restrict s) {
     s->active = 0;
     --num_sources_active;
 }
-
-#if defined(HAVE_KQUEUE)
-static void set_kevs() {
-    int i;
-    unsigned int kevs_num = 0;
-    const source_entry_t *source;
-
-
-    sshguard_log(LOG_DEBUG, "Registering events.");
-
-    /* prepare event list */
-    list_iterator_start(& sources_list);
-    for (i = 0; list_iterator_hasnext(& sources_list); ++i) {
-        /* add event to queue */
-        source = (const source_entry_t *)list_iterator_next(& sources_list);
-        if (! source->active) continue;
-
-        if (source->current_descriptor != STDIN_FILENO) {
-            /* this is a file. Monitor deletion/renaming as well */
-            EV_SET(& kevs[kevs_num], source->current_descriptor, EVFILT_VNODE,
-                EV_ADD | EV_ENABLE | EV_CLEAR,
-                NOTE_DELETE | NOTE_RENAME, 0, 0);
-            ++kevs_num;
-        }
-        EV_SET(& kevs[kevs_num], source->current_descriptor, EVFILT_READ,
-                EV_ADD | EV_ENABLE | EV_CLEAR,
-                0,
-                0, 0);
-        /* sshguard_log(LOG_DEBUG, "Setting event for %s.", source->filename); */
-
-        ++kevs_num;
-    }
-    list_iterator_stop(& sources_list);
-    
-    /* configure kqueue with the given events */
-    sshguard_log(LOG_DEBUG, "Setting %u events for %u (act+inact) files.", kevs_num, i);
-    if (kevent(kq, kevs, kevs_num, NULL, 0, NULL) < 0) {
-        sshguard_log(LOG_ERR, "Cannot configure kqueue() events! %s.", strerror(errno));
-    }
-}
-
-
-#endif

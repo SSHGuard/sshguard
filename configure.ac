@@ -201,7 +201,7 @@ AC_SUBST(WARNING_CFLAGS)
 AS_BOX([Library Functions])
 AC_FUNC_FORK
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol kqueue])
+AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol])
 
 # Solaris provides these functions in separate libraries
 AC_SEARCH_LIBS([socket], [socket])
