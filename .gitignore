@@ -18,6 +18,8 @@ src/config.h
 src/fwalls/.deps/
 src/fwalls/command.h
 src/parser/.deps/
+src/parser/attack_parser.[ch]
+src/parser/attack_scanner.c
 src/sshguard
 src/stamp-h1
 ylwrap
