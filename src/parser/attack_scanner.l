@@ -146,6 +146,7 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 
  /* wrong password for valid user @ FreeBSD, Debian */
 "error: PAM: "[aA]"uthentication "(error|failure)" for "("illegal user ")?.+" from "            { return SSH_LOGINERR_PAM; }
+"via ".*                                                        { return SSH_VIA; }
 
  /* SSH: reverse mapping "possible break-in attempt!" */
 "reverse mapping checking getaddrinfo for "[^\[]*"["            { BEGIN(ssh_reversemap); return SSH_REVERSEMAP_PREF; }
