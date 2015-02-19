@@ -59,14 +59,7 @@ int get_options_cmdline(int argc, char *argv[]) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
-                if (sscanf(optarg, "%u:%s", & opts.blacklist_threshold, opts.blacklist_filename) == 2) {
-                    /* custom threshold specified */
-                    if (opts.blacklist_threshold < opts.abuse_threshold) {
-                        fprintf(stderr, "Doesn't make sense to have a blacklist threshold lower than one abuse (%u). Terminating.\n", opts.abuse_threshold);
-                        usage();
-                        return -1;
-                    }
-                } else {
+                if (sscanf(optarg, "%u:%s", & opts.blacklist_threshold, opts.blacklist_filename) != 2) {
                     /* argument contains only the blacklist filename */
                     strcpy(opts.blacklist_filename, optarg);
                 }
@@ -166,6 +159,12 @@ int get_options_cmdline(int argc, char *argv[]) {
                 usage();
                 return -1;
         }
+    }
+
+    if (opts.blacklist_threshold < opts.abuse_threshold) {
+        fprintf(stderr, "error: blacklist (%u) is less than abuse threshold (%u)\n",
+                opts.blacklist_threshold, opts.abuse_threshold);
+        return -1;
     }
 
     return 0;
