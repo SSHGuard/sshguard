@@ -72,15 +72,20 @@ int filtersyslogprocess(char *syslogbanner) {
 
 
 MONTH       (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
+MONTHNO     0[0-9]|1[0-2]
 DAYNO       [0-9][0-9]?
 HOUR        (0|1)[0-9]|2[0-4]
 MINPS       [0-5][0-9]
+SECONDFRAC  [0-5][0-9]([.,][0-9]+)?
 WORD        [a-zA-Z0-9][-_a-zA-Z0-9]+
 NUMBER      [1-9][0-9]*
+YEAR        (1|2)[0-9]{3}
+TIMEZONE    Z|[-+]{HOUR}(:?{MINPS})?
 
 TIMESTAMP_SYSLOG    {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
 TIMESTAMP_TAI64     [0-9A-Fa-f]{24}
 SOLARIS_MSGID_TAG   "[ID "[0-9]+" "{WORD}"."{WORD}"]"
+TIMESTAMP_ISO8601   {YEAR}-{MONTHNO}-{DAYNO}T{HOUR}:?{MINPS}:?{SECONDFRAC}{TIMEZONE}
 
  /* all words but "sshguard" provided that posix regex don't support negation nor intersection:
   * 1) all words of 2 to 7 characters or 8-* chars
@@ -109,13 +114,13 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
   */
 
  /* handle entries with PID and without PID from processes other than sshguard */
-{TIMESTAMP_SYSLOG}[ ]+([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+{PROCESSNAME}"["{NUMBER}"]: "{SOLARIS_MSGID_TAG}? {
+({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+{PROCESSNAME}"["{NUMBER}"]: "{SOLARIS_MSGID_TAG}? {
         /* extract PID */
         yylval.num = getsyslogpid(yytext, yyleng);
         return SYSLOG_BANNER_PID;
         }
 
-{TIMESTAMP_SYSLOG}[ ]+([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+({PROCESSNAME}":")?   { return SYSLOG_BANNER; }
+({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+({PROCESSNAME}":")?   { return SYSLOG_BANNER; }
 
  /* syslog style  "last message repeated N times" */
 "last message repeated "([1-9][0-9]*)" times"                   {
@@ -221,6 +226,9 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
  /* TAI64 timestamp */
 "@"{TIMESTAMP_TAI64}                                            { return AT_TIMESTAMP_TAI64; }
 {TIMESTAMP_TAI64}                                               { return TIMESTAMP_TAI64; }
+
+ /* iso8601 timestamp */
+{TIMESTAMP_ISO8601}                                             { return TIMESTAMP_ISO8601; }
 
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }
