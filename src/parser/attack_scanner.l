@@ -186,7 +186,7 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 
  /* cyrus-imap login error */
 "badlogin: "[^\[]*"["                                           { BEGIN(cyrusimap_loginerr); return CYRUSIMAP_SASL_LOGINERR_PREF; }
-<cyrusimap_loginerr>"] ".*"SASL".*"checkpass failed"            { BEGIN(INITIAL); return CYRUSIMAP_SASL_LOGINERR_SUFF; }
+<cyrusimap_loginerr>"] ".*"SASL".*"failed".?$                   { BEGIN(INITIAL); return CYRUSIMAP_SASL_LOGINERR_SUFF; }
 
  /* FreeBSD's ftpd login errors */
 "FTP LOGIN FAILED FROM "                                        { BEGIN(freebsdftpd_loginerr); return FREEBSDFTPD_LOGINERR_PREF; }
