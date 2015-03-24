@@ -1,32 +1,30 @@
-#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-
-AC_PREREQ(2.59)
-AC_INIT(sshguard, 1.5, mij@sshguard.net)
-AM_INIT_AUTOMAKE
+AC_PREREQ([2.59])
+AC_INIT([sshguard], [1.5], [sshguard-users@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/simclist.c])
 AM_CONFIG_HEADER([src/config.h])
+AM_INIT_AUTOMAKE
+
+AM_SILENT_RULES([yes])
+
 # test if we are on Solaris, which requires outstanding practices
 AC_CANONICAL_BUILD
 AS_CASE([$build_os], 
         [solaris*], [on_solaris=yes])
 AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
 
-
-
-
-# Checks for programs.
+##############################################################################
+AS_BOX([Program Checks])
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CC_C99
+AC_PROG_EGREP
 AC_PROG_RANLIB
 AC_PROG_YACC
-# for some command backends, as OSes like Solaris have odd default implementations
-AC_PROG_EGREP
-AC_PROG_AWK
-
 AM_PROG_LEX
 
-# Checks for libraries.
+##############################################################################
+AS_BOX([Library Checks])
 AC_CHECK_LIB(pthread, pthread_create)
 
 # Checks for header files.
@@ -43,11 +41,12 @@ AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
-# Checks for library functions.
+AS_BOX([Library Functions])
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol kqueue])
+
 # Solaris provides these functions in separate libraries
 AC_SEARCH_LIBS([socket], [socket])
 AC_SEARCH_LIBS([gethostbyname], [nsl])
@@ -329,30 +328,19 @@ if test x$usepf = xtrue ; then
     AC_MSG_NOTICE([Using $pfctlpath as location for pfctl])
 fi
 
-# compiler options
-if test "$SUNCC" = "yes"
-then
+# Compiler Characteristics
+AS_IF([test "$SUNCC" = "yes"], [
     # sun compiler
-    OPTIMIZER_CFLAGS="-xO4 -xlibmil -xdepend"
     WARNING_CFLAGS="-v"
-    STD99_CFLAGS="-xc99"
-else
+], [
     # other compiler (assume gcc-compatibile :( )
-    OPTIMIZER_CFLAGS="-O2"
     WARNING_CFLAGS="-Wall"
-    # enable or disable C99 constructs based on compiler capabilities
-    if test "x$ac_cv_prog_cc_c99" != xno ; then
-        # AC_PROG_CC_C99 has already changed $CC to make it compile c99
-        STD99_CFLAGS=""
-    else
-        # disable flag and null constructs in code
-        STD99_CFLAGS="-Drestrict= -Dinline="
-    fi
-fi
+])
 
-AC_SUBST(OPTIMIZER_CFLAGS)
+AC_C_INLINE
+AC_C_RESTRICT
+
 AC_SUBST(WARNING_CFLAGS)
-AC_SUBST(STD99_CFLAGS)
 
 AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile])
 
