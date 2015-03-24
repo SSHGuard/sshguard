@@ -7,12 +7,6 @@ AM_INIT_AUTOMAKE
 
 AM_SILENT_RULES([yes])
 
-# test if we are on Solaris, which requires outstanding practices
-AC_CANONICAL_BUILD
-AS_CASE([$build_os], 
-        [solaris*], [on_solaris=yes])
-AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
-
 ##############################################################################
 AS_BOX([Program Checks])
 AC_PROG_AWK
@@ -27,24 +21,43 @@ AM_PROG_LEX
 AS_BOX([Library Checks])
 AC_CHECK_LIB(pthread, pthread_create)
 
-# Checks for header files.
+# Header Files
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([arpa/inet.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h getopt.h])
-# Sun Studio?
-AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
 
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
+# Types
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
+# Compiler Characteristics
+AC_C_CONST
+AC_C_INLINE
+AC_C_RESTRICT
+
+# test if we are on Solaris, which requires outstanding practices
+AC_CANONICAL_BUILD
+AS_CASE([$build_os], 
+        [solaris*], [on_solaris=yes])
+AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
+# Sun Studio?
+AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
+
+AS_IF([test "$SUNCC" = "yes"], [
+    # sun compiler
+    WARNING_CFLAGS="-v"
+], [
+    # other compiler (assume gcc-compatibile :( )
+    WARNING_CFLAGS="-Wall"
+])
+
+AC_SUBST(WARNING_CFLAGS)
+
+##############################################################################
 AS_BOX([Library Functions])
 AC_FUNC_FORK
 AC_FUNC_MALLOC
-AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol kqueue])
 
 # Solaris provides these functions in separate libraries
@@ -327,20 +340,6 @@ fi
 if test x$usepf = xtrue ; then
     AC_MSG_NOTICE([Using $pfctlpath as location for pfctl])
 fi
-
-# Compiler Characteristics
-AS_IF([test "$SUNCC" = "yes"], [
-    # sun compiler
-    WARNING_CFLAGS="-v"
-], [
-    # other compiler (assume gcc-compatibile :( )
-    WARNING_CFLAGS="-Wall"
-])
-
-AC_C_INLINE
-AC_C_RESTRICT
-
-AC_SUBST(WARNING_CFLAGS)
 
 AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile])
 
