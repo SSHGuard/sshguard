@@ -8,78 +8,108 @@ AM_INIT_AUTOMAKE
 AM_SILENT_RULES([yes])
 
 ##############################################################################
-AS_BOX([Program Checks])
-AC_PROG_AWK
-AC_PROG_CC
-AC_PROG_CC_C99
-AC_PROG_EGREP
-AC_PROG_RANLIB
-AC_PROG_YACC
-AM_PROG_LEX
+# Configuration Options
 
-##############################################################################
-AS_BOX([Library Checks])
-AC_CHECK_LIB(pthread, pthread_create)
+AC_ARG_ENABLE([debug], [AS_HELP_STRING([--enable-debug], [Turn on debugging])])
+AM_CONDITIONAL([DEBUG], [test x$enable_debug = xyes])
 
-# Header Files
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([arpa/inet.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h getopt.h])
-
-# Types
-AC_TYPE_OFF_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-
-# Compiler Characteristics
-AC_C_CONST
-AC_C_INLINE
-AC_C_RESTRICT
-
-# test if we are on Solaris, which requires outstanding practices
-AC_CANONICAL_BUILD
-AS_CASE([$build_os], 
-        [solaris*], [on_solaris=yes])
-AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
-# Sun Studio?
-AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
-
-AS_IF([test "$SUNCC" = "yes"], [
-    # sun compiler
-    WARNING_CFLAGS="-v"
-], [
-    # other compiler (assume gcc-compatibile :( )
-    WARNING_CFLAGS="-Wall"
+AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
+            [Full path to the genfilt command (default from PATH)])],
+[
+  if test x$useaix != xtrue ; then
+     AC_MSG_ERROR([Can not define genfilt path in this context, as AIX has not
+                   been chosen as firewall backend])
+  else
+      genfiltpath=`dirname $withval`
+  fi
 ])
 
-AC_SUBST(WARNING_CFLAGS)
+AC_ARG_WITH([ipf], [AS_HELP_STRING([--with-ipf=path],
+            [Full path to the ipf command (default from PATH)])],
+[ 
+  if test x$useipfilter != xtrue ; then
+     AC_MSG_ERROR([Can not define define ipf path in this context, where iptables has not been chosen as firewall backend])
+  else
+     ipfpath=`dirname $withval`
+  fi
+])
 
-##############################################################################
-AS_BOX([Library Functions])
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol kqueue])
+AC_ARG_WITH([ipfw], [AS_HELP_STRING([--with-ipfw=path],
+            [Full path to the ipfw command (default from PATH)])],
+[
+ if test x$useipfw != xtrue ; then
+     AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
+  else
+     ipfwpath=`dirname $withval`
+  fi
+])
 
-# Solaris provides these functions in separate libraries
-AC_SEARCH_LIBS([socket], [socket])
-AC_SEARCH_LIBS([gethostbyname], [nsl])
+AC_ARG_WITH([iptables], [AS_HELP_STRING([--with-iptables=path],
+            [Full path to the iptables command (default from PATH)])],
+[ 
+  if test x$useiptables != xtrue ; then
+     AC_MSG_ERROR([Can not define define iptables path in this context, where iptables has not been chosen as firewall backend])
+  else
+     iptablespath=`dirname $withval`
+  fi
+])
 
-# --enable-debug
-AC_ARG_ENABLE([debug],
-              [  --enable-debug          Turn on debugging],
-              [case "${enableval}" in
-                   yes) debug=true ;;
-                   no)  debug=false ;;
-                   *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
-               esac],
-               [debug=false])
-AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
+AC_ARG_WITH([pfctl], [AS_HELP_STRING([--with-pfctl=path],
+            [Full path to the pfctl command (default from PATH)])],
+[
+ if test x$usepf != xtrue ; then
+     AC_MSG_ERROR([Can not define define pfctl path in this context, where PF has not been chosen as firewall backend])
+  else
+     pfctlpath=`dirname $withval`
+  fi
+])
 
+#   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
+AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX],
+            [Specify the IDs range in which sshguard can put its block rules (Default: "55000-55050")])],
+[
+ if test x$useipfw != xtrue ; then
+      AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
+   else
+      ipfwrange_min=`echo $withval | cut -d- -f1` 
+      ipfwrange_max=`echo $withval | cut -d- -f2`
+  fi
+  AC_MSG_NOTICE([IPFW block rules will range between $ipfwrange_min and $ipfwrange_max])
+  
+  # define IPFW range in config.h
+  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
+  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
+  ])
+                            
+AC_ARG_WITH([hostsfile], [AS_HELP_STRING([--with-hostsfile=file],
+            [Specify what file to use as hosts.allow (Default: /etc/hosts.allow)])],
+[
+ if ! test -d "`dirname $withval`" ; then
+     AC_MSG_ERROR([Could not access path `dirname $withval`])
+  fi
+  touch "$withval"
+  hostsfilepath=$withval
+],
+[
+    hostsfilepath=/etc/hosts.allow
+])
 
-#   --with-firewall     for setting what blocking backend to use
-AC_ARG_WITH(firewall,
-[  --with-firewall=< pf | ipfw | iptables | ipfilter | hosts | aix | null >
-                          Select the firewall backend],
+AC_ARG_WITH([ipfilterconf], [AS_HELP_STRING([--with-ipfilterconf=file],
+            [Specify what configuration file to use for ipfilter (Default: /etc/ipf.rules)])],
+[
+  if test x$useipfilter != xtrue ; then
+      AC_MSG_ERROR([Doesn't make sense to use this option if ipf has not been chosen as backend])
+  else
+      ipfconf=$withval
+  fi
+],
+[
+    ipfconf=/etc/ipf.rules
+])
+ 
+
+AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall],
+            [Firewall backend (one of pf, ipfw, iptables, ipfilter, hosts, aix, or null)])],
 [
  FWALLSDIR="src/fwalls"
  case "$withval" in
@@ -167,6 +197,64 @@ AC_ARG_WITH(firewall,
 [
  echo "Error: please choose a valid firewall backend (see --help)" && exit 1
 ])
+
+##############################################################################
+AS_BOX([Program Checks])
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CC_C99
+AC_PROG_EGREP
+AC_PROG_RANLIB
+AC_PROG_YACC
+AM_PROG_LEX
+
+##############################################################################
+AS_BOX([Library Checks])
+AC_CHECK_LIB(pthread, pthread_create)
+
+# Header Files
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([arpa/inet.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h getopt.h])
+
+# Types
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+
+# Compiler Characteristics
+AC_C_CONST
+AC_C_INLINE
+AC_C_RESTRICT
+
+# test if we are on Solaris, which requires outstanding practices
+AC_CANONICAL_BUILD
+AS_CASE([$build_os], 
+        [solaris*], [on_solaris=yes])
+AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
+# Sun Studio?
+AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
+
+AS_IF([test "$SUNCC" = "yes"], [
+    # sun compiler
+    WARNING_CFLAGS="-v"
+], [
+    # other compiler (assume gcc-compatibile :( )
+    WARNING_CFLAGS="-Wall"
+])
+
+AC_SUBST(WARNING_CFLAGS)
+
+##############################################################################
+AS_BOX([Library Functions])
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol kqueue])
+
+# Solaris provides these functions in separate libraries
+AC_SEARCH_LIBS([socket], [socket])
+AC_SEARCH_LIBS([gethostbyname], [nsl])
+
 # set what firewall backend has been used, for automake
 # AIX chosen
 AM_CONDITIONAL(FWALL_AIX, test x$useaix = xtrue)
@@ -184,122 +272,6 @@ AM_CONDITIONAL(FWALL_PF, test x$usepf = xtrue)
 # NULL chosen
 AM_CONDITIONAL(FWALL_NULL, test x$usenull = xtrue)
 
-
-##          CUSTOM SETTINGS FOR PATHS
-
-#   --with-genfilt          for setting genfilt path
-AC_ARG_WITH(genfilt,
-[  --with-genfilt=path Specify the full path of the genfilt command
-                               (Default: autodetect from PATH)],
-[
-  if test x$useaix != xtrue ; then
-     AC_MSG_ERROR([Can not define genfilt path in this context, as AIX has not
-                   been chosen as firewall backend])
-  else
-      genfiltpath=`dirname $withval`
-  fi
-])
-
-#   --with-ipf              for setting ipf path
-AC_ARG_WITH(ipf,
-[  --with-ipf=path    Specify the full path of the ipf command
-                               (Default: autodetect from PATH)],
-[ 
-  if test x$useipfilter != xtrue ; then
-     AC_MSG_ERROR([Can not define define ipf path in this context, where iptables has not been chosen as firewall backend])
-  else
-     ipfpath=`dirname $withval`
-  fi
-])
-
-#   --with-ipfw         for setting ipfw path
-AC_ARG_WITH(ipfw,
-[  --with-ipfw=path        Specify the full path for the ipfw command
-                               (Default: autodetect from PATH)],
-[
- if test x$useipfw != xtrue ; then
-     AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
-  else
-     ipfwpath=`dirname $withval`
-  fi
-])
-
-#   --with-iptables         for setting iptables path
-AC_ARG_WITH(iptables,
-[  --with-iptables=path    Specify the full path of the iptables command
-                               (Default: autodetect from PATH)],
-[ 
-  if test x$useiptables != xtrue ; then
-     AC_MSG_ERROR([Can not define define iptables path in this context, where iptables has not been chosen as firewall backend])
-  else
-     iptablespath=`dirname $withval`
-  fi
-])
-
-#   --with-pfctl        for setting pfctl path
-AC_ARG_WITH(pfctl,
-[  --with-pfctl=path       Specify the full path for the pfctl command
-                               (Default: autodetect from PATH)],
-[
- if test x$usepf != xtrue ; then
-     AC_MSG_ERROR([Can not define define pfctl path in this context, where PF has not been chosen as firewall backend])
-  else
-     pfctlpath=`dirname $withval`
-  fi
-])
-
-         
-##          FURTHER OPTIONS
-
-#   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
-AC_ARG_WITH(ipfw-rules-range,
-[  --with-ipfw-rules-range=MIN-MAX
-                          Specify the IDs range in which sshguard can put its block rules
-                               (Default: "55000-55050")],
-[
- if test x$useipfw != xtrue ; then
-      AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
-   else
-      ipfwrange_min=`echo $withval | cut -d- -f1` 
-      ipfwrange_max=`echo $withval | cut -d- -f2`
-  fi
-  AC_MSG_NOTICE([IPFW block rules will range between $ipfwrange_min and $ipfwrange_max])
-  
-  # define IPFW range in config.h
-  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
-  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
-  ])
-                            
-AC_ARG_WITH(hostsfile,
-[  --with-hostsfile=file
-                          Specify what file to use as hosts.allow
-                               (Default: /etc/hosts.allow)],
-[
- if ! test -d "`dirname $withval`" ; then
-     AC_MSG_ERROR([Could not access path `dirname $withval`])
-  fi
-  touch "$withval"
-  hostsfilepath=$withval
-],
-[
-    hostsfilepath=/etc/hosts.allow
-])
-
-#   --with-ipfilterconf     for setting IPFILTER configuration file
-AC_ARG_WITH(ipfilterconf,
-[  --with-ipfilterconf=file    Specify what configuration file to use for ipfilter
-                                (Default: /etc/ipf.rules)],
-[
-  if test x$useipfilter != xtrue ; then
-      AC_MSG_ERROR([Doesn't make sense to use this option if ipf has not been chosen as backend])
-  else
-      ipfconf=$withval
-  fi
-],
-[
-    ipfconf=/etc/ipf.rules
-])
- 
 # define $genfiltpath in config.h
 AC_DEFINE_UNQUOTED(FILT_PATH, "$genfiltpath", [path for the genfilt command])
 # define $hostsfilepath in config.h
