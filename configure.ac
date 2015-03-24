@@ -15,54 +15,23 @@ AM_CONDITIONAL([DEBUG], [test x$enable_debug = xyes])
 
 AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
             [Full path to the genfilt command (default from PATH)])],
-[
-  if test x$useaix != xtrue ; then
-     AC_MSG_ERROR([Can not define genfilt path in this context, as AIX has not
-                   been chosen as firewall backend])
-  else
-      genfiltpath=`dirname $withval`
-  fi
-])
+            [genfiltpath=`dirname $withval`])
 
 AC_ARG_WITH([ipf], [AS_HELP_STRING([--with-ipf=path],
             [Full path to the ipf command (default from PATH)])],
-[ 
-  if test x$useipfilter != xtrue ; then
-     AC_MSG_ERROR([Can not define define ipf path in this context, where iptables has not been chosen as firewall backend])
-  else
-     ipfpath=`dirname $withval`
-  fi
-])
+            [ipfpath=`dirname $withval`])
 
 AC_ARG_WITH([ipfw], [AS_HELP_STRING([--with-ipfw=path],
             [Full path to the ipfw command (default from PATH)])],
-[
- if test x$useipfw != xtrue ; then
-     AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
-  else
-     ipfwpath=`dirname $withval`
-  fi
-])
+            [ipfwpath=`dirname $withval`])
 
 AC_ARG_WITH([iptables], [AS_HELP_STRING([--with-iptables=path],
             [Full path to the iptables command (default from PATH)])],
-[ 
-  if test x$useiptables != xtrue ; then
-     AC_MSG_ERROR([Can not define define iptables path in this context, where iptables has not been chosen as firewall backend])
-  else
-     iptablespath=`dirname $withval`
-  fi
-])
+            [iptablespath=`dirname $withval`])
 
 AC_ARG_WITH([pfctl], [AS_HELP_STRING([--with-pfctl=path],
             [Full path to the pfctl command (default from PATH)])],
-[
- if test x$usepf != xtrue ; then
-     AC_MSG_ERROR([Can not define define pfctl path in this context, where PF has not been chosen as firewall backend])
-  else
-     pfctlpath=`dirname $withval`
-  fi
-])
+            [pfctlpath=`dirname $withval`])
 
 #   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
 AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX],
@@ -80,33 +49,16 @@ AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX
   AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
   AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
   ])
-                            
+
 AC_ARG_WITH([hostsfile], [AS_HELP_STRING([--with-hostsfile=file],
-            [Specify what file to use as hosts.allow (Default: /etc/hosts.allow)])],
-[
- if ! test -d "`dirname $withval`" ; then
-     AC_MSG_ERROR([Could not access path `dirname $withval`])
-  fi
-  touch "$withval"
-  hostsfilepath=$withval
-],
-[
-    hostsfilepath=/etc/hosts.allow
-])
+            [Full path to allowed hosts file (default /etc/hosts.allow)])],
+            [hostsfilepath=$withval],
+            [hostsfilepath=/etc/hosts.allow])
 
 AC_ARG_WITH([ipfilterconf], [AS_HELP_STRING([--with-ipfilterconf=file],
-            [Specify what configuration file to use for ipfilter (Default: /etc/ipf.rules)])],
-[
-  if test x$useipfilter != xtrue ; then
-      AC_MSG_ERROR([Doesn't make sense to use this option if ipf has not been chosen as backend])
-  else
-      ipfconf=$withval
-  fi
-],
-[
-    ipfconf=/etc/ipf.rules
-])
- 
+            [Full path to ipf configuration file (default /etc/ipf.rules)])],
+            [ipfconf=$withval],
+            [ipfconf=/etc/ipf.rules])
 
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall],
             [Firewall backend (one of pf, ipfw, iptables, ipfilter, hosts, aix, or null)])],
