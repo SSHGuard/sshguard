@@ -13,26 +13,6 @@ AM_SILENT_RULES([yes])
 AC_ARG_ENABLE([debug], [AS_HELP_STRING([--enable-debug], [Turn on debugging])])
 AM_CONDITIONAL([DEBUG], [test x$enable_debug = xyes])
 
-AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
-            [Path to the genfilt command (default from PATH)])],
-            [genfiltpath=`dirname $withval`])
-
-AC_ARG_WITH([ipf], [AS_HELP_STRING([--with-ipf=path],
-            [Path to the ipf command (default from PATH)])],
-            [ipfpath=`dirname $withval`])
-
-AC_ARG_WITH([ipfw], [AS_HELP_STRING([--with-ipfw=path],
-            [Path to the ipfw command (default from PATH)])],
-            [ipfwpath=`dirname $withval`])
-
-AC_ARG_WITH([iptables], [AS_HELP_STRING([--with-iptables=path],
-            [Path to the iptables command (default from PATH)])],
-            [iptablespath=`dirname $withval`])
-
-AC_ARG_WITH([pfctl], [AS_HELP_STRING([--with-pfctl=path],
-            [Path to the pfctl command (default from PATH)])],
-            [pfctlpath=`dirname $withval`])
-
 #   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
 AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX],
             [Specify the IDs range in which sshguard can put its block rules (Default: "55000-55050")])],
@@ -49,16 +29,6 @@ AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX
   AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
   AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
   ])
-
-AC_ARG_WITH([hosts], [AS_HELP_STRING([--with-hosts=file],
-            [Path to allowed hosts file (default /etc/hosts.allow)])],
-            [hostsfilepath=$withval],
-            [hostsfilepath=/etc/hosts.allow])
-
-AC_ARG_WITH([ipfconf], [AS_HELP_STRING([--with-ipfconf=file],
-            [Path to ipf configuration file (default /etc/ipf.rules)])],
-            [ipfconf=$withval],
-            [ipfconf=/etc/ipf.rules])
 
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
             [Firewall backend (one of pf, ipfw, iptables, ipfilter, hosts, aix, or null)])],
@@ -149,6 +119,36 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
 [
  echo "Error: please choose a valid firewall backend (see --help)" && exit 1
 ])
+
+AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
+            [Path to the genfilt command (default from PATH)])],
+            [genfiltpath=`dirname $withval`])
+
+AC_ARG_WITH([hosts], [AS_HELP_STRING([--with-hosts=file],
+            [Path to allowed hosts file (default /etc/hosts.allow)])],
+            [hostsfilepath=$withval],
+            [hostsfilepath=/etc/hosts.allow])
+
+AC_ARG_WITH([ipf], [AS_HELP_STRING([--with-ipf=path],
+            [Path to the ipf command (default from PATH)])],
+            [ipfpath=`dirname $withval`])
+
+AC_ARG_WITH([ipfconf], [AS_HELP_STRING([--with-ipfconf=file],
+            [Path to ipf configuration file (default /etc/ipf.rules)])],
+            [ipfconf=$withval],
+            [ipfconf=/etc/ipf.rules])
+
+AC_ARG_WITH([ipfw], [AS_HELP_STRING([--with-ipfw=path],
+            [Path to the ipfw command (default from PATH)])],
+            [ipfwpath=`dirname $withval`])
+
+AC_ARG_WITH([iptables], [AS_HELP_STRING([--with-iptables=path],
+            [Path to the iptables command (default from PATH)])],
+            [iptablespath=`dirname $withval`])
+
+AC_ARG_WITH([pfctl], [AS_HELP_STRING([--with-pfctl=path],
+            [Path to the pfctl command (default from PATH)])],
+            [pfctlpath=`dirname $withval`])
 
 ##############################################################################
 AS_BOX([Program Checks])
