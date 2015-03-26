@@ -30,6 +30,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 %}
 
 %option debug
+%option noinput
 %option nounput
 %option noyywrap
 
