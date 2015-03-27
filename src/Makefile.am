@@ -1,13 +1,6 @@
 SUBDIRS = parser fwalls
 
-AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE @WARNING_CFLAGS@
-
-if SOLARIS
-# on solaris, the compiler refuses to use C99 for compiling pre-POSIX.1-2001 stuff (ew!)
-AM_CFLAGS+= -D_XOPEN_SOURCE=600
-else
-AM_CFLAGS+= -D_XOPEN_SOURCE
-endif
+AM_CFLAGS=-I. -D_XOPEN_SOURCE=600 -DSIMCLIST_NO_DUMPRESTORE @WARNING_CFLAGS@
 
 if DEBUG
 AM_CFLAGS+= -g

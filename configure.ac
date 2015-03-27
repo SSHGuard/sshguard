@@ -179,11 +179,6 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_RESTRICT
 
-# test if we are on Solaris, which requires outstanding practices
-AC_CANONICAL_BUILD
-AS_CASE([$build_os], 
-        [solaris*], [on_solaris=yes])
-AM_CONDITIONAL([SOLARIS], [test x$on_solaris != x])
 # Sun Studio?
 AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
 
