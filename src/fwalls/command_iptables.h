@@ -26,8 +26,11 @@
 
 #include "../config.h"
 
+/* backwards compatible with -w  */
+#define IPTBLCMD "TBL=iptables; if [ x$SSHG_ADDRKIND == x6 ]; then TBL=ip6tables; fi; iptblscmd() { " IPTABLES_PATH "/$TBL -w $@; r=$?; if [ $r == 2 ]; then exec " IPTABLES_PATH "/$TBL $@; fi; exit $r; }; iptblscmd "
+
 /* for initializing the firewall (+ make sure we have sufficient credentials) */
-#define COMMAND_INIT        "iptables -w -L -n"
+#define COMMAND_INIT       IPTBLCMD "-L -n"
 
 /* for finalizing the firewall */
 #define COMMAND_FIN         ""
@@ -38,7 +41,7 @@
  *  $SSHG_ADDRKIND  the code of the address type [see sshguard_addresskind.h] (e.g. 4)
  *  $SSHG_SERVICE   the code of the service attacked [see sshguard_services.h] (e.g. 10)
  */
-#define COMMAND_BLOCK       "case $SSHG_ADDRKIND in 4) exec " IPTABLES_PATH "/iptables -w -I sshguard -s $SSHG_ADDR -j DROP ;; 6) exec " IPTABLES_PATH "/ip6tables -w -I sshguard -s $SSHG_ADDR -j DROP ;; *) exit -2 ;; esac"
+#define COMMAND_BLOCK IPTBLCMD "-I sshguard -s $SSHG_ADDR -j DROP"
 
 /* iptables does not support blocking multiple addresses in one call.
  * COMMAND_BLOCK_LIST can not be provided here, a sequence of calls to
@@ -50,10 +53,10 @@
  *  $SSHG_ADDRKIND  the code of the address type [see sshguard_addresskind.h] (e.g. 4)
  *  $SSHG_SERVICE   the code of the service attacked [see sshguard_services.h] (e.g. 10)
  */
-#define COMMAND_RELEASE     "case $SSHG_ADDRKIND in 4) exec " IPTABLES_PATH "/iptables -w -D sshguard -s $SSHG_ADDR -j DROP ;; 6) exec " IPTABLES_PATH "/ip6tables -w -D sshguard -s $SSHG_ADDR -j DROP ;; *) exit -2 ;; esac"
+#define COMMAND_RELEASE IPTBLCMD "-D sshguard -s $SSHG_ADDR -j DROP"
 
 /* for releasing all blocked IPs at once (blocks flush) */
-#define COMMAND_FLUSH       IPTABLES_PATH "/iptables -w -F sshguard ; " IPTABLES_PATH "/ip6tables -w -F sshguard"
+#define COMMAND_FLUSH  "(" IPTBLCMD "-F sshguard ); SSHG_ADDRKIND=6; " IPTBLCMD "-F sshguard"
 
 
 #endif
