@@ -218,10 +218,9 @@ int main(int argc, char *argv[]) {
 
 
     /* initialization successful */
-    
-    sshguard_log(LOG_NOTICE, "Started successfully [(a,p,s)=(%u, %u, %u)], now ready to scan.", \
-            opts.abuse_threshold, (unsigned int)opts.pardon_threshold, (unsigned int)opts.stale_threshold);
-
+    sshguard_log(LOG_NOTICE,
+            "Started with danger threshold=%u ; minimum block=%u seconds",
+            opts.abuse_threshold, (unsigned int)opts.pardon_threshold);
 
     while (read_log_line(buf, MAX_LOGLINE_LEN, false, & source_id) == 0) {
         if (suspended) continue;
