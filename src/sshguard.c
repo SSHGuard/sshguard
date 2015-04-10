@@ -59,8 +59,7 @@
 #define MAX_LOGLINE_LEN     1000
 
 /* switch from 0 (normal) to 1 (suspended) with SIGTSTP and SIGCONT respectively */
-int suspended;
-
+int suspended = 0;
 
 /*      FUNDAMENTAL DATA STRUCTURES         */
 /* These lists are all lists of attacker_t structures.
@@ -84,9 +83,6 @@ list_t limbo;
 list_t hell;
 /* list of offenders (addresses already blocked in the past) */
 list_t offenders;
-
-/* global debugging flag */
-int sshg_debugging = 0;
 
 /* mutex against races between insertions and pruning of lists */
 pthread_mutex_t list_mutex;
@@ -130,12 +126,13 @@ int main(int argc, char *argv[]) {
     int retv;
     sourceid_t source_id;
     char buf[MAX_LOGLINE_LEN];
-    
+    int sshg_debugging;
 
     /* initializations */
     srand(time(NULL));
-    suspended = 0;
     sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
+    yydebug = sshg_debugging;
+    yy_flex_debug = sshg_debugging;
 
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
@@ -190,7 +187,6 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-
     /* set finalization routine */
     atexit(finishup);
 
@@ -206,9 +202,6 @@ int main(int argc, char *argv[]) {
     /* load blacklisted addresses and block them (if requested) */
     process_blacklisted_addresses();
 
-    /* set debugging value for parser/scanner ... */
-    yydebug = sshg_debugging;
-    yy_flex_debug = sshg_debugging;
     
     /* start thread for purging stale blocked addresses */
     if (pthread_create(&tid, NULL, pardonBlocked, NULL) != 0) {
