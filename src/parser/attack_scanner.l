@@ -56,6 +56,7 @@ int filtersyslogprocess(char *syslogbanner) {
 
 %}
 
+%option nounput
 %option noyywrap
  /* enable debugging messages if yy_flex_debug != 0 */
 %option debug

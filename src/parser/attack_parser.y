@@ -48,9 +48,6 @@ extern void scanner_init();
 extern void scanner_fin();
 extern int yylex();
 
- /* my function for reporting parse errors */
-static void yyerror(int source_id, const char *msg);
-
  /* Metadata used by the parser */
  /* per-source metadata */
 typedef struct {
