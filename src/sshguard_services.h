@@ -21,45 +21,19 @@
 #ifndef SSHGUARD_SERVICES_H
 #define SSHGUARD_SERVICES_H
 
-/* "Any" -- the service attacked is not relevant, block address for everything */
-#define SERVICES_ALL                    0
+enum service {
+    SERVICES_ALL            = 0,    //< anything
+    SERVICES_SSH            = 100,  //< ssh
+    SERVICES_UWIMAP         = 200,  //< UWimap for imap and pop daemon
+    SERVICES_DOVECOT        = 210,  //< dovecot
+    SERVICES_CYRUSIMAP      = 220,  //< cyrus-imap
+    SERVICES_CUCIPOP        = 230,  //< cucipop
+    SERVICES_EXIM           = 240,  //< exim
+    SERVICES_SENDMAIL       = 250,  //< sendmail
+    SERVICES_FREEBSDFTPD    = 300,  //< ftpd shipped with FreeBSD
+    SERVICES_PROFTPD        = 310,  //< ProFTPd
+    SERVICES_PUREFTPD       = 320,  //< Pure-FTPd
+    SERVICES_VSFTPD         = 330,  //< vsftpd
+};
 
-
-/* SHELL SERVICES */
-/* SSH daemon */
-#define SERVICES_SSH                    100
-
-
-
-/* MAIL SERVICES */
-/* UWimap for imap and pop daemon http://www.washington.edu/imap/ */
-#define SERVICES_UWIMAP                 200
-
-/* dovecot */
-#define SERVICES_DOVECOT                210
-
-/* cyrus-imap */
-#define SERVICES_CYRUSIMAP              220
-
-/* cucipop */
-#define SERVICES_CUCIPOP                230
-
-/* exim */
-#define SERVICES_EXIM                   240
-
-/* sendmail */
-#define SERVICES_SENDMAIL               250
-
-/* FTP SERVICES */
-/* ftpd shipped with FreeBSD */
-#define SERVICES_FREEBSDFTPD            300
-
-/* ProFTPd */
-#define SERVICES_PROFTPD                310
-
-/* Pure-FTPd */
-#define SERVICES_PUREFTPD               320
-
-/* vsftpd */
-#define SERVICES_VSFTPD                 330
 #endif
