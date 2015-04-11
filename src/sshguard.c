@@ -222,9 +222,16 @@ int main(int argc, char *argv[]) {
 
         /* extract the IP address */
         sshguard_log(LOG_DEBUG, "Matched address %s:%d attacking service %d, dangerousness %u.", parsed_attack.address.value, parsed_attack.address.kind, parsed_attack.service, parsed_attack.dangerousness);
-       
-        /* report IP */
-        report_address(parsed_attack);
+
+        // Do not report if the source is clearly fake.
+        if (parsed_attack.source != 0 && procauth_isauthoritative(
+                    parsed_attack.service, parsed_attack.source) == -1) {
+            sshguard_log(LOG_NOTICE,
+                    "Ignoring message from PID %d for service %d",
+                    parsed_attack.source, parsed_attack.service);
+        } else {
+            report_address(parsed_attack);
+        }
     }
 
     /* let exit() call finishup() */

@@ -32,15 +32,11 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "parser/parser.h"
 #include "parser/services.h"
+#include "sshguard.h"
 #include "sshguard_log.h"
 #include "sshguard_logsuck.h"
-#include "sshguard_procauth.h"
-
- /* get to know MAX_FILES_POLLED */
-#include "sshguard.h"
-
-#include "parser/parser.h"
 
  /* stuff exported by the scanner */
 extern void scanner_init();
@@ -132,14 +128,7 @@ text:
 syslogent:
      /* timestamp hostname procname[pid]: logmsg */
     /*TIMESTAMP_SYSLOG hostname procname '[' INTEGER ']' ':' logmsg   {*/
-    SYSLOG_BANNER_PID logmsg {
-                        /* reject to accept if the pid has been forged */
-                        if (procauth_isauthoritative(attack->service, $1) == -1) {
-                            /* forged */
-                            sshguard_log(LOG_NOTICE, "Ignore attack as pid '%d' has been forged for service %d.", $1, attack->service);
-                            YYABORT;
-                        }
-                    }
+    SYSLOG_BANNER_PID logmsg { attack->source = $1; }
 
     /*| TIMESTAMP_SYSLOG hostname procname ':' logmsg*/
     | SYSLOG_BANNER logmsg
@@ -361,6 +350,7 @@ static void init_structures(int source_id, attack_t *attack) {
     
     /* initialize the attack structure */
     attack->dangerousness = DEFAULT_ATTACKS_DANGEROUSNESS;
+    attack->source = 0;
 
     /* set current source index */
     parser_metadata.current_source_index = cnt;

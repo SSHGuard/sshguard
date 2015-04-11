@@ -24,12 +24,14 @@
 #include <time.h>
 
 #include "parser/address.h"
+#include "parser/services.h"
 
 /* an attack (source address & target service info) */
 typedef struct {
-    sshg_address_t address;         /* address (value + type) */
-    int service;                    /* type of service offended */
-    unsigned int dangerousness;     /* how dangerous the attack is, the bigger the worse */
+    sshg_address_t address;     //< Address
+    enum service service;       //< Service
+    int source;                 //< Source PID, or zero if unknown
+    int dangerousness;          //< Danger level
 } attack_t;
 
 /* profile of an attacker */
