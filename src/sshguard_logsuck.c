@@ -153,7 +153,6 @@ int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source
     int ret;
     /* use active poll through non-blocking read()s */
     int sleep_interval;
-    struct timeval sleepstruct;
     source_entry_t *restrict readentry;
 
 
@@ -210,10 +209,7 @@ int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source
         }
         /* no data. Wait for something with exponential backoff, up to LOGSUCK_MAX_WAIT */
         sshguard_log(LOG_DEBUG, "Sleeping %d ms before next poll.", sleep_interval);
-        /* sleep, POSIX-compatibly */
-        sleepstruct.tv_sec = sleep_interval / 1000;
-        sleepstruct.tv_usec = (sleep_interval % 1000)*1000;
-        select(0, NULL, NULL, NULL, & sleepstruct);
+        usleep(sleep_interval * 1000);
         /* update sleep interval for next call */
         if (sleep_interval < MAX_LOGPOLL_INTERVAL) {
             sleep_interval = sleep_interval + 1+(LOGPOLL_INTERVAL_GROWTHFACTOR*sleep_interval);
