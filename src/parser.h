@@ -28,16 +28,20 @@ extern int yydebug;
 extern int yy_flex_debug;
 #endif
 
-
-
 #include "sshguard_services.h"
 #include "sshguard_addresskind.h"
 #include "sshguard_attack.h"
 
+/**
+ * Last attack classified. This will be overwritten by subsequent calls to
+ * parse_line() and is not thread-safe.
+ */
 attack_t parsed_attack;
 
-/* this is defined in attack_scanner.c */
+/**
+ * Parse a single line of a log for an attack. If an attack is found, return
+ * zero and store the attack in the 'parsed_attack' global.
+ */
 int parse_line(int source_id, char *str);
 
 #endif
-
