@@ -18,12 +18,8 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-
 #ifndef SSHGUARD_FW_H
 #define SSHGUARD_FW_H
-
-#include "sshguard_services.h"
-#include "sshguard_addresskind.h"
 
 /*      return values for fw backend functions:     */
 /* success */
@@ -111,4 +107,3 @@ int fw_release(const char *restrict addr, int addrkind, int service);
 int fw_flush(void);
 
 #endif
-

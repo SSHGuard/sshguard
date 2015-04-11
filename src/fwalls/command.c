@@ -30,11 +30,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-
-#include "../sshguard_log.h"
-#include "../sshguard_fw.h"
-/* for ADDRLEN: */
-#include "../sshguard_addresskind.h"
+#include "parser/address.h"
+#include "sshguard_fw.h"
+#include "sshguard_log.h"
 
 #include "command.h"
 

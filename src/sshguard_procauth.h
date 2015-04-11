@@ -23,8 +23,6 @@
 
 #include <sys/types.h>
 
-#include "sshguard_services.h"
-
 /* initialize the procauth subsystem */
 int procauth_init();
 
@@ -51,6 +49,4 @@ int procauth_refreshpids();
  */
 int procauth_isauthoritative(int service_code, pid_t pid);
 
-
 #endif
-

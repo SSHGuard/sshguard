@@ -20,7 +20,6 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -33,15 +32,15 @@
 #include <errno.h>
 #include <assert.h>
 
-
-#include "../sshguard_log.h"
-#include "../sshguard_procauth.h"
-#include "../sshguard_logsuck.h"
+#include "parser/services.h"
+#include "sshguard_log.h"
+#include "sshguard_logsuck.h"
+#include "sshguard_procauth.h"
 
  /* get to know MAX_FILES_POLLED */
-#include "../sshguard.h"
+#include "sshguard.h"
 
-#include "../parser.h"
+#include "parser/parser.h"
 
  /* stuff exported by the scanner */
 extern void scanner_init();
@@ -392,5 +391,3 @@ int parse_line(int source_id, char *str) {
 
     return ret;
 }
-
-

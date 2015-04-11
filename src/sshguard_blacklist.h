@@ -21,10 +21,6 @@
 #ifndef SSHGUARD_BLACKLIST_H
 #define SSHGUARD_BLACKLIST_H
 
-#include <simclist.h>
-
-#include "sshguard_attack.h"
-
 /**
  * Load the blacklist contained at a given filename.
  *
@@ -57,7 +53,6 @@ int blacklist_create(const char *filename);
  */
 int blacklist_add(const char *restrict filename, const attacker_t *restrict newel);
 
-
 /**
  * Lookup if an address is present in the blacklist.
  *
@@ -69,4 +64,3 @@ int blacklist_add(const char *restrict filename, const attacker_t *restrict newe
 int blacklist_lookup_address(const char *restrict filename, const sshg_address_t *restrict addr);
 
 #endif
-

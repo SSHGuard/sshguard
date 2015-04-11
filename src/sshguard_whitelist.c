@@ -36,6 +36,7 @@
 #include "sshguard_log.h"
 #include "regexlib.h"
 #include "sshguard_whitelist.h"
+#include "parser/address.h"
 
 #define WHITELIST_SRCLINE_LEN       300
 

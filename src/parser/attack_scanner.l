@@ -26,7 +26,7 @@
 
 #include "attack_parser.h"
 
-#include "../parser.h"
+#include "parser/parser.h"
 
 
 void scanner_init(char *str) {

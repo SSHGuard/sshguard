@@ -21,13 +21,7 @@
 #ifndef SEEKERS_H
 #define SEEKERS_H
 
-#include <simclist.h>
-
-
 /* seeks an address (key) into a list element (el). Callback for SimCList */
 int seeker_addr(const void *el, const void *key);
 
-
-
 #endif
-

@@ -18,8 +18,6 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -30,7 +28,9 @@
 #include <assert.h>
 #include <ctype.h>
 
-#include "sshguard_addresskind.h"
+#include <simclist.h>
+
+#include "parser/attack.h"
 #include "sshguard_log.h"
 #include "sshguard_blacklist.h"
 

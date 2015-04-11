@@ -21,9 +21,9 @@
 #ifndef SSHGUARD_ATTACK_H
 #define SSHGUARD_ATTACK_H
 
-#include "sshguard_addresskind.h"
-
 #include <time.h>
+
+#include "parser/address.h"
 
 /* an attack (source address & target service info) */
 typedef struct {
@@ -43,4 +43,3 @@ typedef struct {
 } attacker_t;
 
 #endif
-

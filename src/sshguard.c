@@ -29,16 +29,13 @@
 
 #include <simclist.h>
 
-
 /* subsystem for parsing log entries, notably parse_line() */
-#include "parser.h"
+#include "parser/parser.h"
 
 /* logging subsystem, sshguard_log() */
 #include "sshguard_log.h"
 /* functions for getting user's preferences */
 #include "sshguard_options.h"
-/* constant definitions for address types */
-#include "sshguard_addresskind.h"
 /* functions for managing whitelist (addresses not to block): whitelist_*() */
 #include "sshguard_whitelist.h"
 /* functions for reading and updating the blacklist (addresses to block and never release): blacklist_*() */
@@ -49,8 +46,6 @@
 #include "sshguard_fw.h"
 /* seeker functions for lists */
 #include "seekers.h"
-/* data types for tracking attacks (attack_t, attacker_t etc) */
-#include "sshguard_attack.h"
 /* subsystem for polling multiple log files and getting log entries */
 #include "sshguard_logsuck.h"
 

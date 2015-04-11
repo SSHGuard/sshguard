@@ -28,9 +28,7 @@ extern int yydebug;
 extern int yy_flex_debug;
 #endif
 
-#include "sshguard_services.h"
-#include "sshguard_addresskind.h"
-#include "sshguard_attack.h"
+#include "parser/attack.h"
 
 /**
  * Last attack classified. This will be overwritten by subsequent calls to

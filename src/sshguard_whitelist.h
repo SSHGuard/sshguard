@@ -21,9 +21,6 @@
 #ifndef SSHGUARD_WHITELIST_H
 #define SSHGUARD_WHITELIST_H
 
-#include "sshguard_addresskind.h"
-
-
 /**
  * Initialize the whitelisting subsystem.
  *
@@ -158,4 +155,3 @@ int whitelist_add_host(const char *restrict host);
 int whitelist_match(const char *restrict addr, int addrkind);
 
 #endif
-

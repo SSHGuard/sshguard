@@ -1,8 +1,9 @@
-#include <string.h>
 #include <assert.h>
+#include <string.h>
 
+#include <simclist.h>
 
-#include "sshguard_attack.h"
+#include "parser/attack.h"
 #include "seekers.h"
 
 int seeker_addr(const void *el, const void *key) {
@@ -14,4 +15,3 @@ int seeker_addr(const void *el, const void *key) {
     if (atk->attack.address.kind != adr->kind) return 0;
     return (strcmp(atk->attack.address.value, adr->value) == 0);
 }
-
