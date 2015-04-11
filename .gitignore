@@ -22,6 +22,7 @@ src/fwalls/command.h
 src/parser/.deps/
 src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
+src/sshg_parser
 src/sshguard
 src/stamp-h1
 ylwrap
