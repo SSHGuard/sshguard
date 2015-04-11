@@ -32,9 +32,6 @@ typedef struct {
     unsigned int dangerousness;     /* how dangerous the attack is, the bigger the worse */
 } attack_t;
 
-/* portable definition of the length in bytes of the attack_t structure */
-#define ATTACK_T_LEN            (SSHG_ADDRESS_T_LEN + 4)
-
 /* profile of an attacker */
 typedef struct {
     attack_t attack;                /* attacker address, target service */
@@ -44,9 +41,6 @@ typedef struct {
     unsigned int numhits;           /* #attacks for attacker tracking; #abuses for offenders tracking */
     unsigned int cumulated_danger;  /* total danger incurred (before or after blocked) */
 } attacker_t;
-
-/* portable definition of the length in bytes of the attacker_t structure */
-#define ATTACKER_T_LEN          (ATTACK_T_LEN + 3*4 + 4)
 
 #endif
 

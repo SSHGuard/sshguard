@@ -39,7 +39,4 @@ typedef struct {
     int kind;                   /* type of address addr */
 } sshg_address_t;
 
-/* portable definition of the length in bytes of the sshg_address_t structure */
-#define SSHG_ADDRESS_T_LEN      (ADDRLEN + 4)
-
 #endif
