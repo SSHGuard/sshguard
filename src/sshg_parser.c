@@ -13,9 +13,10 @@ int main() {
     procauth_init();
 
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
-        if (parse_line(0, buf) == 0) {
+        attack_t attack;
+        if (parse_line(0, buf, &attack) == 0) {
             printf("Attack from %s on service %d\n",
-                    parsed_attack.address.value, parsed_attack.service);
+                    attack.address.value, attack.service);
         }
     }
 }

@@ -211,9 +211,10 @@ int main(int argc, char *argv[]) {
             opts.abuse_threshold, (unsigned int)opts.pardon_threshold);
 
     while (read_log_line(buf, MAX_LOGLINE_LEN, false, & source_id) == 0) {
+        attack_t parsed_attack;
         if (suspended) continue;
 
-        retv = parse_line(source_id, buf);
+        retv = parse_line(source_id, buf, &parsed_attack);
         if (retv != 0) {
             /* sshguard_log(LOG_DEBUG, "Skip line '%s'", buf); */
             continue;

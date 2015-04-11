@@ -31,15 +31,9 @@ extern int yy_flex_debug;
 #include "parser/attack.h"
 
 /**
- * Last attack classified. This will be overwritten by subsequent calls to
- * parse_line() and is not thread-safe.
- */
-attack_t parsed_attack;
-
-/**
  * Parse a single line of a log for an attack. If an attack is found, return
- * zero and store the attack in the 'parsed_attack' global.
+ * zero and store the attack in the given pointer.
  */
-int parse_line(int source_id, char *str);
+int parse_line(int source_id, char *str, attack_t *attack);
 
 #endif
