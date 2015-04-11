@@ -209,7 +209,7 @@ int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source
             }
         }
         /* no data. Wait for something with exponential backoff, up to LOGSUCK_MAX_WAIT */
-        sshguard_log(LOG_DEBUG, "Nothing new on any file. Wait %d millisecs for new data.", sleep_interval);
+        sshguard_log(LOG_DEBUG, "Sleeping %d ms before next poll.", sleep_interval);
         /* sleep, POSIX-compatibly */
         sleepstruct.tv_sec = sleep_interval / 1000;
         sleepstruct.tv_usec = (sleep_interval % 1000)*1000;
@@ -220,7 +220,6 @@ int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source
             if (sleep_interval > MAX_LOGPOLL_INTERVAL)
                 sleep_interval = MAX_LOGPOLL_INTERVAL;
         }
-        refresh_files();
     }
 
     /* we shouldn't be here, or there is an error */
@@ -279,8 +278,6 @@ static int refresh_files() {
     struct stat fileinfo;
     source_entry_t *myentry;
     unsigned int numchanged = 0;
-
-    sshguard_log(LOG_DEBUG, "Checking to refresh sources...");
 
     /* get all updated serial numbers */
     list_iterator_start(& sources_list);
