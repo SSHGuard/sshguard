@@ -18,5 +18,5 @@ sshguard_SOURCES = sshguard.c seekers.c sshguard_whitelist.c sshguard_log.c sshg
 sshguard_LDADD = parser/libparser.a fwalls/libfwall.a
 
 bin_PROGRAMS = sshg_parser
-sshg_parser_SOURCES = sshguard_log.c sshg_parser.c sshguard_procauth.c simclist.c
+sshg_parser_SOURCES = sshguard_log.c sshg_parser.c
 sshg_parser_LDADD = parser/libparser.a

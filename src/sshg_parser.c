@@ -3,14 +3,12 @@
 
 #include "parser/parser.h"
 #include "sshguard_log.h"
-#include "sshguard_procauth.h"
 
 int main() {
     char buf[1000];
 
     // Initialize necessary subsystems.
     sshguard_log_init(true);
-    procauth_init();
 
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         attack_t attack;
