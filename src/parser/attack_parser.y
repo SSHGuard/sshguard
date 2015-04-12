@@ -96,6 +96,8 @@ static struct {
 %token EXIM_ESMTP_AUTHFAIL_PREF EXIM_ESMTP_AUTHFAIL_SUFF
 /* sendmail */
 %token SENDMAIL_RELAYDENIED_PREF SENDMAIL_RELAYDENIED_SUFF
+/* postfix */
+%token POSTFIX_SASL_LOGINERR_PREF POSTFIX_SASL_LOGINERR_SUFF
 /* FreeBSD's FTPd */
 %token FREEBSDFTPD_LOGINERR_PREF FREEBSDFTPD_LOGINERR_SUFF
 /* proFTPd */
@@ -159,6 +161,7 @@ msg_single:
     | cucipopmsg        {   attack->service = SERVICES_CUCIPOP; }
     | eximmsg           {   attack->service = SERVICES_EXIM; }
     | sendmailmsg       {   attack->service = SERVICES_SENDMAIL; }
+    | postfixmsg        {   attack->service = SERVICES_POSTFIX; }
     | freebsdftpdmsg    {   attack->service = SERVICES_FREEBSDFTPD; }
     | proftpdmsg        {   attack->service = SERVICES_PROFTPD; }
     | pureftpdmsg       {   attack->service = SERVICES_PUREFTPD; }
@@ -306,6 +309,10 @@ eximmsg:
 sendmailmsg:
    SENDMAIL_RELAYDENIED_PREF addr SENDMAIL_RELAYDENIED_SUFF;
    ;
+
+postfixmsg:
+    POSTFIX_SASL_LOGINERR_PREF addr POSTFIX_SASL_LOGINERR_SUFF
+    ;
 
 /* attack rules for FreeBSD's ftpd */
 freebsdftpdmsg:
