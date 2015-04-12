@@ -32,6 +32,10 @@ int main(int argc, char *argv[]) {
             return 0;
         case 'v':
             debug = true;
+            break;
+        case '?':
+            print_usage();
+            return 1;
         }
     }
 
