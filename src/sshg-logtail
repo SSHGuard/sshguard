@@ -1,0 +1,9 @@
+#!/bin/sh
+# sshg-logtail -- poll from the ends of log files using `tail`
+# This file is part of SSHGuard.
+
+fallback() {
+    tail -n 0 -f $@
+}
+
+tail -n 0 -F $@ 2>/dev/null || fallback

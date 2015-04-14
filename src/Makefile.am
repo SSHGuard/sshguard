@@ -24,6 +24,8 @@ sshguard_SOURCES = \
 	sshguard_whitelist.h
 sshguard_LDADD = parser/libparser.a fwalls/libfwall.a
 
+dist_libexec_SCRIPTS = sshg-logtail
+
 libexec_PROGRAMS = sshg-parser
 sshg_parser_SOURCES = sshguard_log.c sshg_parser.c
 sshg_parser_LDADD = parser/libparser.a
