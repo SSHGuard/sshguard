@@ -18,8 +18,6 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-
-/* the symbol table definitions */
 %{
 #include <string.h>
 #include <stdlib.h>
@@ -28,37 +26,12 @@
 
 #include "attack_parser.h"
 
-void scanner_init(char *str) {
-    yy_scan_string(str);
-}
-
-void scanner_fin() {
-    yy_delete_buffer(YY_CURRENT_BUFFER);
-}
-
-int getsyslogpid(char *syslogbanner, int length) {
-    int i;
-    syslogbanner[length-2] = '\0';
-    for (i = length; syslogbanner[i] != '['; i--);
-    return strtol(& syslogbanner[i+1], (char **)NULL, 10);
-}
-
-int filtersyslogprocess(char *syslogbanner) {
-    int i;
-    char *cursor;
-    cursor = syslogbanner + strlen("Jan 01 01:01:01 ");
-    for (i = 0; cursor[i] != ' '; i++);
-    cursor[i] = '\0';
-    if (strcmp(cursor, "sshguard") == 0) return 1;
-    return 0;
-}
-
+static int getsyslogpid(char *syslogbanner, int length);
 %}
 
+%option debug
 %option nounput
 %option noyywrap
- /* enable debugging messages if yy_flex_debug != 0 */
-%option debug
 
 %array
 
@@ -243,3 +216,19 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 
  /**         end of COMMON-USE TOKENS                           **/
 
+%%
+
+void scanner_init(char *str) {
+    yy_scan_string(str);
+}
+
+void scanner_fin() {
+    yy_delete_buffer(YY_CURRENT_BUFFER);
+}
+
+static int getsyslogpid(char *syslogbanner, int length) {
+    int i;
+    syslogbanner[length-2] = '\0';
+    for (i = length; syslogbanner[i] != '['; i--);
+    return strtol(& syslogbanner[i+1], (char **)NULL, 10);
+}
