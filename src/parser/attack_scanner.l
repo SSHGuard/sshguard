@@ -24,10 +24,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "parser/parser.h"  // attack_t, required by the parser header
+
 #include "attack_parser.h"
-
-#include "parser/parser.h"
-
 
 void scanner_init(char *str) {
     yy_scan_string(str);

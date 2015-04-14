@@ -43,6 +43,8 @@ extern void scanner_init();
 extern void scanner_fin();
 extern int yylex();
 
+static void yyerror(attack_t *attack, const char *msg);
+
  /* Metadata used by the parser */
  /* per-source metadata */
 typedef struct {
