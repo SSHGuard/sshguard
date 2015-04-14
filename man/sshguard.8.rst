@@ -12,147 +12,126 @@
 .. ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .. OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-==============
- **sshguard**
-==============
+========
+sshguard
+========
 
-------------------------
-monitors daemon activity
-------------------------
+----------------------------------------------------
+block brute-force attacks by aggregating system logs
+----------------------------------------------------
 
-:Date: Mar 31, 2010
+:Date: April 15, 2015
+:Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 1.5
-:Manual group: BSD System Manager's Manual
+:Version: 1.6
 
 SYNOPSIS
 ========
-
-| **sshguard** [-b thr:filename] [-w addr/host/block/file] [-a sAfety_thresh]
-|              [-p pardon_min_interval] [-s preScribe_interval] [-l source]
-|              [-f srv:pidfile] [-i pidfile] [-v]
+**sshguard** [**-v**]
+[**-a** `thresh`]
+[**-b** `thresh`:`file`]
+[**-e** `script`]
+[**-f** `service`:`pidfile`]
+[**-i** `pidfile`]
+[**-l** `source`]
+[**-p** `interval`]
+[**-s** `interval`]
+[**-w** `address` | `file`]
 
 DESCRIPTION
 ===========
-**sshguard** monitors logging activity and reacts to attacks by blocking their
-source addresses.
+**sshguard** protects hosts from brute-force attacks against SSH and other
+services. It aggregates system logs and blocks repeat offenders using one of
+several firewall backends, including ``iptables``, ``ipfw``, and ``pf``.
 
-**sshguard** was born for protecting SSH servers from the today's widespread
-brute force attacks, and evolved to an extensible log supervisor for blocking
-attacks to applications in real-time.
+**sshguard** can read log messages from standard input (suitable for piping
+from ``syslog``) or monitor one or more log files. Log messages are parsed,
+line-by-line, for recognized patterns. If an attack, such as several login
+failures within a few seconds, is detected, the offending IP is blocked.
+Offenders are unblocked after a set interval, but can be semi-permanently
+banned using the blacklist option.
 
-**sshguard** can monitor a number of log sources proactively, or receive log
-messages in its standard input. By means of a parser, it decides whether an
-entry is normal activity or attack; in the latter case, it remarks the
-attacker's address. When sshguard determines that an attacker committed enough
-danger to the system to discern an abuse, it blocks the attacker's address with
-the firewall. The attacker becomes offender, and is released after an adequate
-period of time.
+For clarification on some specific terms used in the source code and
+documentation, please see http://www.sshguard.net/docs/terminology/.
 
-**sshguard** supports the following firewalls:
+FEATURES
+========
+**sshguard** can block attackers using one of several backends:
 
-AIX native firewall
-  for IBM AIX operating systems
+- AIX native firewall, for IBM AIX operating systems
+- netfilter/iptables, for Linux-based operating systems
+- ``pf``, for several BSD operating systems
+- ``ipfw``, for FreeBSD and Mac OS X
+- ``ipfilter``, for FreeBSD, NetBSD and Solaris
+- *hosts.allow*, which uses TCP Wrappers to block attackers
+- null, which runs **sshguard** without blocking any attackers
 
-netfilter/iptables
-  for Linux-based operating systems
+**sshguard** understands several log formats:
 
-Packet Filter (PF)
-  for BSD operating systems (Open, Free, Net, DragonFly -BSD)
-
-IPFirewall (IPFW)
-  for FreeBSD and Mac OS X
-
-IP Filter (IPFILTER)
-  for FreeBSD, NetBSD and Solaris
-
-tcpd's hosts_access (/etc/hosts.allow)
-  portable across UNIX
-
-null
-  portable do-nothing backend for running detection without prevention
-
-Some terms in this manual have a special meaning in the context. **sshguard**
-refers to them consistently throughout documentation, source code, and log
-messages. See http://www.sshguard.net/docs/terminology/ to get acquainted with
-them.
-
-USAGE
-=====
-**sshguard** reads log entries to analyze by monitoring a number of log sources.
-It can interpret logs with all of the following formats:
-
-* syslog
-* syslog-ng
+* syslog(-ng)
 * metalog
 * multilog
 * raw messages
 
-**sshguard** can interface with the following blocking systems to block
-attackers:
+See http://www.sshguard.net/docs/reference/attack-signatures/ for a list of
+recognized attacks.
 
-* IBM AIX firewall
-* PF
-* netfilter/iptables
-* IPFW
-* IP Filter
-* /etc/hosts.allow
-* null firewall
+SETUP
+=====
+Please see http://www.sshguard.net/docs/setup/ for instructions on setting
+up **sshguard** with specific log systems and backends.
 
-Depending on the way chosen for giving logs to **sshguard**, and depending on the
-chosen blocking system, some setup may be needed. Instructions are documented at
-http://www.sshguard.net/docs/setup/.
+OPTIONS
+=======
+**-a** `thresh` (default 40)
+    Block an attacker when its dangerousness exceeds `thresh`. Currently,
+    all recognized patterns have a dangerousness of 10.
 
-**sshguard** does not make use of any configuration file. Instead, a combination
-of optional arguments can be passed to its process on the command line, for
-modifying its default behaviour:
+**-b** `thresh`:`file`
+    Enable blacklisting. When a repeat attacker's dangerousness exceeds
+    `thresh`, add its address to the blacklist file stored in `file`. See
+    TOUCHINESS & BLACKLISTING below.
 
--b [thresh:]filename
-                enable blacklisting: blacklist after thresh (or 120)
-                dangerousness committed, and hold the permanent blacklist in
-                filename. See TOUCHINESS & BLACKLISTING below.
+**-e** `script`
+    Execute an external program when an event is triggered. See EXTERNAL
+    PROGRAMS below.
 
--a sAfety_thresh
-                block an attacker after it incurred a total dangerousness
-                exceeding sAfety_thresh. Most attacks incur dangerousness 10.
-                See http://www.sshguard.net/docs/reference/attack-signatures/
-                for details. (Default: 40)
+**-f** `service`:`pidfile`
+    See LOG VALIDATION below.
 
--p secs         release a blocked address no sooner than secs seconds after
-                being blocked for the first time. **sshguard** will release the
-                address between X and 3/2 * X seconds after blocking it.
-                (Default: 7*60)
+**-i** `pidfile`
+    Write the PID of **sshguard** to `pidfile`.
 
--w addr/host/block/file
-                Whitelisting of addr/host/block, or take the triples from the
-                specified file. See the WHITELISTING section for more details.
+**-l** `source`
+    Monitor `source` for log messages. By default, **sshguard** reads log
+    messages from standard input. Give this option once for every source to
+    monitor instead. **sshguard** transparently handles log rotations. When
+    using this option, standard input is ignored, but can be re-added by
+    giving '**-l** -'.
 
--s secs         forget about an address after secs seconds. If host A issues one
-                attack every this many seconds, it will never be blocked.
-                (Default: 20*60)
+**-p** `interval` (default 420 secs, or 7 minutes)
+    Wait at least `interval` seconds before releasing a blocked address. In
+    practice it takes longer for an attacker to be unblocked, because
+    **sshguard** checks only at periodic intervals.
 
--l source       enable the Log Sucker, and add source to the list of log sources
-                to monitor. source is a filename, a FIFO name, or the magic
-                symbol "-" to identify **sshguard**'s standard input. **sshguard**
-                handles autonomously file-like sources disappearing,
-                reappearing, or "rotating". This option can be used multiple
-                times. When omitted, source defaults to standard input.
-                Otherwise, standard input is ignored unless explicitly added.
+**-s** `interval` (default 1200 secs, or 20 minutes)
+    Forget about an attacker `interval` seconds after its last attempt. Its
+    dangerousness will be reset to zero.
 
--f servicecode:pidfile
-                see the LOG VALIDATION section.
+**-w** `address` | `file`
+    Whitelist the given address, hostname, or address block. Alternatively,
+    read whitelist entires from `file`. This option can be given multiple
+    times. See WHITELISTING below for details.
 
--i pidfile      store my PID in file pidfile at startup (for control scripts).
+**-v**
+    Print version information and exit.
 
--e filename     execute extra external program filename whenever an event is
-                triggered. See EXTERNAL PROGRAMS below.
+When **sshguard** is signalled with SIGTSTP, it suspends activity. When
+**sshguard** is signalled with SIGCONT, it resumes monitoring. During
+suspension, log entries are discarded without being analyzed.
 
--v              print summary information on **sshguard** and exit.
-
-When **sshguard** is signalled with SIGTSTP, it suspends activity. When **sshguard**
-is signalled with SIGCONT, it resumes monitoring. During suspension, log entries
-are discarded without being analyzed.
-
+ENVIRONMENT
+===========
 When **sshguard** senses the SSHGUARD_DEBUG environment variable, it enables
 debugging mode: logging is directed to standard error instead of syslog, and
 includes comprehensive details of the activity and parsing process. Debugging
@@ -369,8 +348,8 @@ requires to blacklist addresses after having committed attacks for danger 50
 in human-readable format, the strings(1) command can be used to peek in it for
 listing the blacklisted addresses.
 
-EXTENSIONS
-==========
+CONTRIBUTING
+============
 **sshguard** operates firewalls through a general interface, which enables easy
 extension, and allows back-ends to be non-local (e.g. remote appliances), and
 non-blocking (e.g. report tools). Additions can be suggested at
@@ -380,8 +359,12 @@ Extending attack signatures needs some expertise with context-free parsers;
 users are welcome to submit samples of the desired log messages to
 http://www.sshguard.net/support/attacks/submit/.
 
+HISTORY
+=======
+**sshguard** was originally written by Michele Mazzucchi <mij@bitchx.it>.
+
 SEE ALSO
 ========
-syslog(1), syslog.conf(5)
+syslog(1), syslog.conf(5), hosts_access(5)
 
-**sshguard** website at: http://www.sshguard.net/
+<http://www.sshguard.net/>
