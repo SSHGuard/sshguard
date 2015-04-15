@@ -34,7 +34,6 @@
 
 #include "simclist.h"
 #include "sshguard_log.h"
-#include "regexlib.h"
 #include "sshguard_whitelist.h"
 #include "parser/address.h"
 
