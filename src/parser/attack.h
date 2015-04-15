@@ -24,7 +24,22 @@
 #include <time.h>
 
 #include "parser/address.h"
-#include "parser/services.h"
+
+enum service {
+    SERVICES_ALL            = 0,    //< anything
+    SERVICES_SSH            = 100,  //< ssh
+    SERVICES_UWIMAP         = 200,  //< UWimap for imap and pop daemon
+    SERVICES_DOVECOT        = 210,  //< dovecot
+    SERVICES_CYRUSIMAP      = 220,  //< cyrus-imap
+    SERVICES_CUCIPOP        = 230,  //< cucipop
+    SERVICES_EXIM           = 240,  //< exim
+    SERVICES_SENDMAIL       = 250,  //< sendmail
+    SERVICES_POSTFIX        = 260,  //< postfix
+    SERVICES_FREEBSDFTPD    = 300,  //< ftpd shipped with FreeBSD
+    SERVICES_PROFTPD        = 310,  //< ProFTPd
+    SERVICES_PUREFTPD       = 320,  //< Pure-FTPd
+    SERVICES_VSFTPD         = 330,  //< vsftpd
+};
 
 /* an attack (source address & target service info) */
 typedef struct {

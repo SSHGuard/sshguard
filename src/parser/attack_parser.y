@@ -33,7 +33,6 @@
 #include <assert.h>
 
 #include "parser/parser.h"
-#include "parser/services.h"
 #include "sshguard.h"
 #include "sshguard_log.h"
 #include "sshguard_logsuck.h"
