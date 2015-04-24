@@ -32,13 +32,7 @@ typedef struct {
     int has_polled_files;               /* true if we are polling log any file, false if reading from stdin */
 } sshg_opts;
 
-
 extern sshg_opts opts;
-
-/* version information: 1.5 */
-#define MAJOR_VERSION 1
-#define MINOR_VERSION 5
-#define BUILD_VERSION 0
 
 /**
  * Parses user options from the command line, environment, config file or
@@ -51,6 +45,4 @@ extern sshg_opts opts;
  */
 int get_options_cmdline(int argc, char *argv[]);
 
-
 #endif
-

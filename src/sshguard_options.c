@@ -40,8 +40,10 @@ sshg_opts opts;
 
 /* dumps usage message to standard error */
 static void usage(void);
-/* dumps version message to standard error */
-static void version(void);
+
+static void version(void) {
+    fprintf(stderr, PACKAGE_STRING "\n");
+}
 
 int get_options_cmdline(int argc, char *argv[]) {
     struct stat event_script_buf;
@@ -185,10 +187,4 @@ static void usage(void) {
     fprintf(stderr, "\t-v\tDump version message to stderr, supply this when reporting bugs\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "\tThe SSHGUARD_DEBUG environment variable enables debugging mode (verbosity + interactivity).\n");
-}
-
-static void version(void) {
-    fprintf(stderr, "sshguard %d.%d.%d\n\n", MAJOR_VERSION, MINOR_VERSION, BUILD_VERSION);
-    fprintf(stderr, "Copyright (c) 2007,2008 Mij <mij@sshguard.net>\n");
-    fprintf(stderr, "This is free software; see the source for conditions on copying.\n");
 }
