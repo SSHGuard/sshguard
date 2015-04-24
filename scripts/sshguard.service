@@ -1,0 +1,16 @@
+# sshguard.service -- sample systemd unit file
+
+[Unit]
+Description=Intelligently block brute-force attacks by aggregating system logs
+After=syslog.target
+After=iptables.target
+After=ip6tables.target
+After=libvirtd.service
+After=firewalld.service
+
+[Service]
+ExecStart=/usr/sbin/sshguard -w /etc/sshguard.whitelist -l /var/log/secure -b 60:/var/db/sshguard/blacklist.db
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
