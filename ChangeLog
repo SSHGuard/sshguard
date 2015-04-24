@@ -1,9 +1,21 @@
-* 1.6
-    - blacklist: blacklist file is now human-readable/editable (thanks Armando Miraglia)
-    - fix Log Sucker bug with filesystems with gazillion files (thanks Johann H. Hauschild)
-    - fix syslog format detection on hosts with undefined hostname
-    - fix ipfw backend crashing when blacklist is enabled but empty on start-up (thanks Jin Choi)
-    - hosts backend: ensure safe permission for tcpwrappers file regardless of the local umask
+* 1.6.0     May 2015
+    - Add rules for Postfix SASL login attempts
+    - Add support for ISO 8601 timestamps (David Caldwell)
+    - Add support for external commands run on firewall events (-e)
+    - Blacklist file is now human-readable (Armando Miraglia)
+    - Check tcpwrapper file permissions regardless of local umask
+    - Detect additional pre-auth disconnects
+    - Fix ipfw crash when loading an empty blacklist (Jin Choi)
+    - Fix log parsing on days beginning with zero
+    - Fix log polling on filesystems with many files (Johann H. Hauschild)
+    - Fix matching for Cyrus IMAP login via SASL
+    - Fix syslog format detection on hosts with undefined hostname
+    - Match SSH login failures with "via" suffix
+    - Remove broken kqueue(2) support
+    - Tweak option names and help strings
+    - Update SSH "Bad protocol" signature
+    - Use case-insensitive "invalid user" signature
+    - Wait for xtables lock when using iptables command (James Harris)
 
 * 1.5       Feb 2011
     - logsucker: sshguard polls multiple log files at once
