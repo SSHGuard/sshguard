@@ -417,17 +417,15 @@ static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restri
 }
 
 static void purge_limbo_stale(void) {
-    attacker_t *tmpent;
-    time_t now;
-    unsigned int pos = 0;
-
-
     sshguard_log(LOG_DEBUG, "Purging stale attackers.");
-    now = time(NULL);
-    for (pos = 0; pos < list_size(&limbo); pos++) {
-        tmpent = list_get_at(&limbo, pos);
-        if (now - tmpent->whenfirst > opts.stale_threshold)
+    time_t now = time(NULL);
+    for (unsigned int pos = 0; pos < list_size(&limbo); pos++) {
+        attacker_t *tmpent = list_get_at(&limbo, pos);
+        if (now - tmpent->whenfirst > opts.stale_threshold) {
             list_delete_at(&limbo, pos);
+            free(tmpent);
+            pos--;
+        }
     }
 }
 
