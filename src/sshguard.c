@@ -91,10 +91,6 @@ static int attackt_whenlast_comparator(const void *a, const void *b);
 /* get log lines in here. Hide the actual source and the method. Fill buf up
  * to buflen chars, return 0 for success, -1 for failure */
 static int read_log_line(char *restrict buf, size_t buflen, sourceid_t *restrict source_id);
-#ifdef EINTR
-/* get line unaffected by interrupts */
-static char *safe_fgets(char *restrict s, int size, FILE *restrict stream);
-#endif
 /* handler for termination-related signals */
 static void sigfin_handler(int signo);
 /* handler for suspension/resume signals */
@@ -250,31 +246,8 @@ static int read_log_line(char *restrict buf, size_t buflen, sourceid_t *restrict
     /* otherwise, get logs from stdin */
     if (source_id != NULL) *source_id = 0;
 
-#ifdef EINTR
-    return (safe_fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
-#else
     return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
-#endif
 }
-
-#ifdef EINTR
-static char *safe_fgets(char *restrict s, int size, FILE *restrict stream) {
-    char *restrict ret;
-
-    do {
-        clearerr(stream);
-        ret = fgets(s, size, stream);
-        if (ret != NULL)
-            return s;
-        if (errno != EINTR)
-            return NULL;
-    } while (ret == NULL && errno == EINTR);
-
-    /* pretend we arrive here to make compiler happy */
-    return NULL;
-}
-#endif
-
 
 /*
  * This function is called every time an attack pattern is matched.
