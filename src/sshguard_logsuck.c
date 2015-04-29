@@ -149,24 +149,11 @@ int logsuck_add_logsource(const char *restrict filename) {
     return 0;
 }
 
-int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source, sourceid_t *restrict whichsource) {
+int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whichsource) {
     int ret;
     /* use active poll through non-blocking read()s */
     int sleep_interval;
     source_entry_t *restrict readentry;
-
-
-    /* do we have to stick to the last source used? */
-    if (from_previous_source && index_last_read >= 0) {
-        /* get source to read from */
-        readentry = (source_entry_t *restrict)list_get_at(& sources_list, index_last_read);
-        if (readentry->active) {
-            sshguard_log(LOG_DEBUG, "Sticking to '%s' to get next line.", readentry->filename);
-            if (whichsource != NULL) *whichsource = readentry->source_id;
-            return read_from(readentry, buf, buflen);
-        }
-        sshguard_log(LOG_ERR, "Source '%s' no longer active; can't insist reading from it.", readentry->filename);
-    }
 
     /* poll all files until some stuff is read (in random order, until data is found) */
     sleep_interval = 20;

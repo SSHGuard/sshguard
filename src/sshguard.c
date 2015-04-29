@@ -90,7 +90,7 @@ static int attackt_whenlast_comparator(const void *a, const void *b);
 
 /* get log lines in here. Hide the actual source and the method. Fill buf up
  * to buflen chars, return 0 for success, -1 for failure */
-static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source, sourceid_t *restrict source_id);
+static int read_log_line(char *restrict buf, size_t buflen, sourceid_t *restrict source_id);
 #ifdef EINTR
 /* get line unaffected by interrupts */
 static char *safe_fgets(char *restrict s, int size, FILE *restrict stream);
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
             "Started with danger threshold=%u ; minimum block=%u seconds",
             opts.abuse_threshold, (unsigned int)opts.pardon_threshold);
 
-    while (read_log_line(buf, MAX_LOGLINE_LEN, false, & source_id) == 0) {
+    while (read_log_line(buf, MAX_LOGLINE_LEN, &source_id) == 0) {
         attack_t parsed_attack;
         if (suspended) continue;
 
@@ -238,13 +238,13 @@ int main(int argc, char *argv[]) {
     exit(0);
 }
 
-static int read_log_line(char *restrict buf, size_t buflen, bool from_last_source, sourceid_t *restrict source_id) {
+static int read_log_line(char *restrict buf, size_t buflen, sourceid_t *restrict source_id) {
     /* must fill buf, and return 0 for success and -1 for error */
 
     /* get logs from polled files ? */
     if (opts.has_polled_files) {
         /* logsuck_getline() reflects the 0/-1 codes already */
-        return logsuck_getline(buf, MAX_LOGLINE_LEN, from_last_source, source_id);
+        return logsuck_getline(buf, MAX_LOGLINE_LEN, source_id);
     }
 
     /* otherwise, get logs from stdin */

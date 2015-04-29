@@ -44,11 +44,9 @@ int logsuck_add_logsource(const char *restrict filename);
 /**
  * Get the first whole log line coming from any log file configured.
  *
- * @param from_previous_source  read from the same source of previous message
- *
  * @return 0 on success, -1 on error
  */
-int logsuck_getline(char *restrict buf, size_t buflen, bool from_previous_source, sourceid_t *restrict whichsource);
+int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whichsource);
 
 /**
  * Finalize the logsuck subsystem.
