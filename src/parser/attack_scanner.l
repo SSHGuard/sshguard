@@ -143,8 +143,8 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
 
  /* Exim */
-.*" auth_plaintext authenticator failed for ".+" ["             { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
-<exim_esmtp_autherr>"]:"[0-9]+" I=".+": 535 Incorrect authentication data (set_id=test)"    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
+.*"authenticator failed for ".+" ["                             { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
+<exim_esmtp_autherr>"]"(:{NUMBER})?(" I=".+)?(" U=".+)?": 535 Incorrect authentication data"(" (set_id=".+")")?    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
 
  /* Sendmail */
 "Relaying denied. IP name lookup failed ["                      { BEGIN(sendmail_relaydenied); return SENDMAIL_RELAYDENIED_PREF; }
