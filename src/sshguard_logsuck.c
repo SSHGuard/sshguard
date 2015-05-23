@@ -158,7 +158,7 @@ int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whic
     /* poll all files until some stuff is read (in random order, until data is found) */
     sleep_interval = 20;
     while (1) {
-        int pos, start;
+        unsigned int pos, start;
 
         /* attempt to redeem disappeared files */
         refresh_files();
@@ -228,7 +228,7 @@ int logsuck_fin() {
 
 
 static int read_from(const source_entry_t *restrict source, char *restrict buf, size_t buflen) {
-    int i, ret, bullets;
+    unsigned int i, ret, bullets;
 
     /* read until error, newline reached, or buffer exhausted */
     i = 0;
@@ -240,7 +240,7 @@ static int read_from(const source_entry_t *restrict source, char *restrict buf, 
             usleep(20 * 1000);
             --bullets;
         }
-    } while (ret >= 0 && buf[i-1] != '\n' && i < buflen-2 && bullets > 0);
+    } while (buf[i-1] != '\n' && i < buflen-2 && bullets > 0);
     buf[i] = '\0';
     if (bullets == 0) {
         /* what's up with the writer? read() patiented forever! Discard this entry. */

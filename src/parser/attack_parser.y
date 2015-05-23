@@ -339,8 +339,8 @@ vsftpdmsg:
 
 static void yyerror(attack_t *attack, const char *msg) { /* do nothing */ }
 
-static void init_structures(int source_id, attack_t *attack) {
-    int cnt;
+static void init_structures(unsigned int source_id, attack_t *attack) {
+    unsigned int cnt;
 
     /* add metadata for this source, if new */
     for (cnt = 0; cnt < parser_metadata.num_sources; ++cnt) {

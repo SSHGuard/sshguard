@@ -119,7 +119,7 @@ int sshguard_log(int prio, char *fmt, ...) {
         fflush(stderr);
     } else {
         /* avoid the more convenient vsyslog() for portability reasons.. */
-        while (vsnprintf(msgbuf, msgbuf_len, fmt, ap) >= msgbuf_len) {
+        while ((size_t)vsnprintf(msgbuf, msgbuf_len, fmt, ap) >= msgbuf_len) {
             if (msgbuf_len >= msgbuf_max_length) break;
             /* msgbuf was too small to host message, increase it by 20% and retry */
             enlarge_buffer();

@@ -70,9 +70,7 @@ static int match_ip4(in_addr_t addr1, in_addr_t addr2, in_addr_t mask) {
 
 /* tell if IPv6 addr1 and addr2 are equivalent modulo mask */
 static int match_ip6(const struct in6_addr *restrict addr1, const struct in6_addr *restrict addr2, const struct in6_addr *restrict mask) {
-    int i;
-
-    for (i = 0; i < sizeof(addr1->s6_addr) && mask->s6_addr[i] != 0; i++) {
+    for (unsigned int i = 0; i < sizeof(addr1->s6_addr) && mask->s6_addr[i] != 0; i++) {
         if ((addr1->s6_addr[i] & mask->s6_addr[i]) != (addr2->s6_addr[i] & mask->s6_addr[i]))
             return 0;
     }
