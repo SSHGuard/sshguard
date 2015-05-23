@@ -287,7 +287,6 @@ static char *safe_fgets(char *restrict s, int size, FILE *restrict stream) {
 static void report_address(attack_t attack) {
     attacker_t *tmpent = NULL;
     attacker_t *offenderent;
-    int ret;
 
     assert(attack.address.value != NULL);
     assert(memchr(attack.address.value, '\0', sizeof(attack.address.value)) != NULL);
@@ -385,7 +384,7 @@ static void report_address(attack_t attack) {
     } else {
         sshguard_log(LOG_INFO, "Offender '%s:%d' scored %u danger in %u abuses.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger, offenderent->numhits);
         /* compute blocking time wrt the "offensiveness" */
-        for (ret = 0; ret < offenderent->numhits; ret++) {
+        for (unsigned int i = 0; i < offenderent->numhits; i++) {
             tmpent->pardontime *= 1.5;
         }
     }
@@ -395,7 +394,8 @@ static void report_address(attack_t attack) {
             tmpent->attack.address.value, tmpent->attack.address.kind, (long long int)tmpent->pardontime,
             tmpent->cumulated_danger, tmpent->numhits, (long long int)(tmpent->whenlast - tmpent->whenfirst),
             offenderent->cumulated_danger, offenderent->numhits, (long long int)(offenderent->whenlast - offenderent->whenfirst));
-    ret = fw_block(attack.address.value, attack.address.kind, attack.service);
+    int ret = fw_block(attack.address.value,
+            attack.address.kind, attack.service);
     if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
 
     /* append blocked attacker to the blocked list, and remove it from the pending list */
@@ -432,8 +432,7 @@ static void purge_limbo_stale(void) {
 static void *pardonBlocked(void *par) {
     time_t now;
     attacker_t *tmpel;
-    int ret, pos;
-
+    int ret;
 
     while (1) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
@@ -443,7 +442,7 @@ static void *pardonBlocked(void *par) {
         pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
         pthread_mutex_lock(& list_mutex);
 
-        for (pos = 0; pos < list_size(& hell); pos++) {
+        for (unsigned int pos = 0; pos < list_size(&hell); pos++) {
             tmpel = list_get_at(&hell, pos);
             /* skip blacklisted hosts (pardontime = infinite/0) */
             if (tmpel->pardontime == 0) continue;
