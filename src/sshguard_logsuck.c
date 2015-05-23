@@ -83,7 +83,7 @@ static int activate_source(source_entry_t *restrict srcent, const struct stat *f
 static int refresh_files();
 
 /* meter for SimCList */
-static size_t list_meter_sourceentry(const void *el) {
+static size_t list_meter_sourceentry() {
     return sizeof(source_entry_t);
 }
 

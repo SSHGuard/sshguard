@@ -80,8 +80,7 @@ static int match_ip6(const struct in6_addr *restrict addr1, const struct in6_add
     return 1;
 }
 
-
-static size_t whitelist_meter(const void *el) { return sizeof(addrblock_t); }
+static size_t whitelist_meter() { return sizeof(addrblock_t); }
 
 static int whitelist_compare(const void *a, const void *b) {
     int ret;

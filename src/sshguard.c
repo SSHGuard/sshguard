@@ -90,9 +90,9 @@ static int attackt_whenlast_comparator(const void *a, const void *b);
 
 /* get log lines in here. Hide the actual source and the method. Fill buf up
  * to buflen chars, return 0 for success, -1 for failure */
-static int read_log_line(char *restrict buf, size_t buflen, sourceid_t *restrict source_id);
+static int read_log_line(char *restrict buf, sourceid_t *restrict source_id);
 /* handler for termination-related signals */
-static void sigfin_handler(int signo);
+static void sigfin_handler();
 /* handler for suspension/resume signals */
 static void sigstpcont_handler(int signo);
 /* called at exit(): flush blocked addresses and finalize subsystems */
@@ -105,7 +105,7 @@ static void report_address(attack_t attack);
 /* cleanup false-alarm attackers from limbo list (ones with too few attacks in too much time) */
 static void purge_limbo_stale(void);
 /* release blocked attackers after their penalty expired */
-static void *pardonBlocked(void *par);
+static void *pardonBlocked(void *);
 
 /* create or destroy my own pidfile */
 static int my_pidfile_create();
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
             "Started with danger threshold=%u ; minimum block=%u seconds",
             opts.abuse_threshold, (unsigned int)opts.pardon_threshold);
 
-    while (read_log_line(buf, MAX_LOGLINE_LEN, &source_id) == 0) {
+    while (read_log_line(buf, &source_id) == 0) {
         attack_t parsed_attack;
         if (suspended) continue;
 
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
     exit(0);
 }
 
-static int read_log_line(char *restrict buf, size_t buflen, sourceid_t *restrict source_id) {
+static int read_log_line(char *restrict buf, sourceid_t *restrict source_id) {
     /* must fill buf, and return 0 for success and -1 for error */
 
     /* get logs from polled files ? */
@@ -402,7 +402,7 @@ static void purge_limbo_stale(void) {
     }
 }
 
-static void *pardonBlocked(void *par) {
+static void *pardonBlocked() {
     time_t now;
     attacker_t *tmpel;
     int ret, pos;
@@ -456,7 +456,7 @@ static void finishup(void) {
     sshguard_log_fin();
 }
 
-static void sigfin_handler(int signo) {
+static void sigfin_handler() {
     /* let exit() call finishup() */
     exit(0);
 }

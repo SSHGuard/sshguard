@@ -36,7 +36,7 @@ typedef struct {
     pid_t current_pid;
 } procpid;
 
-size_t procpid_meter(const void *el) {
+size_t procpid_meter() {
     return sizeof(procpid);
 }
 
