@@ -336,7 +336,7 @@ static void report_address(attack_t attack) {
 
         /* insert in the blacklisted db iff enabled */
         if (opts.blacklist_filename != NULL) {
-            switch (blacklist_lookup_address(opts.blacklist_filename, & offenderent->attack.address)) {
+            switch (blacklist_contains(&offenderent->attack.address)) {
                 case 1:     /* in blacklist */
                     /* do nothing */
                     break;
@@ -346,9 +346,7 @@ static void report_address(attack_t attack) {
                             offenderent->attack.address.value, offenderent->attack.address.kind,
                             offenderent->cumulated_danger, offenderent->numhits,
                             opts.blacklist_threshold);
-                    if (blacklist_add(opts.blacklist_filename, offenderent) != 0) {
-                        sshguard_log(LOG_ERR, "Could not blacklist offender: %s", strerror(errno));
-                    }
+                    blacklist_add(offenderent);
                     break;
                 default:    /* error while looking up */
                     sshguard_log(LOG_ERR, "Error while looking up '%s:%d' in blacklist '%s'.", attack.address.value, attack.address.kind, opts.blacklist_filename);
@@ -485,27 +483,21 @@ static void process_blacklisted_addresses() {
     list_t *blacklist;
     const char **addresses;         /* NULL-terminated array of (string) addresses to block:  char *addresses[]  */
     int *restrict service_codes;    /* array of service codes resp to the given addresses */
-    int i;
 
-
-    /* if blacklist enabled, block blacklisted addresses */
-    if (opts.blacklist_filename == NULL)
+    if (opts.blacklist_filename == NULL) {
+        // Return if blacklisting is not enabled.
         return;
+    }
 
     blacklist = blacklist_load(opts.blacklist_filename);
     if (blacklist == NULL) {
-        sshguard_log(LOG_NOTICE, "Blacklist file '%s' doesn't exist, I'll create it for you.\n", opts.blacklist_filename);
-        if (blacklist_create(opts.blacklist_filename) != 0) {
-            /* write to both destinations to make sure the user notice it */
-            fprintf(stderr, "Unable to create a blacklist file at '%s'! Terminating.\n", opts.blacklist_filename);
-            sshguard_log(LOG_CRIT, "Unable to create a blacklist file at '%s'! Terminating.\n", opts.blacklist_filename);
-            exit(1);
-        }
-        blacklist = blacklist_load(opts.blacklist_filename);
+        perror("Could not open blacklist");
+        sshguard_log(LOG_CRIT, "Fatal: Could not open blacklist file '%s'",
+                opts.blacklist_filename);
+        exit(1);
     }
 
     /* blacklist enabled */
-    assert(blacklist != NULL);
     size_t num_blacklisted = list_size(blacklist);
     sshguard_log(LOG_INFO, "Blacklist loaded, blocking %lu addresses.", (long unsigned int)num_blacklisted);
     /* prepare to call fw_block_list() to block in bulk */
@@ -515,7 +507,7 @@ static void process_blacklisted_addresses() {
     int addrkind;
     for (addrkind = ADDRKIND_IPv4; addrkind != -1; addrkind = (addrkind == ADDRKIND_IPv4 ? ADDRKIND_IPv6 : -1)) {
         /* extract from blacklist only addresses (and resp. codes) of type addrkind */
-        i = 0;
+        int i = 0;
         list_iterator_start(blacklist);
         while (list_iterator_hasnext(blacklist)) {
             const attacker_t *bl_attacker = list_iterator_next(blacklist);
@@ -540,9 +532,6 @@ static void process_blacklisted_addresses() {
     /* free temporary arrays */
     free(addresses);
     free(service_codes);
-    /* free blacklist stuff */
-    list_destroy(blacklist);
-    free(blacklist);
 }
 
 static int my_pidfile_create() {

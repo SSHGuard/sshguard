@@ -40,6 +40,8 @@
 #define stringify(x)    xstr(x)
 #define xstr(x)         #x
 
+static FILE *blacklist_file;
+static list_t *blacklist;
 
 /*          UTILITY FUNCTIONS           */
 
@@ -61,24 +63,34 @@ static size_t attacker_el_meter(const void *el) {
 
 /*          INTERFACE FUNCTIONS             */
 
+static void blacklist_close() {
+    assert(blacklist_file != NULL && blacklist != NULL);
+    fclose(blacklist_file);
+    blacklist_file = NULL;
+    list_destroy(blacklist);
+    free(blacklist);
+    blacklist = NULL;
+}
+
 list_t *blacklist_load(const char *filename) {
-    attacker_t newattacker;
-    list_t *blacklist;
-    FILE *blacklist_file;
     char blacklist_line[BL_MAXBUF];
     unsigned int linecnt;
 
-    blacklist_file = fopen(filename, "r");
-
-    if (blacklist_file == NULL)
+    assert(blacklist_file == NULL && blacklist == NULL);
+    blacklist_file = fopen(filename, "a+");
+    if (blacklist_file == NULL) {
         return NULL;
+    }
 
     blacklist = (list_t *)malloc(sizeof(list_t));
     list_init(blacklist);
     list_attributes_copy(blacklist, attacker_el_meter, 1);
+    rewind(blacklist_file);
 
     /* loading content of the file in the blacklist */
     for (linecnt = 1; fgets(blacklist_line, BL_MAXBUF, blacklist_file) != NULL; ++linecnt) {
+        attacker_t newattacker;
+
         /* discard empty lines and lines starting with a white-space or # */
         if (isspace(blacklist_line[0]) || blacklist_line[0] == '#') {
             while (blacklist_line[strlen(blacklist_line)-1] != '\n') {
@@ -112,72 +124,35 @@ list_t *blacklist_load(const char *filename) {
         list_append(blacklist, & newattacker);
     }
 
-    fclose(blacklist_file);
-
+    atexit(blacklist_close);
     return blacklist;
 }
 
-int blacklist_create(const char *filename) {
-    FILE * blacklist_file = fopen(filename, "w");
+void blacklist_add(const attacker_t *restrict newel) {
+    assert(blacklist_file != NULL && blacklist != NULL);
+    int retval = fprintf(blacklist_file, "%lu|%d|%d|%s\n",
+            newel->whenlast, newel->attack.service,
+            newel->attack.address.kind, newel->attack.address.value);
 
-    if (blacklist_file == NULL)
-        return -1;
-
-    fprintf(blacklist_file, "# SSHGuard blacklist file ( http://www.sshguard.net/ ).\n");
-    fprintf(blacklist_file, "# Format of entries: BLACKLIST_TIMESTAMP|SERVICE|ADDRESS_TYPE|ADDRESS\n");
-    fclose(blacklist_file);
-
-    return 0;
-}
-
-int blacklist_add(const char *restrict filename, const attacker_t *restrict newel) {
-    FILE * blacklist_file;
-    char blacklist_line[BL_MAXBUF];
-    unsigned int counter = 0;
-
-    /* append the new attacker in the blacklist */
-    blacklist_file = fopen(filename, "r+");
-
-    if (blacklist_file == NULL)
-        return -1;
-
-    /* count existing entries */
-    while (fgets(blacklist_line, BL_MAXBUF, blacklist_file) != NULL) {
-        /* discard empty lines */
-        // TODO: check again this condition
-        if ((blacklist_line != NULL || (blacklist_line[0] == '\0')))
-          continue;
-
-        /* check if the line is a comment */
-        if (blacklist_line[0] == '#')
-          continue;
-
-        ++counter;
+    if (retval > 0) {
+        sshguard_log(LOG_DEBUG, "Attacker '%s:%d' blacklisted.",
+                newel->attack.address.value, newel->attack.address.kind);
+        fflush(blacklist_file);
+        list_append(blacklist, newel);
+    } else {
+        sshguard_log(LOG_ERR, "Could not update blacklist: %s", strerror(errno));
     }
-
-    fprintf(blacklist_file, "%lu|%d|%d|%s\n", newel->whenlast, newel->attack.service, newel->attack.address.kind, newel->attack.address.value);
-    fclose(blacklist_file);
-
-    sshguard_log(LOG_DEBUG, "Attacker '%s:%d' blacklisted. Blacklist now %d entries.", newel->attack.address.value, newel->attack.address.kind, counter);
-
-    return 0;
 }
 
-
-int blacklist_lookup_address(const char *restrict filename, const sshg_address_t *restrict addr) {
-    attacker_t *restrict el;
-    list_t *restrict blacklist = blacklist_load(filename);
-
-    if (blacklist == NULL)
+int blacklist_contains(const sshg_address_t *restrict addr) {
+    if (blacklist == NULL) {
+        // Blacklist hasn't been loaded yet.
         return -1;
+    }
 
     sshguard_log(LOG_DEBUG, "Looking for address '%s:%d'...", addr->value, addr->kind);
     list_attributes_seeker(blacklist, seeker_addr);
-
-    el = list_seek(blacklist, addr);
-
-    list_destroy(blacklist);
-    free(blacklist);
+    attacker_t *restrict el = list_seek(blacklist, addr);
 
     if (el != NULL)
         sshguard_log(LOG_DEBUG, "Found!");

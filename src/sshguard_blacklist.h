@@ -22,10 +22,8 @@
 #define SSHGUARD_BLACKLIST_H
 
 /**
- * Load the blacklist contained at a given filename.
- *
- * Load the blacklist from a file with full path specified at "filename" into
- * a list_t object, and return it.
+ * Load blacklist from the given file. Return a list with the contents of the
+ * blacklist. Do not destroy or free the returned list.
  *
  * @param filename  full path of the file containing the black list
  * @return          NULL in case of error, or a list containing blacklisted entries
@@ -33,34 +31,20 @@
 list_t *blacklist_load(const char *filename);
 
 /**
- * Create an empty blacklist.
- *
- * Create an empty blacklist file at "filename". If such file already
- * exists, it is overwritten.
- *
- * @param filename  full path of the file to create
- * @return          0 if successfull, non-0 otherwise
- */
-int blacklist_create(const char *filename);
-
-/**
  * Add an entry to the blacklist.
  *
  * @param filename  full path of the file containing the black list
  * @param newel     ip entry to add
- *
- * @return          0 if successful, non-0 otherwise
  */
-int blacklist_add(const char *restrict filename, const attacker_t *restrict newel);
+void blacklist_add(const attacker_t *restrict newel);
 
 /**
  * Lookup if an address is present in the blacklist.
  *
- * @param filename  full path of the file containing the black list
  * @param addr      address to look up (value + type)
  *
  * @return          <0 if error; 1 if (addr,addrkind) present in blacklist, 0 otherwise
  */
-int blacklist_lookup_address(const char *restrict filename, const sshg_address_t *restrict addr);
+int blacklist_contains(const sshg_address_t *restrict addr);
 
 #endif
