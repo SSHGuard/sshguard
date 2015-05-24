@@ -336,21 +336,7 @@ static void report_address(attack_t attack) {
 
         /* insert in the blacklisted db iff enabled */
         if (opts.blacklist_filename != NULL) {
-            switch (blacklist_contains(&offenderent->attack.address)) {
-                case 1:     /* in blacklist */
-                    /* do nothing */
-                    break;
-                case 0:     /* not in blacklist */
-                    /* add it */
-                    sshguard_log(LOG_NOTICE, "Offender '%s:%d' scored %d danger in %u abuses (threshold %u) -> blacklisted.",
-                            offenderent->attack.address.value, offenderent->attack.address.kind,
-                            offenderent->cumulated_danger, offenderent->numhits,
-                            opts.blacklist_threshold);
-                    blacklist_add(offenderent);
-                    break;
-                default:    /* error while looking up */
-                    sshguard_log(LOG_ERR, "Error while looking up '%s:%d' in blacklist '%s'.", attack.address.value, attack.address.kind, opts.blacklist_filename);
-            }
+            blacklist_add(offenderent);
         }
     } else {
         sshguard_log(LOG_INFO, "Offender '%s:%d' scored %u danger in %u abuses.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger, offenderent->numhits);
@@ -513,9 +499,17 @@ static void process_blacklisted_addresses() {
             const attacker_t *bl_attacker = list_iterator_next(blacklist);
             if (bl_attacker->attack.address.kind != addrkind)
                 continue;
-            sshguard_log(LOG_DEBUG, "Loaded from blacklist (%d): '%s:%d', service %d, last seen %s.", i,
-                    bl_attacker->attack.address.value, bl_attacker->attack.address.kind, bl_attacker->attack.service,
-                    ctime(& bl_attacker->whenlast));
+
+            // Trim trailing newline from strchr().
+            char *time_str = ctime(&bl_attacker->whenlast);
+            char *newline = strchr(time_str, '\n');
+            assert(newline != NULL);
+            *newline = '\0';
+            sshguard_log(LOG_DEBUG,
+                    "blacklist: loaded %s (ip%d) on service %d: %s",
+                    bl_attacker->attack.address.value,
+                    bl_attacker->attack.address.kind,
+                    bl_attacker->attack.service, time_str);
             addresses[i] = bl_attacker->attack.address.value;
             service_codes[i] = bl_attacker->attack.service;
             ++i;

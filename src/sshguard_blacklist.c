@@ -130,17 +130,23 @@ list_t *blacklist_load(const char *filename) {
 
 void blacklist_add(const attacker_t *restrict newel) {
     assert(blacklist_file != NULL && blacklist != NULL);
+    if (blacklist_contains(&newel->attack.address)) {
+        sshguard_log(LOG_WARNING, "blacklist: %s is already blacklisted",
+                newel->attack.address.value);
+        return;
+    }
+
     int retval = fprintf(blacklist_file, "%lu|%d|%d|%s\n",
             newel->whenlast, newel->attack.service,
             newel->attack.address.kind, newel->attack.address.value);
-
     if (retval > 0) {
-        sshguard_log(LOG_DEBUG, "Attacker '%s:%d' blacklisted.",
-                newel->attack.address.value, newel->attack.address.kind);
+        sshguard_log(LOG_NOTICE, "blacklist: added %s",
+                newel->attack.address.value);
         fflush(blacklist_file);
         list_append(blacklist, newel);
     } else {
-        sshguard_log(LOG_ERR, "Could not update blacklist: %s", strerror(errno));
+        sshguard_log(LOG_ERR, "blacklist: could not add %s: %s",
+                newel->attack.address.value, strerror(errno));
     }
 }
 
@@ -150,15 +156,8 @@ int blacklist_contains(const sshg_address_t *restrict addr) {
         return -1;
     }
 
-    sshguard_log(LOG_DEBUG, "Looking for address '%s:%d'...", addr->value, addr->kind);
     list_attributes_seeker(blacklist, seeker_addr);
     attacker_t *restrict el = list_seek(blacklist, addr);
-
-    if (el != NULL)
-        sshguard_log(LOG_DEBUG, "Found!");
-    else
-        sshguard_log(LOG_DEBUG, "Not found.");
-
     return (el != NULL);
 }
 
