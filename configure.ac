@@ -21,7 +21,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
      aix)
         cp $FWALLSDIR/command_aix.h $FWALLSDIR/command.h
         useaix=true
-        AC_CHECK_PROG(genfiltpath, genfilt, `which genfilt | xargs dirname`, "")
+        AC_CHECK_PROG([genfiltpath], [genfilt])
         if test x$genfiltpath = x
         then
             # genfilt not in PATH, use "/usr/sbin" as default path
@@ -36,7 +36,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
         cp $FWALLSDIR/command_ipfilter.h $FWALLSDIR/command.h
         useipfilter=true
         # is ipf in PATH?
-        AC_CHECK_PROG(ipfpath, ipf, `which ipf | xargs dirname`, "")
+        AC_CHECK_PROG([ipfpath], [ipf])
         if test x$ipfpath = x
         then
             # if ipf is not in PATH not, use "/sbin" as default path
@@ -47,7 +47,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
      ipfw)
         useipfw=true
         # is ipfw in PATH ?
-        AC_CHECK_PROG(ipfwpath, ipfw, `which ipfw | xargs dirname`, "")
+        AC_CHECK_PROG([ipfwpath], [ipfw])
         if test x$ipfwpath = x
         then
             # if ipfw is not in PATH not, use "/sbin" as default path
@@ -69,7 +69,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
         cp $FWALLSDIR/command_iptables.h $FWALLSDIR/command.h
         useiptables=true
         # is iptables in PATH ?
-        AC_CHECK_PROG(iptablespath, iptables, `which iptables | xargs dirname`, "")
+        AC_CHECK_PROG([iptablespath], [iptables])
         if test x$iptablespath = x
         then
             # if iptables is not in PATH not, use "/sbin" as default path
@@ -81,7 +81,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
         cp $FWALLSDIR/command_pf.h $FWALLSDIR/command.h
         usepf=true
         # is pfctl in PATH ?
-        AC_CHECK_PROG(pfctlpath, pfctl, `which pfctl | xargs dirname`, "")
+        AC_CHECK_PROG([pfctlpath], [pfctl])
         if test x$pfctlpath = x
         then
             # if pfctl is not in PATH not, use "/sbin" as default path
@@ -238,26 +238,6 @@ AC_DEFINE_UNQUOTED(PFCTL_PATH, "$pfctlpath", [path for the pfctl command])
 AC_DEFINE_UNQUOTED(EGREP, $EGREP, [path and filename for a grep tool supporting -E])
 # define a suitable awk
 AC_DEFINE_UNQUOTED(AWK, $AWK, [path and filename for a suitable awk tool])
-
-# user feedback on options
-if test x$useaix = xtrue ; then
-    AC_MSG_NOTICE([Using $genfiltpath as path for genfilt])
-fi
-if test x$usehosts = xtrue ; then
-    AC_MSG_NOTICE([Using $hostsfilepath as hosts.allow file])
-fi
-if test x$useipfilter = xtrue ; then
-    AC_MSG_NOTICE([Using $ipfpath as location for ipf. Using $ipfconf as configuration file for ipfilter])
-fi
-if test x$useipfw = xtrue ; then
-    AC_MSG_NOTICE([Using $ipfwpath as location for ipfw])
-fi
-if test x$useiptables = xtrue ; then
-    AC_MSG_NOTICE([Using $iptablespath as location for iptables])
-fi
-if test x$usepf = xtrue ; then
-    AC_MSG_NOTICE([Using $pfctlpath as location for pfctl])
-fi
 
 AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile])
 
