@@ -94,13 +94,12 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
         usenull=true
         ;;
      *)
-        echo "Choose a valid firewall backend (see --help)"
-        exit 1
+        AC_MSG_ERROR([Invalid firewall backend (see help)])
         ;;
     esac
 ],
 [
- echo "Error: please choose a valid firewall backend (see --help)" && exit 1
+AC_MSG_ERROR([Please choose a firewall backend (see help)])
 ])
 
 #   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
