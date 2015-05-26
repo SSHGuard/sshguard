@@ -45,6 +45,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
         fi
         ;;
      ipfw)
+        cp $FWALLSDIR/command_ipfw.h $FWALLSDIR/command.h
         useipfw=true
         # is ipfw in PATH ?
         AC_CHECK_PROG([ipfwpath], [ipfw])
