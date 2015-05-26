@@ -13,23 +13,6 @@ AM_SILENT_RULES([yes])
 AC_ARG_ENABLE([debug], [AS_HELP_STRING([--enable-debug], [Turn on debugging])])
 AM_CONDITIONAL([DEBUG], [test x$enable_debug = xyes])
 
-#   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
-AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX],
-            [Specify the IDs range in which sshguard can put its block rules (Default: "55000-55050")])],
-[
- if test x$useipfw != xtrue ; then
-      AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
-   else
-      ipfwrange_min=`echo $withval | cut -d- -f1` 
-      ipfwrange_max=`echo $withval | cut -d- -f2`
-  fi
-  AC_MSG_NOTICE([IPFW block rules will range between $ipfwrange_min and $ipfwrange_max])
-  
-  # define IPFW range in config.h
-  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
-  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
-  ])
-
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
             [Firewall backend (one of pf, ipfw, iptables, ipfilter, hosts, aix, or null)])],
 [
@@ -119,6 +102,23 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
 [
  echo "Error: please choose a valid firewall backend (see --help)" && exit 1
 ])
+
+#   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
+AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX],
+            [Specify the IDs range in which sshguard can put its block rules (Default: "55000-55050")])],
+[
+ if test x$useipfw != xtrue ; then
+      AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
+   else
+      ipfwrange_min=`echo $withval | cut -d- -f1`
+      ipfwrange_max=`echo $withval | cut -d- -f2`
+  fi
+  AC_MSG_NOTICE([IPFW block rules will range between $ipfwrange_min and $ipfwrange_max])
+
+  # define IPFW range in config.h
+  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
+  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
+  ])
 
 AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
             [Path to the genfilt command (default from PATH)])],
