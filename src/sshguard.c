@@ -105,7 +105,7 @@ static void report_address(attack_t attack);
 /* cleanup false-alarm attackers from limbo list (ones with too few attacks in too much time) */
 static void purge_limbo_stale(void);
 /* release blocked attackers after their penalty expired */
-static void *pardonBlocked(void *);
+static void *pardonBlocked();
 
 /* create or destroy my own pidfile */
 static int my_pidfile_create();
