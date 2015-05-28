@@ -74,10 +74,10 @@ static struct {
 
 /* semantic values for tokens */
 %token <str> IPv4 IPv6 HOSTADDR WORD
-%token <num> INTEGER SYSLOG_BANNER_PID LAST_LINE_REPEATED_N_TIMES
+%token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID LAST_LINE_REPEATED_N_TIMES
 
 /* flat tokens */
-%token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 METALOG_BANNER
+%token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 METALOG_BANNER SOCKLOG_BANNER
 /* ssh */
 %token SSH_INVALUSERPREF SSH_NOTALLOWEDPREF SSH_NOTALLOWEDSUFF
 %token SSH_LOGINERR_PREF SSH_LOGINERR_SUFF SSH_LOGINERR_PAM
@@ -118,6 +118,7 @@ text:
     syslogent
     | multilogent
     | metalogent
+    | socklogent
     | logmsg
     ;
 
@@ -144,6 +145,12 @@ multilogent:
 
 metalogent:
     METALOG_BANNER logmsg
+    ;
+
+/* a socklog-generated log entry */
+socklogent:
+    SOCKLOG_BANNER_PID logmsg { attack->source = $1; }
+    | SOCKLOG_BANNER logmsg
     ;
 
 /* the "payload" of a log entry: the oridinal message generated from a process */
