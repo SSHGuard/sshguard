@@ -54,16 +54,6 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
             ipfwpath=/sbin
             AC_MSG_WARN([ipfw program not in path! Using /sbin as default unless --with-ipfw specified])
         fi
-        # test whether we have ip6fw, otherwise ipfw will be used for IPv6
-        AC_CHECK_PROG(hasip6fw, ip6fw, "true", "")
-        if test x$hasip6fw = x
-        then
-            AC_MSG_NOTICE([ip6fw program not found. Assuming ipfw supports IPv6 rules on its own.])
-        else
-            AC_MSG_NOTICE([ip6fw found. Using ip6fw for blocking IPv6 addresses.])
-            # define FWALL_HAS_IP6FW in config.h
-            AC_DEFINE(FWALL_HAS_IP6FW, 1, [use ip6fw as ipfw can't take IPv6 addresses])
-        fi
         ;;
      iptables)
         cp $FWALLSDIR/command_iptables.h $FWALLSDIR/command.h
@@ -102,23 +92,6 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
 [
  echo "Error: please choose a valid firewall backend (see --help)" && exit 1
 ])
-
-#   --with-ipfw-range       for setting the boundaries to IPFW block rules IDs
-AC_ARG_WITH([ipfw-rules-range], [AS_HELP_STRING([--with-ipfw-rules-range=MIN-MAX],
-            [Specify the IDs range in which sshguard can put its block rules (Default: "55000-55050")])],
-[
- if test x$useipfw != xtrue ; then
-      AC_MSG_ERROR([Can not define define ipfw path in this context, where ipfw has not been chosen as firewall backend])
-   else
-      ipfwrange_min=`echo $withval | cut -d- -f1`
-      ipfwrange_max=`echo $withval | cut -d- -f2`
-  fi
-  AC_MSG_NOTICE([IPFW block rules will range between $ipfwrange_min and $ipfwrange_max])
-
-  # define IPFW range in config.h
-  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MIN, [$ipfwrange_min], [minimum block rule ID to use in IPFW ruleset])
-  AC_DEFINE_UNQUOTED(IPFW_RULERANGE_MAX, [$ipfwrange_max], [maximum block rule ID to use in IPFW ruleset])
-  ])
 
 AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
             [Path to the genfilt command (default from PATH)])],
@@ -216,7 +189,6 @@ AM_CONDITIONAL(FWALL_HOSTS, test x$usehosts = xtrue)
 AM_CONDITIONAL(FWALL_IPFILTER, test x$useipfilter = xtrue)
 # IPFW chosen
 AM_CONDITIONAL(FWALL_IPFW, test x$useipfw = xtrue)
-AM_CONDITIONAL(FWALL_HAS_IP6FW, test x$hasip6fw = xtrue)
 # IPTABLES chosen
 AM_CONDITIONAL(FWALL_IPTABLES, test x$useiptables = xtrue)
 # PF chosen
@@ -232,8 +204,6 @@ AC_DEFINE_UNQUOTED(HOSTSFILE_PATH, "$hostsfilepath", [file for /etc/hosts.allow]
 AC_DEFINE_UNQUOTED(IPFILTER_CONFFILE, "$ipfconf", [filename of the ipfilter configuration file])
 # define $ipfwpath in config.h
 AC_DEFINE_UNQUOTED(IPFW_PATH, "$ipfwpath", [path for the ipfw command])
-# define $ip6fwpath in config.h
-AC_DEFINE_UNQUOTED(IP6FW_PATH, "$ip6fwpath", [path for ip6fw command, use null if non-existent FreeBSD >=7])
 # define $iptablespath in config.h
 AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$iptablespath", [path for the iptables command])
 # define $ipfpath in config.h
