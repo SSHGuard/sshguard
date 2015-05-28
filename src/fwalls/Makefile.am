@@ -10,32 +10,3 @@ else
 libfwall_a_SOURCES = command.c
 endif
 endif
-
-#if FWALL_AIX
-#libfwall_a_SOURCES = command.c
-#else
-#if FWALL_HOSTS
-#libfwall_a_SOURCES = hosts.c
-#else
-#if FWALL_IPFILTER
-#libfwall_a_SOURCES = command.c
-#else
-#if FWALL_IPFW
-#libfwall_a_SOURCES = ipfw.c
-#else
-#if FWALL_IPTABLES
-#libfwall_a_SOURCES = command.c
-#else
-#if FWALL_PF
-#libfwall_a_SOURCES = command.c
-#else
-#if FWALL_NULL
-#libfwall_a_SOURCES = command.c
-#else
-#libfwall_a_SOURCES = # illegal!
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
