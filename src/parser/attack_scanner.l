@@ -147,7 +147,7 @@ HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 
  /* SSH: connections open and closed without auth attempts */
 "Did not receive identification string from "                   { return SSH_NOIDENTIFSTR; }
-"Connection closed by "|"Received disconnect from "             { BEGIN(ssh_disconnect); return SSH_DISCONNECT_PREF; }
+"error: "?("Connection closed by "|"Received disconnect from ") { BEGIN(ssh_disconnect); return SSH_DISCONNECT_PREF; }
 <ssh_disconnect>[: ].*"[preauth]"                               { BEGIN(INITIAL); return SSH_PREAUTH_SUFF; }
 
  /* SSH: clients connecting with other application protocols */
