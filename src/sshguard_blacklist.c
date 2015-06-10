@@ -100,16 +100,24 @@ list_t *blacklist_load(const char *filename) {
             continue;
         }
 
-        /* line is valid, do create a list entry for it */
-        if (sscanf(blacklist_line, "%lu|%d|%d|%" stringify(ADDRLEN) "s", & newattacker.whenlast,
-               & newattacker.attack.service,
-               & newattacker.attack.address.kind, newattacker.attack.address.value) != 4) {
-            sshguard_log(LOG_NOTICE, "Blacklist entry (line #%d of '%s') appears to be malformatted. Ignoring.", linecnt, filename);
+        long long blacklist_time;
+        int service_no;
+        if (sscanf(blacklist_line, "%lld|%d|%d|%" stringify(ADDRLEN) "s",
+                    &blacklist_time, &service_no,
+                    &newattacker.attack.address.kind,
+                    newattacker.attack.address.value) != 4) {
+            sshguard_log(LOG_NOTICE,
+                    "blacklist: ignoring malformed line %d", linecnt);
             continue;
         }
-        if (newattacker.attack.address.kind != ADDRKIND_IPv4 && newattacker.attack.address.kind != ADDRKIND_IPv6) {
+        newattacker.whenlast = (time_t)blacklist_time;
+        newattacker.attack.service = (enum service)service_no;
+
+        if (newattacker.attack.address.kind != ADDRKIND_IPv4 &&
+                newattacker.attack.address.kind != ADDRKIND_IPv6) {
             /* unknown address type */
-            sshguard_log(LOG_NOTICE, "Blacklist entry (line #%d of '%s') has unknown type %d. Ignoring.", linecnt, filename, newattacker.attack.address.kind);
+            sshguard_log(LOG_NOTICE,
+                    "blacklist: unknown address type on line %d", linecnt);
             continue;
         }
 
@@ -136,8 +144,8 @@ void blacklist_add(const attacker_t *restrict newel) {
         return;
     }
 
-    int retval = fprintf(blacklist_file, "%lu|%d|%d|%s\n",
-            newel->whenlast, newel->attack.service,
+    int retval = fprintf(blacklist_file, "%lld|%d|%d|%s\n",
+            (long long)newel->whenlast, newel->attack.service,
             newel->attack.address.kind, newel->attack.address.value);
     if (retval > 0) {
         sshguard_log(LOG_NOTICE, "blacklist: added %s",
