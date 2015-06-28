@@ -18,23 +18,19 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
+#include "config.h"
 
-
-#include <unistd.h>
-#include <string.h>
 #include <assert.h>
-#include <stdlib.h>
+#include <signal.h>
 #include <stdio.h>
-#include <errno.h>
-#include <ctype.h>
-#include <sys/types.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
+#include "fw.h"
 #include "parser/address.h"
-#include "sshguard_fw.h"
 #include "sshguard_log.h"
-
-#include "command.h"
 
 #define MAX_ADDRESSES_PER_LIST      2500
 
@@ -54,7 +50,6 @@
 #define ACTION_NAME_RELEASE         "release"
 #define ACTION_NAME_FLUSH           "flush"
 
-
 /*
  * If getenv("SSHGUARD_EVENT_EXECUTE") is available, this takes it as a command
  * string to execute on every event, before the actual backend command is run.
@@ -73,83 +68,40 @@
  */
 const char *extra_command;
 
-/* Prepare the environment variables to execute a command. */
-static void prepare_cmd_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
-/* Clean up the environment variables set to execute a command. */
-static void clear_cmd_environment();
+static FILE *fw_pipe;
 
-/* Run a command for a given event. Takes care of running extra_command before, if any is set. */
-static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service);
-
+static void fw_sigpipe() {
+    sshguard_log(LOG_CRIT, "fw: broken pipe");
+    exit(EXIT_FAILURE);
+}
 
 int fw_init() {
     extra_command = getenv("SSHGUARD_EVENT_EXECUTE");
-    return (run_command(ACTION_NAME_INIT, COMMAND_INIT, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
+    signal(SIGPIPE, fw_sigpipe);
+    fw_pipe = popen("exec " PREFIX "/libexec/sshg-fw", "w");
+    return fw_pipe == NULL ? FWALL_ERR : FWALL_OK;
 }
 
 int fw_fin() {
-    int ret;
-
-    ret = run_command(ACTION_NAME_FIN, COMMAND_FIN, NULL, 0, 0);
-
-    clear_cmd_environment();
-
     extra_command = NULL;
-
-    return (ret == 0 ? FWALL_OK : FWALL_ERR);
+    fprintf(fw_pipe, "\n");
+    fflush(fw_pipe);
+    return pclose(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
 }
 
-int fw_block(const char *restrict addr, int addrkind, int service) {
-    return (run_command(ACTION_NAME_BLOCK, COMMAND_BLOCK, addr, addrkind, service) == 0 ? FWALL_OK : FWALL_ERR);
+int fw_block(const attack_t *attack) {
+    fprintf(fw_pipe, "block %s %d\n", attack->address.value, attack->address.kind);
+    return fflush(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
 }
 
-int fw_block_list(const char *restrict addresses[], int addrkind, const int service_codes[]) {
-    /* block each address individually */
-    int i;
-
-    assert(addresses != NULL);
-    assert(service_codes != NULL);
-
-#ifdef COMMAND_BLOCK_LIST
-    char address_list[MAX_ADDRESSES_PER_LIST * ADDRLEN];
-    address_list[0] = '\0';
-    strcpy(address_list, addresses[0]);
-    size_t first_free_char = strlen(address_list);
-    int j;
-    for (i = 1; addresses[i] != NULL; ++i) {
-        /* call list-blocking command passing SSHG_ADDRLIST env var as "addr1,addr2,...,addrN" */
-        address_list[first_free_char] = ',';
-        for (j = 0; addresses[i][j] != '\0'; ++j) {
-            address_list[++first_free_char] = addresses[i][j];
-        }
-        ++first_free_char;
-
-        if (first_free_char >= sizeof(address_list)) {
-            sshguard_log(LOG_CRIT, "Wanted to bulk-block %d addresses, but my buffer can't take this many.", i);
-            return FWALL_ERR;
-        }
-    }
-    address_list[first_free_char] = '\0';
-
-    /* FIXME: we are blocking all addresses as they were to the same service */
-    return run_command(ACTION_NAME_BLOCK_LIST, COMMAND_BLOCK_LIST, address_list, addrkind, service_codes[0]);
-
-#else
-    int err = FWALL_OK;
-    for (int i = 0; addresses[i] != NULL; i++) {
-        if (fw_block(addresses[i], addrkind, service_codes[i]) != FWALL_OK)
-            err = FWALL_ERR;
-    }
-    return err;
-#endif
+int fw_release(const attack_t *attack) {
+    fprintf(fw_pipe, "release %s %d\n", attack->address.value, attack->address.kind);
+    return fflush(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
 }
 
-int fw_release(const char *restrict addr, int addrkind, int service) {
-    return (run_command(ACTION_NAME_RELEASE, COMMAND_RELEASE, addr, addrkind, service) == 0 ? FWALL_OK : FWALL_ERR);
-}
-
-int fw_flush(void) {
-    return (run_command(ACTION_NAME_FLUSH, COMMAND_FLUSH, NULL, 0, 0) == 0 ? FWALL_OK : FWALL_ERR);
+int fw_flush() {
+    fprintf(fw_pipe, "flush\n");
+    return fflush(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
 }
 
 static void prepare_cmd_environment(const char *restrict action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
@@ -206,25 +158,15 @@ static void clear_cmd_environment() {
 
 }
 
-static int run_command(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
+static int run_hook(const char *action_name, const char *restrict command, const char *restrict addr, int addrkind, int service) {
     int ret;
-    const char *ultimate_cmd;
 
     /* prepare environment */
     prepare_cmd_environment(action_name, command, addr, addrkind, service);
 
-    if (extra_command == NULL) {
-        /* run backend command directly */
-        if (command == NULL || strlen(command) == 0) return 0;
-        ultimate_cmd = command;
-    } else {
-        /* extra command specified; run this in place of backend command */
-        ultimate_cmd = extra_command;
-    }
-    
-    ret = system(ultimate_cmd);
+    ret = system(extra_command);
     ret = WEXITSTATUS(ret);
-    sshguard_log(LOG_DEBUG, "Run command \"%s\": exited %d.", ultimate_cmd, ret);
+    sshguard_log(LOG_DEBUG, "Run command \"%s\": exited %d.", extra_command, ret);
 
     clear_cmd_environment();
 

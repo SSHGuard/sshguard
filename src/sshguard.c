@@ -28,11 +28,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "fwalls/fw.h"
 #include "parser/parser.h"
 #include "simclist.h"
 #include "sshguard.h"
 #include "sshguard_blacklist.h"
-#include "sshguard_fw.h"
 #include "sshguard_log.h"
 #include "sshguard_logsuck.h"
 #include "sshguard_options.h"
@@ -333,8 +333,7 @@ static void report_address(attack_t attack) {
     list_sort(& offenders, -1);
     log_block(tmpent, offenderent);
 
-    int ret = fw_block(attack.address.value,
-            attack.address.kind, attack.service);
+    int ret = fw_block(&attack);
     if (ret != FWALL_OK) {
         sshguard_log(LOG_ERR, "fw: failed to block (%d)", ret);
     }
@@ -380,8 +379,7 @@ static void unblock_expired() {
             sshguard_log(LOG_INFO, "%s: unblocking after %lld secs",
                          tmpel->attack.address.value,
                          (long long)(now - tmpel->whenlast));
-            ret = fw_release(tmpel->attack.address.value,
-                    tmpel->attack.address.kind, tmpel->attack.service);
+            ret = fw_release(&tmpel->attack);
             if (ret != FWALL_OK) {
                 sshguard_log(LOG_ERR, "fw: failed to unblock (%d)", ret);
             }
@@ -436,8 +434,7 @@ static void block_list(list_t *list) {
     list_iterator_start(list);
     while (list_iterator_hasnext(list)) {
         attacker_t *next = list_iterator_next(list);
-        fw_block(next->attack.address.value, next->attack.address.kind,
-                next->attack.service);
+        fw_block(&next->attack);
     }
     list_iterator_stop(list);
 }

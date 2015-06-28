@@ -30,7 +30,7 @@
 
 #include "../config.h"
 #include "../sshguard_log.h"
-#include "../sshguard_fw.h"
+#include "fw.h"
 #include "parser/address.h"
 
 #ifndef HOSTSFILE_PATH

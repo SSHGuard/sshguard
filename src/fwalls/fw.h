@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007,2008,2009 Mij <mij@sshguard.net>
+ * Copyright (c) 2007,2008,2009,2010 Mij <mij@sshguard.net>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,17 +17,38 @@
 /*
  * SSHGuard. See http://www.sshguard.net
  */
-#ifndef COMMAND_H
-#define COMMAND_H
 
-#include "../config.h"
+#ifndef FW_H
+#define FW_H
 
-#define COMMAND_INIT    ""
-#define COMMAND_FIN     ""
+#include "parser/attack.h"
 
-#define COMMAND_BLOCK   PFCTL_PATH "/pfctl -k $SSHG_ADDR -t sshguard -T add $SSHG_ADDR"
-#define COMMAND_RELEASE PFCTL_PATH "/pfctl -t sshguard -T del $SSHG_ADDR"
+#define FWALL_OK    0
+#define FWALL_ERR  -1
 
-#define COMMAND_FLUSH   PFCTL_PATH "/pfctl -t sshguard -T flush"
+/**
+ * Start the firewall process.
+ */
+int fw_init(void);
+
+/**
+ * Stop the firewall process.
+ */
+int fw_fin(void);
+
+/**
+ * Block an address associated with an attack.
+ */
+int fw_block(const attack_t *attack);
+
+/**
+ * Release an address associated with an attack.
+ */
+int fw_release(const attack_t *attack);
+
+/**
+ * Release all blocked addresses.
+ */
+int fw_flush(void);
 
 #endif
