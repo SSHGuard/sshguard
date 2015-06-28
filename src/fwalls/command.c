@@ -110,8 +110,6 @@ int fw_block_list(const char *restrict addresses[], int addrkind, const int serv
     assert(addresses != NULL);
     assert(service_codes != NULL);
 
-    if (addresses[0] == NULL) return FWALL_OK;
-
 #ifdef COMMAND_BLOCK_LIST
     char address_list[MAX_ADDRESSES_PER_LIST * ADDRLEN];
     address_list[0] = '\0';
@@ -138,17 +136,10 @@ int fw_block_list(const char *restrict addresses[], int addrkind, const int serv
 
 #else
     int err = FWALL_OK;
-    for (i = 0; addresses[i] != NULL; i++) {
-        /* repeatedly call single-blocking command for each address */
+    for (int i = 0; addresses[i] != NULL; i++) {
         if (fw_block(addresses[i], addrkind, service_codes[i]) != FWALL_OK)
             err = FWALL_ERR;
     }
-
-    if (err == FWALL_OK)
-        sshguard_log(LOG_INFO, "Blocked %d addresses without errors.", i);
-    else
-        sshguard_log(LOG_INFO, "Some errors while trying to block %d addresses.", i);
-
     return err;
 #endif
 }
