@@ -38,8 +38,11 @@
 
 sshg_opts opts;
 
-/* dumps usage message to standard error */
-static void usage(void);
+static void usage(void) {
+    fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file] [-e script]\n"
+                    "\t\t[-f service:pid-file] [-i pidfile] [-l source] [-p interval]\n"
+                    "\t\t[-s interval] [-w address | file]\n");
+}
 
 static void version(void) {
     fprintf(stderr, PACKAGE_STRING "\n");
@@ -57,7 +60,7 @@ int get_options_cmdline(int argc, char *argv[]) {
     opts.stale_threshold = DEFAULT_STALE_THRESHOLD;
     opts.abuse_threshold = DEFAULT_ABUSE_THRESHOLD;
     opts.has_polled_files = 0;
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vdh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vh")) != -1) {
         switch (optch) {
             case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
                 opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
@@ -66,10 +69,6 @@ int get_options_cmdline(int argc, char *argv[]) {
                     strcpy(opts.blacklist_filename, optarg);
                 }
                 break;
-
-            case 'd':   /* (historical) debugging */
-                fprintf(stderr, "Debugging mode now uses environment variable. Run:\n\tenv SSHGUARD_DEBUG=\"\" %s ...\n", argv[0]);
-                return -1;
 
             case 'p':   /* pardon threshold interval */
                 opts.pardon_threshold = strtol(optarg, (char **)NULL, 10);
@@ -91,13 +90,17 @@ int get_options_cmdline(int argc, char *argv[]) {
 
             case 'a':   /* abuse threshold count */
                 opts.abuse_threshold = strtol(optarg, (char **)NULL, 10);
-                if (opts.abuse_threshold < 1) {
-                    fprintf(stderr, "Doesn't make sense to have an abuse threshold lower than 1 attempt. Terminating.\n");
-                    usage();
+                if (opts.abuse_threshold < DEFAULT_ATTACKS_DANGEROUSNESS) {
+                    fprintf(stderr,
+                            "Abuse threshold should be greater than one attack (%d danger)\n",
+                            DEFAULT_ATTACKS_DANGEROUSNESS);
                     return -1;
-                } else if (opts.abuse_threshold < DEFAULT_ABUSE_THRESHOLD) {
-                    fprintf(stderr, "Warning! Sshguard now uses *attack dangerousness*, not occurrences, to gauge threats.\n");
-                    fprintf(stderr, "Default dangerousness per attack is %u, default threshold is %d.\n", DEFAULT_ATTACKS_DANGEROUSNESS, DEFAULT_ABUSE_THRESHOLD);
+                }
+
+                if (opts.abuse_threshold % DEFAULT_ATTACKS_DANGEROUSNESS != 0) {
+                    fprintf(stderr,
+                            "Warning: abuse threshold should be a multiple of %d\n",
+                            DEFAULT_ATTACKS_DANGEROUSNESS);
                 }
                 break;
 
@@ -170,21 +173,4 @@ int get_options_cmdline(int argc, char *argv[]) {
     }
 
     return 0;
-}
-
-static void usage(void) {
-    fprintf(stderr, "Usage:\nsshguard [-b <thr:file>] [-w <whlst>]{0,n} [-a num] [-p sec] [-s sec]\n\t[-l <source>] [-f <srv:pidfile>]{0,n} [-i <pidfile>] [-v]\n");
-    /* fprintf(stderr, "\t-d\tDebugging mode: don't fork to background, and dump activity to stderr.\n"); */
-    fprintf(stderr, "\t-b\tBlacklist: thr = blacklist from this total incurred danger, file = blacklist filename.\n");
-    fprintf(stderr, "\t-a\tIncurred danger score after which blocking an address (%d)\n", DEFAULT_ABUSE_THRESHOLD);
-    fprintf(stderr, "\t-p\tSeconds after which unblocking a blocked address (%d)\n", DEFAULT_PARDON_THRESHOLD);
-    fprintf(stderr, "\t-w\tWhitelisting of addr/host/block, or take from file if starts with \"/\" or \".\" (repeatable)\n");
-    fprintf(stderr, "\t-s\tSeconds after which forgetting about a cracker candidate (%d)\n", DEFAULT_STALE_THRESHOLD);
-    fprintf(stderr, "\t-l\tAdd the given log source to Log Sucker's monitored sources (off)\n");
-    fprintf(stderr, "\t-f\t\"authenticate\" service's logs through its process pid, as in pidfile\n");
-    fprintf(stderr, "\t-i\tWhen started, save PID in the given file; useful for startup scripts (off)\n");
-    fprintf(stderr, "\t-e\tEvent script that is executed each time a firewall event is risen (it must be the absolute path if the script is not in the system path).\n");
-    fprintf(stderr, "\t-v\tDump version message to stderr, supply this when reporting bugs\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, "\tThe SSHGUARD_DEBUG environment variable enables debugging mode (verbosity + interactivity).\n");
 }
