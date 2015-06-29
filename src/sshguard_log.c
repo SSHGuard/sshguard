@@ -54,23 +54,6 @@ int sshguard_log_init(int debugmode) {
     return 0;
 }
 
-/* enable/disable debug mode */
-int sshguard_log_debug(int use_debug) {
-    int tmp;
-
-    if (sshg_log_debugging == use_debug)
-        return use_debug;
-
-    if (use_debug)
-        closelog();
-    else
-        openlog("sshguard", LOG_PID, LOG_AUTH);
-
-    tmp = sshg_log_debugging;
-    sshg_log_debugging = use_debug;
-    return tmp;
-}
-
 /* finalize the given logging subsystem */
 int sshguard_log_fin() {
     if (! sshg_log_debugging) closelog();

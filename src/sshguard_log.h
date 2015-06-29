@@ -43,17 +43,6 @@ extern const int sshguard_log_minloglevel;
  */
 int sshguard_log_init(int debugmode);
 
-
-/**
- * Enable or disable debug mode.
- *
- * @param use_debug     0 to disable debug mode, non-0 to enable it
- *
- * @return              the previous state
- */
-int sshguard_log_debug(int use_debug);
-
-
 /**
  * Issue a log message.
  *
