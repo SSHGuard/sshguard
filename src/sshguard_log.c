@@ -18,13 +18,12 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "sshguard_log.h"
-
 
 const int sshguard_log_minloglevel = LOG_NOTICE;
 

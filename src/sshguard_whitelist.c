@@ -18,24 +18,20 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <regex.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
-#include <errno.h>
 #include <assert.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <regex.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
 
+#include "parser/address.h"
 #include "simclist.h"
 #include "sshguard_log.h"
 #include "sshguard_whitelist.h"
-#include "parser/address.h"
 
 #define WHITELIST_SRCLINE_LEN       300
 

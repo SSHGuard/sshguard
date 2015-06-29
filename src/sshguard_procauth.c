@@ -20,13 +20,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <sys/wait.h>
 #include <string.h>
-#include <errno.h>
+#include <sys/wait.h>
 #include <unistd.h>
-#include <simclist.h>
 
+#include "simclist.h"
 #include "sshguard_log.h"
 #include "sshguard_procauth.h"
 

@@ -21,33 +21,23 @@
 #include "config.h"
 
 #include <assert.h>
-#include <stdio.h>
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
-/* to sleep POSIX-compatibly with select() */
-#include <sys/time.h>
-
+#include <unistd.h>
 
 #include "fnv.h"
 #include "simclist.h"
-
 #include "sshguard.h"
 #include "sshguard_log.h"
-
-
 #include "sshguard_logsuck.h"
-
 
 #ifndef STDIN_FILENO
 #   define STDIN_FILENO     0
 #endif
-
 
 /* factor of growth of the interval between polls while in idle */
 #define     LOGPOLL_INTERVAL_GROWTHFACTOR     0.03

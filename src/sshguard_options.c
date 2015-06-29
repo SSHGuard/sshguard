@@ -18,23 +18,22 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h> /* stat() function and stat structure */
-
 #include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
 
 #include "sshguard.h"
-#include "sshguard_procauth.h"
-#include "sshguard_whitelist.h"
 #include "sshguard_logsuck.h"
 #include "sshguard_options.h"
+#include "sshguard_procauth.h"
+#include "sshguard_whitelist.h"
 
 sshg_opts opts;
 

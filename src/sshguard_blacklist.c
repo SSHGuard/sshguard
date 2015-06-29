@@ -18,21 +18,16 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <inttypes.h>
-/* for hton*() functions */
-#include <arpa/inet.h>
 #include <assert.h>
 #include <ctype.h>
-
-#include <simclist.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "parser/attack.h"
-#include "sshguard_log.h"
+#include "simclist.h"
 #include "sshguard_blacklist.h"
+#include "sshguard_log.h"
 
 #define BL_MAXBUF      1024
 #define BL_NUMENT      5

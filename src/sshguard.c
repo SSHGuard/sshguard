@@ -18,38 +18,25 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
+#include <assert.h>
 #include <pthread.h>
 #include <signal.h>
-#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-#include <simclist.h>
-
-/* subsystem for parsing log entries, notably parse_line() */
 #include "parser/parser.h"
-
-/* logging subsystem, sshguard_log() */
-#include "sshguard_log.h"
-/* functions for getting user's preferences */
-#include "sshguard_options.h"
-/* functions for managing whitelist (addresses not to block): whitelist_*() */
-#include "sshguard_whitelist.h"
-/* functions for reading and updating the blacklist (addresses to block and never release): blacklist_*() */
-#include "sshguard_blacklist.h"
-/* functions for log messages verification: procauth_*() */
-#include "sshguard_procauth.h"
-/* functions for controlling the underlying firewall: fw_*() */
-#include "sshguard_fw.h"
-/* seeker functions for lists */
 #include "seekers.h"
-/* subsystem for polling multiple log files and getting log entries */
-#include "sshguard_logsuck.h"
-
+#include "simclist.h"
 #include "sshguard.h"
+#include "sshguard_blacklist.h"
+#include "sshguard_fw.h"
+#include "sshguard_log.h"
+#include "sshguard_logsuck.h"
+#include "sshguard_options.h"
+#include "sshguard_procauth.h"
+#include "sshguard_whitelist.h"
 
 #define MAX_LOGLINE_LEN     1000
 

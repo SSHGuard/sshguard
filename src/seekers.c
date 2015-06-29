@@ -1,8 +1,6 @@
 #include <assert.h>
 #include <string.h>
 
-#include <simclist.h>
-
 #include "parser/attack.h"
 #include "seekers.h"
 
