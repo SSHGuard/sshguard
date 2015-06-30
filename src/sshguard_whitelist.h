@@ -32,7 +32,7 @@
  *
  * @see whitelist_fin()
  */
-int whitelist_init(void);
+void whitelist_init(void);
 
 /**
  * Start a session for configuring the whitelist.
@@ -49,20 +49,16 @@ int whitelist_conf_init(void);
 
 /**
  * End a session for configuring the whitelist.
- *
- * @return 0
  */
-int whitelist_conf_fin(void);
+void whitelist_conf_fin(void);
 
 /**
  * Terminate the whitelisting subsystem.
  *
  * No calls to any whitelist_*() function can occur after
  * this, unless whitelist_init() is called first.
- *
- * @return  0 if success, <0 if failure
  */
-int whitelist_fin(void);
+void whitelist_fin(void);
 
 /**
  * Adds entries to whitelist from file.

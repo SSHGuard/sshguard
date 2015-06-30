@@ -44,17 +44,12 @@ list_t proclist;
 static pid_t procauth_getprocpid(char *filename);
 static int procauth_ischildof(pid_t child, pid_t parent);
 
-
-
-int procauth_init() {
-    /* assume random number generator already seeded */
+void procauth_init() {
     list_init(&proclist);
     list_attributes_copy(&proclist, procpid_meter, 1);
-
-    return 0;
 }
 
-int procauth_fin() {
+void procauth_fin() {
     procpid *pp;
 
     /* free filenames */
@@ -67,7 +62,6 @@ int procauth_fin() {
 
     /* destroy the list itself */
     list_destroy(&proclist);
-    return 0;
 }
 
 int procauth_addprocess(char *conf) {

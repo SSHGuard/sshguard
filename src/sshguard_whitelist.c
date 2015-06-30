@@ -123,24 +123,20 @@ int whitelist_conf_init(void) {
     return 0;
 }
 
-int whitelist_conf_fin(void) {
+void whitelist_conf_fin() {
     regfree(&wl_ip4reg);
     regfree(&wl_ip6reg);
     regfree(&wl_hostreg);
-    return 0;
 }
 
-int whitelist_init(void) {
+void whitelist_init() {
     list_init(&whitelist);
     list_attributes_copy(&whitelist, whitelist_meter, 1);
     list_attributes_comparator(&whitelist, whitelist_compare);
-    
-    return 0;
 }
 
-int whitelist_fin(void) {
+void whitelist_fin() {
     list_destroy(&whitelist);
-    return 0;
 }
 
 int whitelist_file(const char *restrict filename) {

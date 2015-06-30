@@ -53,7 +53,7 @@ int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whic
  *
  * @return 0 on success, -1 on error
  */
-int logsuck_fin();
+void logsuck_fin(void);
 
 #endif
 

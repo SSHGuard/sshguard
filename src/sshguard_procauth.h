@@ -24,10 +24,10 @@
 #include <sys/types.h>
 
 /* initialize the procauth subsystem */
-int procauth_init();
+void procauth_init(void);
 
 /* finalize the procauth subsystem */
-int procauth_fin();
+void procauth_fin(void);
 
 /* add a process to the list of authorizable given its configuration.
  * Configuration format is: "digit:string", meaning: service_code:pid_filename

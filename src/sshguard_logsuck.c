@@ -199,7 +199,7 @@ int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whic
     return -1;
 }
 
-int logsuck_fin() {
+void logsuck_fin() {
     source_entry_t *restrict myentry;
 
     /* close all files and release memory for metadata */
@@ -210,10 +210,7 @@ int logsuck_fin() {
         close(myentry->current_descriptor);
     }
     list_iterator_stop(& sources_list);
-
     list_destroy(& sources_list);
-
-    return 0;
 }
 
 
