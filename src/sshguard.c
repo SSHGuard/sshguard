@@ -98,19 +98,17 @@ static void *pardonBlocked();
 static int my_pidfile_create();
 static void my_pidfile_destroy();
 
-
 int main(int argc, char *argv[]) {
     pthread_t tid;
-    int retv;
     sourceid_t source_id;
     char buf[MAX_LOGLINE_LEN];
-    int sshg_debugging;
 
-    /* initializations */
-    srand(time(NULL));
-    sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
-    yydebug = sshg_debugging;
+    int sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
+    sshguard_log_init(sshg_debugging);
     yy_flex_debug = sshg_debugging;
+    yydebug = sshg_debugging;
+
+    srand(time(NULL));
 
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
@@ -120,25 +118,19 @@ int main(int argc, char *argv[]) {
     list_init(&offenders);
     list_attributes_seeker(& offenders, seeker_addr);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
-    pthread_mutex_init(& list_mutex, NULL);
 
-
-    /* logging system */
-    sshguard_log_init(sshg_debugging);
-
-    /* whitelisting system */
+    // Initialize whitelist; must be called before parsing arguments.
     if (whitelist_init() != 0 || whitelist_conf_init() != 0) {
         fprintf(stderr, "Could not initialize the whitelist engine.\n");
         exit(1);
     }
 
-    /* process authorization system */
+    // Initialize procauth; must be called before parsing arguments.
     if (procauth_init() != 0) {
         fprintf(stderr, "Could not initialize the process authorization subsystem.");
         exit(1);
     }
 
-    /* parsing the command line */
     if (get_options_cmdline(argc, argv) != 0) {
         exit(1);
     }
@@ -150,14 +142,6 @@ int main(int argc, char *argv[]) {
         atexit(my_pidfile_destroy);
     }
 
-    /* whitelist localhost */
-    if (whitelist_add("127.0.0.1") != 0) {
-        fprintf(stderr, "Could not whitelist localhost. Terminating...\n");
-        exit(1);
-    }
-
-    whitelist_conf_fin();
-
     /* address blocking system */
     if (fw_init() != FWALL_OK) {
         sshguard_log(LOG_CRIT, "Could not init firewall. Terminating.\n");
@@ -165,8 +149,8 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    /* set finalization routine */
-    atexit(finishup);
+    // Load blacklist and block listed addresses.
+    process_blacklisted_addresses();
 
     /* suspension signals */
     signal(SIGTSTP, sigstpcont_handler);
@@ -176,17 +160,24 @@ int main(int argc, char *argv[]) {
     signal(SIGTERM, sigfin_handler);
     signal(SIGHUP, sigfin_handler);
     signal(SIGINT, sigfin_handler);
+    atexit(finishup);
 
-    /* load blacklisted addresses and block them (if requested) */
-    process_blacklisted_addresses();
+    // TODO: Privilege separation goes here!
 
-    
+    /* whitelist localhost */
+    if (whitelist_add("127.0.0.1") != 0) {
+        fprintf(stderr, "Could not whitelist localhost. Terminating...\n");
+        exit(1);
+    }
+
+    whitelist_conf_fin();
+
     /* start thread for purging stale blocked addresses */
+    pthread_mutex_init(&list_mutex, NULL);
     if (pthread_create(&tid, NULL, pardonBlocked, NULL) != 0) {
         perror("pthread_create()");
         exit(2);
     }
-
 
     /* initialization successful */
     sshguard_log(LOG_NOTICE,
@@ -197,7 +188,7 @@ int main(int argc, char *argv[]) {
         attack_t parsed_attack;
         if (suspended) continue;
 
-        retv = parse_line(source_id, buf, &parsed_attack);
+        int retv = parse_line(source_id, buf, &parsed_attack);
         if (retv != 0) {
             /* sshguard_log(LOG_DEBUG, "Skip line '%s'", buf); */
             continue;
@@ -414,14 +405,21 @@ static void *pardonBlocked() {
 
 /* finalization routine */
 static void finishup(void) {
-    /* flush blocking rules */
     sshguard_log(LOG_NOTICE, "Got exit signal, flushing blocked addresses and exiting...");
-    fw_flush();
-    if (fw_fin() != FWALL_OK) sshguard_log(LOG_ERR, "Cound not finalize firewall.");
-    if (whitelist_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the whitelisting system.");
-    if (procauth_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the process authorization subsystem.");
+
+    if (fw_flush() != FWALL_OK) {
+        sshguard_log(LOG_ERR, "Could not flush blocked addresses!");
+    }
+    fw_fin();
+
     if (opts.has_polled_files) {
         if (logsuck_fin() != 0) sshguard_log(LOG_ERR, "Could not finalize the log polling subsystem.");
+    }
+    if (procauth_fin() != 0) {
+        sshguard_log(LOG_ERR, "Could not finalize the process authorization subsystem.");
+    }
+    if (whitelist_fin() != 0) {
+        sshguard_log(LOG_ERR, "Could not finalize the whitelisting system.");
     }
     sshguard_log_fin();
 }
