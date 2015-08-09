@@ -134,13 +134,11 @@ AC_PROG_YACC
 AM_PROG_LEX
 
 ##############################################################################
-AS_BOX([Library Checks])
-AC_CHECK_LIB(pthread, pthread_create)
+AS_BOX([Headers, Types, and Compiler Checks])
 
 # Header Files
 AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([arpa/inet.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h getopt.h])
+AC_CHECK_HEADERS([getopt.h])
 
 # Types
 AC_TYPE_OFF_T
@@ -167,13 +165,10 @@ AC_SUBST(WARNING_CFLAGS)
 
 ##############################################################################
 AS_BOX([Library Functions])
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_CHECK_FUNCS([gethostbyname inet_ntoa strerror strstr strtol])
 
-# Solaris provides these functions in separate libraries
-AC_SEARCH_LIBS([socket], [socket])
 AC_SEARCH_LIBS([gethostbyname], [nsl])
+AC_SEARCH_LIBS([pthread_create], [pthread])
+AC_SEARCH_LIBS([socket], [socket])
 
 # set what firewall backend has been used, for automake
 # AIX chosen
