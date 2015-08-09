@@ -10,9 +10,6 @@ AM_SILENT_RULES([yes])
 ##############################################################################
 # Configuration Options
 
-AC_ARG_ENABLE([debug], [AS_HELP_STRING([--enable-debug], [Turn on debugging])])
-AM_CONDITIONAL([DEBUG], [test x$enable_debug = xyes])
-
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
             [Firewall backend (one of pf, ipfw, iptables, ipfilter, hosts, aix, or null)])],
 [
