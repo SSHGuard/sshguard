@@ -147,19 +147,6 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_RESTRICT
 
-# Sun Studio?
-AC_CHECK_DECL([__SUNPRO_C], [SUNCC="yes"], [SUNCC="no"])
-
-AS_IF([test "$SUNCC" = "yes"], [
-    # sun compiler
-    WARNING_CFLAGS="-v"
-], [
-    # other compiler (assume gcc-compatibile :( )
-    WARNING_CFLAGS="-Wall"
-])
-
-AC_SUBST(WARNING_CFLAGS)
-
 ##############################################################################
 AS_BOX([Library Functions])
 
