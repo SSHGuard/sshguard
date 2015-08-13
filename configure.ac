@@ -9,6 +9,9 @@ AM_SILENT_RULES([yes])
 ##############################################################################
 # Configuration Options
 
+AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--disable-sandbox],
+              [Disable Capsicum sandboxing])], [], [sandbox_enable=yes])
+
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
             [Firewall backend (one of pf, ipfw, iptables, hosts, or null)])],
 [
@@ -63,6 +66,16 @@ AS_BOX([Headers, Types, and Compiler Checks])
 
 # Header Files
 AC_CHECK_HEADERS([getopt.h])
+
+AS_IF([test "$sandbox_enable" == "yes"], [
+       AS_IF([test "$usehosts" == "true"],
+             [AC_MSG_ERROR([Hosts backend requires configuring with '--disable-sandbox'])])
+       AC_CHECK_HEADERS([sys/capsicum.h sys/capability.h],
+                        [capsicum_found=yes; break])
+       AS_IF([test "$capsicum_found" == "yes"],
+             [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])],
+             [AC_WARN([Capsicum not found; sandboxing not available])])
+])
 
 ##############################################################################
 AS_BOX([Library Functions])

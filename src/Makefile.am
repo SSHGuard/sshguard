@@ -6,6 +6,8 @@ AM_YFLAGS = -d
 
 BUILT_SOURCES = parser/attack_parser.h
 
+noinst_HEADERS = sandbox.h
+
 libexec_PROGRAMS = sshg-blocker sshg-parser
 sshg_parser_SOURCES = \
 	parser/address.h \

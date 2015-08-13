@@ -30,6 +30,7 @@
 
 #include "fwalls/fw.h"
 #include "parser/parser.h"
+#include "sandbox.h"
 #include "simclist.h"
 #include "sshguard.h"
 #include "sshguard_blacklist.h"
@@ -141,7 +142,7 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, sigfin_handler);
     atexit(finishup);
 
-    // TODO: Privilege separation goes here!
+    sandbox_init();
 
     /* whitelist localhost */
     if (whitelist_add("127.0.0.1") != 0) {

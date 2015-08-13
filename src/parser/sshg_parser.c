@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "parser/parser.h"
+#include "parser.h"
+#include "sandbox.h"
 
 static void print_attack(const attack_t *attack) {
     printf("%d %s %d %d\n", attack->service, attack->address.value,
@@ -22,6 +23,8 @@ int main(int argc, char *argv[]) {
     bool debug = false;
     char buf[1000];
     int flag;
+
+    sandbox_init();
 
     while ((flag = getopt(argc, argv, "hv")) != -1) {
         switch (flag) {
