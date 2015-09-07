@@ -18,7 +18,6 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-
 #ifndef SSHGUARD_LOG_H
 #define SSHGUARD_LOG_H
 
@@ -26,50 +25,16 @@
 #include <stdarg.h>
 
 /**
- * Cut messages under this value, except when debugging enabled.
+ * Initialize the logging system. Must be called before sshguard_log().
+ * @param debug     Enable debugging if set to non-zero value
  */
-extern const int sshguard_log_minloglevel;
-
+void sshguard_log_init(int debug);
 
 /**
- * Initialize the logging system.
- *
- * This function must be called before any call to sshguard_log() is issued.
- * If debugging mode is wanted, the respective argument must be set to
- * non-zero.
- *
- * @param debugmode     0 if debugging disabled; non-0 otherwise
- * @return              0 if successful, non-0 otherwise
+ * Clean up the logging system.
  */
-int sshguard_log_init(int debugmode);
+void sshguard_log_fin();
 
-/**
- * Issue a log message.
- *
- * A log message is reported with the implemented subsystem. Depending on the
- * level of importance specified (prio), the message might be discarded if
- * irrelevant. The log message can be composed with standard printf() format
- * (fmt).
- *
- * If debugging is enabled, the message is printed to standard error.
- *
- * @return 0 iff successful
- */
-int sshguard_log(int prio, char *fmt, ...)
-#ifdef __GNUC__
-    /* thanks kate` :) */
-    __attribute__ ((format (printf, 2, 3)))
-#endif
-    ;
-
-
-/**
- * Finalize the logging system.
- *
- * This function is expected to be call when the logging system is not needed
- * anymore. No calls to sshguard_log() are expected after this.
- */
-int sshguard_log_fin();
+#define sshguard_log syslog
 
 #endif
-
