@@ -43,6 +43,9 @@
 /* switch from 0 (normal) to 1 (suspended) with SIGTSTP and SIGCONT respectively */
 int suspended = 0;
 
+/** Keep track of the exit signal received. */
+static int exit_sig = 0;
+
 /*      FUNDAMENTAL DATA STRUCTURES         */
 /* These lists are all lists of attacker_t structures.
  * limbo and hell maintain "temporary" entries: in limbo, entries are deleted
@@ -95,8 +98,8 @@ static void purge_limbo_stale(void);
 static void *pardonBlocked();
 
 /* create or destroy my own pidfile */
-static int my_pidfile_create();
-static void my_pidfile_destroy();
+static void my_pidfile_create(void);
+static void my_pidfile_destroy(void);
 
 int main(int argc, char *argv[]) {
     pthread_t tid;
@@ -128,21 +131,18 @@ int main(int argc, char *argv[]) {
     }
 
     if (get_options_cmdline(argc, argv) != 0) {
-        exit(1);
+        exit(64);
     }
 
     /* create pidfile, if requested */
     if (opts.my_pidfile != NULL) {
-        if (my_pidfile_create() != 0)
-            exit(1);
+        my_pidfile_create();
         atexit(my_pidfile_destroy);
     }
 
-    /* address blocking system */
     if (fw_init() != FWALL_OK) {
-        sshguard_log(LOG_CRIT, "Could not init firewall. Terminating.\n");
-        fprintf(stderr, "Could not init firewall. Terminating.\n");
-        exit(1);
+        sshguard_log(LOG_ERR, "Failed to initialize firewall");
+        exit(69);
     }
 
     // Load blacklist and block listed addresses.
@@ -175,37 +175,35 @@ int main(int argc, char *argv[]) {
         exit(2);
     }
 
-    /* initialization successful */
-    sshguard_log(LOG_NOTICE,
-            "Started with danger threshold=%u ; minimum block=%u seconds",
-            opts.abuse_threshold, (unsigned int)opts.pardon_threshold);
+    sshguard_log(LOG_INFO, "Monitoring attacks from %s",
+            opts.has_polled_files ? "log files" : "stdin");
 
     while (read_log_line(buf, &source_id) == 0) {
         attack_t parsed_attack;
-        if (suspended) continue;
 
-        int retv = parse_line(source_id, buf, &parsed_attack);
-        if (retv != 0) {
-            /* sshguard_log(LOG_DEBUG, "Skip line '%s'", buf); */
+        if (suspended || parse_line(source_id, buf, &parsed_attack) != 0) {
             continue;
         }
 
-        /* extract the IP address */
-        sshguard_log(LOG_DEBUG, "Matched address %s:%d attacking service %d, dangerousness %u.", parsed_attack.address.value, parsed_attack.address.kind, parsed_attack.service, parsed_attack.dangerousness);
-
-        // Do not report if the source is clearly fake.
         if (parsed_attack.source != 0 && procauth_isauthoritative(
                     parsed_attack.service, parsed_attack.source) == -1) {
             sshguard_log(LOG_NOTICE,
-                    "Ignoring message from PID %d for service %d",
+                    "Ignoring message from pid %d on service %d",
                     parsed_attack.source, parsed_attack.service);
-        } else {
-            report_address(parsed_attack);
+            continue;
         }
+
+        sshguard_log(LOG_DEBUG, "Attack from %s on service %d with danger %u",
+                parsed_attack.address.value, parsed_attack.service,
+                parsed_attack.dangerousness);
+        report_address(parsed_attack);
     }
 
-    /* let exit() call finishup() */
-    exit(0);
+    if (!opts.has_polled_files && feof(stdin)) {
+        sshguard_log(LOG_NOTICE, "Received EOF from stdin");
+    } else {
+        sshguard_log(LOG_ERR, "Unable to read any more log entries");
+    }
 }
 
 static int read_log_line(char *restrict buf, sourceid_t *restrict source_id) {
@@ -246,19 +244,19 @@ static void report_address(attack_t attack) {
     tmpent = list_seek(& hell, & attack.address);
     pthread_mutex_unlock(& list_mutex);
     if (tmpent != NULL) {
-        sshguard_log(LOG_INFO, "Asked to block '%s', which was already blocked to my account.", attack.address.value);
+        sshguard_log(LOG_WARNING, "%s: should already have been blocked",
+                attack.address.value);
         return;
     }
 
-    /* protected address? */
     if (whitelist_match(attack.address.value, attack.address.kind)) {
-        sshguard_log(LOG_INFO, "Pass over address %s because it's been whitelisted.", attack.address.value);
+        sshguard_log(LOG_INFO, "%s: not blocking (on whitelist)",
+                attack.address.value);
         return;
     }
     
     /* search entry in list */
     tmpent = list_seek(& limbo, & attack.address);
-
     if (tmpent == NULL) { /* entry not already in list, add it */
         /* otherwise: insert the new item */
         tmpent = malloc(sizeof(attacker_t));
@@ -283,10 +281,10 @@ static void report_address(attack_t attack) {
      * duration of blocking */
     tmpent->pardontime = opts.pardon_threshold;
     offenderent = list_seek(& offenders, & attack.address);
-
     if (offenderent == NULL) {
         /* first time we block this guy */
-        sshguard_log(LOG_DEBUG, "First abuse of '%s', adding to offenders list.", tmpent->attack.address.value);
+        sshguard_log(LOG_DEBUG, "%s: first block (adding as offender)",
+                tmpent->attack.address.value);
         offenderent = (attacker_t *)malloc(sizeof(attacker_t));
         /* copy everything from tmpent */
         memcpy(offenderent, tmpent, sizeof(attacker_t));
@@ -313,7 +311,6 @@ static void report_address(attack_t attack) {
             blacklist_add(offenderent);
         }
     } else {
-        sshguard_log(LOG_INFO, "Offender '%s:%d' scored %u danger in %u abuses.", tmpent->attack.address.value, tmpent->attack.address.kind, offenderent->cumulated_danger, offenderent->numhits);
         /* compute blocking time wrt the "offensiveness" */
         for (unsigned int i = 0; i < offenderent->numhits; i++) {
             tmpent->pardontime *= 1.5;
@@ -321,13 +318,16 @@ static void report_address(attack_t attack) {
     }
     list_sort(& offenders, -1);
 
-    sshguard_log(LOG_NOTICE, "Blocking %s:%d for >%lldsecs: %u danger in %u attacks over %lld seconds (all: %ud in %d abuses over %llds).\n",
-            tmpent->attack.address.value, tmpent->attack.address.kind, (long long int)tmpent->pardontime,
-            tmpent->cumulated_danger, tmpent->numhits, (long long int)(tmpent->whenlast - tmpent->whenfirst),
-            offenderent->cumulated_danger, offenderent->numhits, (long long int)(offenderent->whenlast - offenderent->whenfirst));
+    sshguard_log(LOG_NOTICE, "%s: blocking for %lld secs (%u attacks in %lld secs, after %d abuses over %lld secs)",
+            tmpent->attack.address.value, (long long)tmpent->pardontime,
+            tmpent->numhits, (long long)(tmpent->whenlast - tmpent->whenfirst),
+            offenderent->numhits,
+            (long long)(offenderent->whenlast - offenderent->whenfirst));
     int ret = fw_block(attack.address.value,
             attack.address.kind, attack.service);
-    if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Blocking command failed. Exited: %d", ret);
+    if (ret != FWALL_OK) {
+        sshguard_log(LOG_ERR, "fw: failed to block (%d)", ret);
+    }
 
     /* append blocked attacker to the blocked list, and remove it from the pending list */
     pthread_mutex_lock(& list_mutex);
@@ -348,7 +348,7 @@ static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restri
 }
 
 static void purge_limbo_stale(void) {
-    sshguard_log(LOG_DEBUG, "Purging stale attackers.");
+    sshguard_log(LOG_DEBUG, "Purging old attackers");
     time_t now = time(NULL);
     for (unsigned int pos = 0; pos < list_size(&limbo); pos++) {
         attacker_t *tmpent = list_get_at(&limbo, pos);
@@ -380,9 +380,13 @@ static void *pardonBlocked() {
             /* process hosts with finite pardon time */
             if (now - tmpel->whenlast > tmpel->pardontime) {
                 /* pardon time passed, release block */
-                sshguard_log(LOG_INFO, "Releasing %s after %lld seconds.\n", tmpel->attack.address.value, (long long int)(now - tmpel->whenlast));
+                sshguard_log(LOG_INFO, "%s: unblocking after %lld secs",
+                        tmpel->attack.address.value,
+                        (long long)(now - tmpel->whenlast));
                 ret = fw_release(tmpel->attack.address.value, tmpel->attack.address.kind, tmpel->attack.service);
-                if (ret != FWALL_OK) sshguard_log(LOG_ERR, "Release command failed. Exited: %d", ret);
+                if (ret != FWALL_OK) {
+                    sshguard_log(LOG_ERR, "fw: failed to unblock (%d)", ret);
+                }
                 list_delete_at(&hell, pos);
                 free(tmpel);
                 /* element removed, next element is at current index (don't step pos) */
@@ -400,10 +404,11 @@ static void *pardonBlocked() {
 }
 
 static void finishup(void) {
-    sshguard_log(LOG_NOTICE, "Cleaning up...");
+    sshguard_log(LOG_INFO, "Exiting on %s",
+            exit_sig == SIGHUP ? "SIGHUP" : "signal");
 
     if (fw_flush() != FWALL_OK) {
-        sshguard_log(LOG_ERR, "Could not flush blocked addresses!");
+        sshguard_log(LOG_ERR, "fw: failed to flush blocked addresses");
     }
 
     if (opts.has_polled_files) {
@@ -416,8 +421,8 @@ static void finishup(void) {
     sshguard_log_fin();
 }
 
-static void sigfin_handler() {
-    /* let exit() call finishup() */
+static void sigfin_handler(int sig) {
+    exit_sig = sig;
     exit(0);
 }
 
@@ -455,14 +460,15 @@ static void process_blacklisted_addresses() {
     blacklist = blacklist_load(opts.blacklist_filename);
     if (blacklist == NULL) {
         perror("Could not open blacklist");
-        sshguard_log(LOG_CRIT, "Fatal: Could not open blacklist file '%s'",
+        sshguard_log(LOG_ERR, "blacklist: could not open %s",
                 opts.blacklist_filename);
-        exit(1);
+        exit(66);
     }
 
     /* blacklist enabled */
     size_t num_blacklisted = list_size(blacklist);
-    sshguard_log(LOG_INFO, "Blacklist loaded, blocking %lu addresses.", (long unsigned int)num_blacklisted);
+    sshguard_log(LOG_INFO, "blacklist: blocking %lu addresses",
+            (long unsigned int)num_blacklisted);
     /* prepare to call fw_block_list() to block in bulk */
     /* two runs, one for each address kind (but allocate arrays once) */
     addresses = (const char **)malloc(sizeof(const char *) * (num_blacklisted+1));
@@ -497,7 +503,7 @@ static void process_blacklisted_addresses() {
         addresses[i] = NULL;
         /* do block addresses of this kind */
         if (fw_block_list(addresses, addrkind, service_codes) != FWALL_OK) {
-            sshguard_log(LOG_CRIT, "While blocking blacklisted addresses, the firewall refused to block!");
+            sshguard_log(LOG_ERR, "blacklist: failed to block addresses");
         }
     }
     /* free temporary arrays */
@@ -505,21 +511,19 @@ static void process_blacklisted_addresses() {
     free(service_codes);
 }
 
-static int my_pidfile_create() {
-    FILE *p;
-    
-    p = fopen(opts.my_pidfile, "w");
+static void my_pidfile_create() {
+    FILE *p = fopen(opts.my_pidfile, "w");
     if (p == NULL) {
-        sshguard_log(LOG_ERR, "Could not create pidfile '%s': %s.", opts.my_pidfile, strerror(errno));
-        return -1;
+        sshguard_log(LOG_ERR, "Failed to create pid file: %m");
+        exit(73);
     }
+
     fprintf(p, "%d\n", (int)getpid());
     fclose(p);
-
-    return 0;
 }
 
 static void my_pidfile_destroy() {
-    if (unlink(opts.my_pidfile) != 0)
-        sshguard_log(LOG_ERR, "Could not remove pidfile '%s': %s.", opts.my_pidfile, strerror(errno));
+    if (unlink(opts.my_pidfile) != 0) {
+        sshguard_log(LOG_ERR, "Failed to remove pid file: %m");
+    }
 }
