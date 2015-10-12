@@ -1,3 +1,8 @@
+* 1.6.2     October 2015
+    - Make '-w' option backwards-compatible for iptables (James Harris)
+    - Remove support for ip6fw and 'ipfw-range' option
+    - Rewrite ipfw backend using command framework
+
 * 1.6.1     July 2015
     - Accept "Received disconnect" with optional prefix
     - Add support for socklog entries
