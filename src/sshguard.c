@@ -41,7 +41,7 @@
 #define MAX_LOGLINE_LEN     1000
 
 /** Keep track of the exit signal received. */
-static int exit_sig = 0;
+static volatile sig_atomic_t exit_sig = 0;
 
 /*      FUNDAMENTAL DATA STRUCTURES         */
 /* These lists are all lists of attacker_t structures.
