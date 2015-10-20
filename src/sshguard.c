@@ -40,9 +40,6 @@
 
 #define MAX_LOGLINE_LEN     1000
 
-/* switch from 0 (normal) to 1 (suspended) with SIGTSTP and SIGCONT respectively */
-int suspended = 0;
-
 /** Keep track of the exit signal received. */
 static int exit_sig = 0;
 
@@ -83,8 +80,6 @@ static int attackt_whenlast_comparator(const void *a, const void *b);
 static int read_log_line(char *restrict buf, sourceid_t *restrict source_id);
 /* handler for termination-related signals */
 static void sigfin_handler();
-/* handler for suspension/resume signals */
-static void sigstpcont_handler(int signo);
 /* called at exit(): flush blocked addresses and finalize subsystems */
 static void finishup(void);
 
@@ -148,10 +143,6 @@ int main(int argc, char *argv[]) {
     // Load blacklist and block listed addresses.
     process_blacklisted_addresses();
 
-    /* suspension signals */
-    signal(SIGTSTP, sigstpcont_handler);
-    signal(SIGCONT, sigstpcont_handler);
-
     /* termination signals */
     signal(SIGTERM, sigfin_handler);
     signal(SIGHUP, sigfin_handler);
@@ -181,7 +172,7 @@ int main(int argc, char *argv[]) {
     while (read_log_line(buf, &source_id) == 0) {
         attack_t parsed_attack;
 
-        if (suspended || parse_line(source_id, buf, &parsed_attack) != 0) {
+        if (parse_line(source_id, buf, &parsed_attack) != 0) {
             continue;
         }
 
@@ -424,20 +415,6 @@ static void finishup(void) {
 static void sigfin_handler(int sig) {
     exit_sig = sig;
     exit(0);
-}
-
-static void sigstpcont_handler(int signo) {
-    /* update "suspended" status */
-    switch (signo) {
-        case SIGTSTP:
-            suspended = 1;
-            sshguard_log(LOG_NOTICE, "Got STOP signal, suspending activity.");
-            break;
-        case SIGCONT:
-            suspended = 0;
-            sshguard_log(LOG_NOTICE, "Got CONTINUE signal, resuming activity.");
-            break;
-    }
 }
 
 static int attackt_whenlast_comparator(const void *a, const void *b) {
