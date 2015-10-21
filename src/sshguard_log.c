@@ -18,6 +18,8 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
+#include <time.h>
+
 #include "sshguard_log.h"
 
 void sshguard_log_init(int debug) {
@@ -29,6 +31,8 @@ void sshguard_log_init(int debug) {
         setlogmask(LOG_UPTO(LOG_INFO));
     }
 
+    // Set local time zone and open log before entering sandbox.
+    tzset();
     openlog("sshguard", flags, LOG_AUTH);
 }
 
