@@ -1,3 +1,13 @@
+* 1.6.3     November 2015
+    - Add sample systemd(8) unit file
+    - Implement logging as wrappers around syslog(2)
+    - Improve log and error messages
+    - Remove SIGTSTP and SIGCONT handler
+    - Remove safe_fgets() and exit on interrupt
+    - Terminate state entries for hosts blocked with pf
+    - Update and shorten command-line usage
+    - Use 'configure' to set feature-test macros
+
 * 1.6.2     October 2015
     - Make '-w' option backwards-compatible for iptables (James Harris)
     - Remove support for ip6fw and 'ipfw-range' option
