@@ -1,5 +1,6 @@
 * 1.6.3     November 2015
     - Add sample systemd(8) unit file
+    - Fix `pfctl` command syntax with OpenBSD 5.8
     - Implement logging as wrappers around syslog(2)
     - Improve log and error messages
     - Remove SIGTSTP and SIGCONT handler
