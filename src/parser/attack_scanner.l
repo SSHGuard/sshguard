@@ -40,7 +40,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for Login services */
 %s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied postfix_loginerr
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
 
@@ -166,6 +166,10 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* Sendmail */
 "Relaying denied. IP name lookup failed ["                      { BEGIN(sendmail_relaydenied); return SENDMAIL_RELAYDENIED_PREF; }
 <sendmail_relaydenied>"]"                                       { BEGIN(INITIAL); return SENDMAIL_RELAYDENIED_SUFF; }
+
+ /* Sendmail */
+[A-Za-z0-9]+": AUTH failure ("[A-Za-z0-9-]+"): ".+"relay=".*"[" { BEGIN(sendmail_authfailure); return SENDMAIL_AUTHFAILURE_PREF; }
+<sendmail_authfailure>"]".*                                     { BEGIN(INITIAL); return SENDMAIL_AUTHFAILURE_SUFF; }
 
  /* dovecot */
 "imap-login: Aborted login (auth failed, "{NUMBER}" attempts): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
