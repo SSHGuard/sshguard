@@ -293,7 +293,8 @@ static void report_address(attack_t attack) {
     /* At this stage, the guy (in tmpent) is offender, and we'll block it anyway. */
 
     /* Let's see if we _also_ need to blacklist it. */
-    if (offenderent->cumulated_danger >= opts.blacklist_threshold) {
+    if (opts.blacklist_filename != NULL &&
+        offenderent->cumulated_danger >= opts.blacklist_threshold) {
         /* this host must be blacklisted -- blocked and never unblocked */
         tmpent->pardontime = 0;
 
