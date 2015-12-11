@@ -82,7 +82,6 @@ static struct {
 %token SSH_INVALUSERPREF SSH_NOTALLOWEDPREF SSH_NOTALLOWEDSUFF
 %token SSH_LOGINERR_PREF SSH_LOGINERR_SUFF SSH_LOGINERR_PAM
 %token SSH_VIA
-%token SSH_REVERSEMAP_PREF SSH_REVERSEMAP_SUFF
 %token SSH_NOIDENTIFSTR SSH_BADPROTOCOLIDENTIF SSH_BADPROTOCOLIDENTIF_SUFF
 %token SSH_DISCONNECT_PREF SSH_PREAUTH_SUFF
 /* dovecot */
@@ -260,7 +259,6 @@ sshmsg:
     ssh_illegaluser
     /* incorrect login attempt from valid and allowed user */
     | ssh_authfail
-    | ssh_reversemapping
     | ssh_noidentifstring
     | ssh_badprotocol
     ;
@@ -276,10 +274,6 @@ ssh_authfail:
     SSH_LOGINERR_PREF addr SSH_LOGINERR_SUFF
     | SSH_LOGINERR_PAM addr
     | SSH_LOGINERR_PAM addr SSH_VIA
-    ;
-
-ssh_reversemapping:
-    SSH_REVERSEMAP_PREF addr SSH_REVERSEMAP_SUFF
     ;
 
 ssh_noidentifstring:

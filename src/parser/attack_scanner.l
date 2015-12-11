@@ -143,10 +143,6 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 "error: PAM: "[aA]"uthentication "(error|failure)" for "("illegal user ")?.+" from "            { return SSH_LOGINERR_PAM; }
 "via ".*                                                        { return SSH_VIA; }
 
- /* SSH: reverse mapping "possible break-in attempt!" */
-"reverse mapping checking getaddrinfo for "[^\[]*"["            { BEGIN(ssh_reversemap); return SSH_REVERSEMAP_PREF; }
-<ssh_reversemap>"] ".*"POSSIBLE BREAK-IN ATTEMPT!"              { BEGIN(INITIAL); return SSH_REVERSEMAP_SUFF; }
-
  /* SSH: connections open and closed without auth attempts */
 "Did not receive identification string from "                   { return SSH_NOIDENTIFSTR; }
 "error: "?("Connection closed by "|"Received disconnect from ") { BEGIN(ssh_disconnect); return SSH_DISCONNECT_PREF; }
