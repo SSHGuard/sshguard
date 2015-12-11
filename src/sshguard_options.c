@@ -47,18 +47,26 @@ static void version(void) {
     fprintf(stderr, PACKAGE_STRING "\n");
 }
 
+/**
+ * Initialize options to defaults.
+ */
+static void options_init(sshg_opts *opt) {
+    opt->pardon_threshold = 7 * 60;
+    opt->stale_threshold = 20 * 60;
+    opt->abuse_threshold = 40;
+    opt->blacklist_threshold = 0;
+    opt->my_pidfile = NULL;
+    opt->blacklist_filename = NULL;
+    opt->has_polled_files = 0;
+}
+
 int get_options_cmdline(int argc, char *argv[]) {
     struct stat event_script_buf;
     int status;
     int optch;
 
-    opts.blacklist_filename = NULL;
-    opts.my_pidfile = NULL;
-    opts.blacklist_threshold = DEFAULT_BLACKLIST_THRESHOLD;
-    opts.pardon_threshold = DEFAULT_PARDON_THRESHOLD;
-    opts.stale_threshold = DEFAULT_STALE_THRESHOLD;
-    opts.abuse_threshold = DEFAULT_ABUSE_THRESHOLD;
-    opts.has_polled_files = 0;
+    options_init(&opts);
+
     while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vh")) != -1) {
         switch (optch) {
             case 'b':
