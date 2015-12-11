@@ -20,10 +20,10 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: April 15, 2015
+:Date: December 11, 2015
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 1.6
+:Version: 1.6.3
 
 SYNOPSIS
 ========
@@ -51,46 +51,23 @@ failures within a few seconds, is detected, the offending IP is blocked.
 Offenders are unblocked after a set interval, but can be semi-permanently
 banned using the blacklist option.
 
-For clarification on some specific terms used in the source code and
-documentation, please see http://www.sshguard.net/docs/terminology/.
+See http://www.sshguard.net/docs/setup/ for setup instructions.
 
-FEATURES
-========
-**sshguard** can block attackers using one of several backends:
-
-- AIX native firewall, for IBM AIX operating systems
-- netfilter/iptables, for Linux-based operating systems
-- ``pf``, for several BSD operating systems
-- ``ipfw``, for FreeBSD and Mac OS X
-- ``ipfilter``, for FreeBSD, NetBSD and Solaris
-- *hosts.allow*, which uses TCP Wrappers to block attackers
-- null, which runs **sshguard** without blocking any attackers
-
-**sshguard** understands several log formats:
-
-* syslog(-ng)
-* metalog
-* multilog
-* raw messages
-
-See http://www.sshguard.net/docs/reference/attack-signatures/ for a list of
-recognized attacks.
-
-SETUP
-=====
-Please see http://www.sshguard.net/docs/setup/ for instructions on setting
-up **sshguard** with specific log systems and backends.
+Other features, attack signatures, and additional documentation can be found
+at http://www.sshguard.net/.
 
 OPTIONS
 =======
 **-a** `thresh` (default 40)
-    Block an attacker when its dangerousness exceeds `thresh`. Currently,
-    all recognized patterns have a dangerousness of 10.
+    Block an attacker when its dangerousness exceeds `thresh`. Each attack
+    pattern that is matched contributes a fixed dangerousness of 10.
 
 **-b** `thresh`:`file`
-    Enable blacklisting. When a repeat attacker's dangerousness exceeds
-    `thresh`, add its address to the blacklist file stored in `file`. See
-    TOUCHINESS & BLACKLISTING below.
+    Blacklist an attacker when its dangerousness exceeds `thresh`.
+    Blacklisted addresses are added to `file` so they can be read at the
+    next startup. Blacklisted addresses are never automatically unblocked,
+    but it is good practice to periodically clean out stale blacklist
+    entries.
 
 **-e** `script`
     Execute an external program when an event is triggered. See EXTERNAL
@@ -110,9 +87,10 @@ OPTIONS
     giving '**-l** -'.
 
 **-p** `interval` (default 420 secs, or 7 minutes)
-    Wait at least `interval` seconds before releasing a blocked address. In
-    practice it takes longer for an attacker to be unblocked, because
-    **sshguard** checks only at periodic intervals.
+    Wait at least `interval` seconds before releasing a blocked address.
+    Repeat attackers are blocked for 1.5 times longer after each attack.
+    Because **sshguard** unblocks attackers only at infrequent intervals,
+    this parameter is inexact (actual blocks will be longer).
 
 **-s** `interval` (default 1200 secs, or 20 minutes)
     Forget about an attacker `interval` seconds after its last attempt. Its
@@ -126,18 +104,10 @@ OPTIONS
 **-v**
     Print version information and exit.
 
-When **sshguard** is signalled with SIGTSTP, it suspends activity. When
-**sshguard** is signalled with SIGCONT, it resumes monitoring. During
-suspension, log entries are discarded without being analyzed.
-
 ENVIRONMENT
 ===========
-When **sshguard** senses the SSHGUARD_DEBUG environment variable, it enables
-debugging mode: logging is directed to standard error instead of syslog, and
-includes comprehensive details of the activity and parsing process. Debugging
-mode can help investigating attack signatures: once enabled, a log message can
-be directly pasted into the tool from the console, and the behavior is
-immediately and minutely shown beneath.
+SSHGUARD_DEBUG
+    Enable additional debugging information.
 
 EXTERNAL PROGRAMS
 =================
@@ -305,66 +275,14 @@ PIDs are checked with the following policy:
 Low I/O load is committed to the operating system because of an internal caching
 mechanism. Changes in the pidfile value are handled transparently.
 
-TOUCHINESS & BLACKLISTING
-=========================
-In many cases, attacks against services are performed in bulk in an automated
-form. For example, the attacker goes trough a dictionary of 1500
-username/password pairs and sequentially tries to violate the SSH service with
-any of them, continuing blindly while blocked, and re-appearing once the block
-expires.
-
-To counteract these cases, **sshguard** by default behaves with touchiness.
-Besides observing abuses from the log activity, it also monitors the overall
-behavior of attackers. The decision on when and how to block is thus made
-respective to the entire history of the offender as well. For example, if
-address A attacks repeatedly and the base blocking time is 420 seconds, A will
-be blocked for 420 seconds (7 mins) at the first abuse, 2*420 (14 mins) the
-second, 2*2*420 (28 mins) the third .\.\. and 2^(n-1)*420 the n-th time.
-
-Touchiness has two major benefits: to legitimate users, it grants forgiving
-blockings on failed logins; to real attackers, it effectively renders large
-scale attacks infeasible, because the time to perform one explodes with the
-number of attempts.
-
-Touchiness can be augmented with blacklisting (-b). With this option, after a
-certain total danger committed, the address is added to a list of offenders to
-be blocked permanently. The list is intended to be loaded at each startup, and
-maintained/extended with new entries during operation. **sshguard** inserts a
-new address after it exceeded a threshold of danger committed over recorded
-history. This threshold is configurable within the -b option argument.
-Blacklisted addresses are never scheduled for releasing.
-
-The -b command line option enables blacklisting and requires the filename to use
-for permanent storage of the blacklist. Optionally, a custom blacklist
-threshold can be prefixed to this path, separated by ':'. For example,
-
-::
-
-    -b 50:/var/db/sshguard/blacklist.db
-
-requires to blacklist addresses after having committed attacks for danger 50
-(default per-attack danger is 10), and store the blacklist in file
-/var/db/sshguard/blacklist.db. Although the blacklist file is not meant to be
-in human-readable format, the strings(1) command can be used to peek in it for
-listing the blacklisted addresses.
-
-CONTRIBUTING
-============
-**sshguard** operates firewalls through a general interface, which enables easy
-extension, and allows back-ends to be non-local (e.g. remote appliances), and
-non-blocking (e.g. report tools). Additions can be suggested at
-http://www.sshguard.net/feedback/firewall/submit/.
-
-Extending attack signatures needs some expertise with context-free parsers;
-users are welcome to submit samples of the desired log messages to
-http://www.sshguard.net/support/attacks/submit/.
-
-HISTORY
-=======
-**sshguard** was originally written by Michele Mazzucchi <mij@bitchx.it>.
-
 SEE ALSO
 ========
 syslog(1), syslog.conf(5), hosts_access(5)
 
-<http://www.sshguard.net/>
+Glossary: http://www.sshguard.net/docs/terminology/
+
+Website: http://www.sshguard.net/
+
+AUTHORS
+=======
+Michele Mazzucchi <mij@bitchx.it>, Kevin Zheng <kevinz5000@gmail.com>
