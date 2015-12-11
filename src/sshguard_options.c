@@ -174,7 +174,8 @@ int get_options_cmdline(int argc, char *argv[]) {
         }
     }
 
-    if (opts.blacklist_threshold < opts.abuse_threshold) {
+    if (opts.blacklist_filename &&
+            opts.blacklist_threshold < opts.abuse_threshold) {
         fprintf(stderr, "error: blacklist (%u) is less than abuse threshold (%u)\n",
                 opts.blacklist_threshold, opts.abuse_threshold);
         return -1;
