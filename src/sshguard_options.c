@@ -61,11 +61,12 @@ int get_options_cmdline(int argc, char *argv[]) {
     opts.has_polled_files = 0;
     while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vh")) != -1) {
         switch (optch) {
-            case 'b':   /* threshold for blacklisting (num abuses >= this implies permanent block */
-                opts.blacklist_filename = (char *)malloc(strlen(optarg)+1);
-                if (sscanf(optarg, "%u:%s", & opts.blacklist_threshold, opts.blacklist_filename) != 2) {
-                    /* argument contains only the blacklist filename */
-                    strcpy(opts.blacklist_filename, optarg);
+            case 'b':
+                opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
+                if (sscanf(optarg, "%u:%s", &opts.blacklist_threshold,
+                           opts.blacklist_filename) != 2) {
+                    usage();
+                    return -1;
                 }
                 break;
 
