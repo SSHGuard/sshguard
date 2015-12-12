@@ -51,9 +51,9 @@ static void version(void) {
  * Initialize options to defaults.
  */
 static void options_init(sshg_opts *opt) {
-    opt->pardon_threshold = 7 * 60;
-    opt->stale_threshold = 20 * 60;
-    opt->abuse_threshold = 40;
+    opt->pardon_threshold = 2 * 60;
+    opt->stale_threshold = 30 * 60;
+    opt->abuse_threshold = 30;
     opt->blacklist_threshold = 0;
     opt->blacklist_filename = NULL;
     opt->has_polled_files = 0;

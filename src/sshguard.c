@@ -304,7 +304,7 @@ static void report_address(attack_t attack) {
     } else {
         /* compute blocking time wrt the "offensiveness" */
         for (unsigned int i = 0; i < offenderent->numhits; i++) {
-            tmpent->pardontime *= 1.5;
+            tmpent->pardontime *= 2;
         }
     }
     list_sort(& offenders, -1);
