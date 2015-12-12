@@ -59,4 +59,8 @@ typedef struct {
     unsigned int cumulated_danger;  /* total danger incurred (before or after blocked) */
 } attacker_t;
 
+int attack_addr_seeker(const void *el, const void *key);
+void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
+int attackt_whenlast_comparator(const void *a, const void *b);
+
 #endif

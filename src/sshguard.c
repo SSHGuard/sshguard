@@ -27,7 +27,6 @@
 #include <unistd.h>
 
 #include "parser/parser.h"
-#include "seekers.h"
 #include "simclist.h"
 #include "sshguard.h"
 #include "sshguard_blacklist.h"
@@ -69,12 +68,6 @@ list_t offenders;
 /* mutex against races between insertions and pruning of lists */
 pthread_mutex_t list_mutex;
 
-
-/* fill an attacker_t structure for usage */
-static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
-/* comparison operator for sorting offenders list */
-static int attackt_whenlast_comparator(const void *a, const void *b);
-
 /* get log lines in here. Hide the actual source and the method. Fill buf up
  * to buflen chars, return 0 for success, -1 for failure */
 static int read_log_line(char *restrict buf, sourceid_t *restrict source_id);
@@ -110,11 +103,11 @@ int main(int argc, char *argv[]) {
 
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
-    list_attributes_seeker(& limbo, seeker_addr);
+    list_attributes_seeker(& limbo, attack_addr_seeker);
     list_init(&hell);
-    list_attributes_seeker(& hell, seeker_addr);
+    list_attributes_seeker(& hell, attack_addr_seeker);
     list_init(&offenders);
-    list_attributes_seeker(& offenders, seeker_addr);
+    list_attributes_seeker(& offenders, attack_addr_seeker);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
 
     // Initialize procauth and whitelist before parsing arguments.
@@ -329,16 +322,6 @@ static void report_address(attack_t attack) {
     list_delete_at(& limbo, list_locate(& limbo, tmpent));
 }
 
-static inline void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack) {
-    assert(ipe != NULL && attack != NULL);
-    strcpy(ipe->attack.address.value, attack->address.value);
-    ipe->attack.address.kind = attack->address.kind;
-    ipe->attack.service = attack->service;
-    ipe->whenfirst = ipe->whenlast = time(NULL);
-    ipe->numhits = 1;
-    ipe->cumulated_danger = attack->dangerousness;
-}
-
 static void purge_limbo_stale(void) {
     sshguard_log(LOG_DEBUG, "Purging old attackers");
     time_t now = time(NULL);
@@ -416,13 +399,6 @@ static void finishup(void) {
 static void sigfin_handler(int sig) {
     exit_sig = sig;
     exit(0);
-}
-
-static int attackt_whenlast_comparator(const void *a, const void *b) {
-    const attacker_t *aa = (const attacker_t *)a;
-    const attacker_t *bb = (const attacker_t *)b;
-
-    return ((aa->whenlast > bb->whenlast) - (aa->whenlast < bb->whenlast));
 }
 
 static void process_blacklisted_addresses() {
