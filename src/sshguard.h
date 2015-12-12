@@ -24,10 +24,6 @@
 /* default "weight" of an attack */
 #define DEFAULT_ATTACKS_DANGEROUSNESS           10
 
-
-/* maximum number of recent offenders to retain in memory at once */
-#define MAX_OFFENDER_ITEMS      15
-
 /* maximum number of files polled */
 #define MAX_FILES_POLLED        35
 /* maximum file polling interval when logs are idle (millisecs) */

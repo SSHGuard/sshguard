@@ -30,26 +30,12 @@
 #include "sshguard_log.h"
 
 #define BL_MAXBUF      1024
-#define BL_NUMENT      5
 
 #define stringify(x)    xstr(x)
 #define xstr(x)         #x
 
 static FILE *blacklist_file;
 static list_t *blacklist;
-
-/*          UTILITY FUNCTIONS           */
-
-/* seeks an address (key) into a list element (el). Callback for SimCList */
-static int seeker_addr(const void *el, const void *key) {
-    const sshg_address_t *adr = (const sshg_address_t *)key;
-    const attacker_t *atk = (const attacker_t *)el;
-
-    assert(atk != NULL && adr != NULL);
-    
-    if (atk->attack.address.kind != adr->kind) return 0;
-    return (strcmp(atk->attack.address.value, adr->value) == 0);
-}
 
 static size_t attacker_el_meter(const void *el) {
     if (el) {}
@@ -159,7 +145,7 @@ int blacklist_contains(const sshg_address_t *restrict addr) {
         return -1;
     }
 
-    list_attributes_seeker(blacklist, seeker_addr);
+    list_attributes_seeker(blacklist, attack_addr_seeker);
     attacker_t *restrict el = list_seek(blacklist, addr);
     return (el != NULL);
 }
