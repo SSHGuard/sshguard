@@ -60,6 +60,7 @@ typedef struct {
 } attacker_t;
 
 int attack_addr_seeker(const void *el, const void *key);
+int attack_from_hostname(attack_t *attack, const char *name);
 void attackerinit(attacker_t *restrict ipe, const attack_t *restrict attack);
 int attackt_whenlast_comparator(const void *a, const void *b);
 
