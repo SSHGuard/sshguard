@@ -5,6 +5,7 @@
     - Implement logging as wrappers around syslog(2)
     - Improve log and error messages
     - Match sendmail authentication failures
+    - Remove PID file option
     - Remove SIGTSTP and SIGCONT handler
     - Remove reverse mapping attack signature
     - Remove safe_fgets() and exit on interrupt

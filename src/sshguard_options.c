@@ -39,7 +39,7 @@ sshg_opts opts;
 
 static void usage(void) {
     fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file] [-e script]\n"
-                    "\t\t[-f service:pid-file] [-i pidfile] [-l source] [-p interval]\n"
+                    "\t\t[-f service:pid-file] [-l source] [-p interval]\n"
                     "\t\t[-s interval] [-w address | file]\n");
 }
 
@@ -55,7 +55,6 @@ static void options_init(sshg_opts *opt) {
     opt->stale_threshold = 20 * 60;
     opt->abuse_threshold = 40;
     opt->blacklist_threshold = 0;
-    opt->my_pidfile = NULL;
     opt->blacklist_filename = NULL;
     opt->has_polled_files = 0;
 }
@@ -67,7 +66,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
     options_init(&opts);
 
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:e:vh")) != -1) {
         switch (optch) {
             case 'b':
                 opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
@@ -147,10 +146,6 @@ int get_options_cmdline(int argc, char *argv[]) {
                     return -1;
                 }
                 opts.has_polled_files = 1;
-                break;
-
-            case 'i':   /* specify pidfile for my PID */
-                opts.my_pidfile = optarg;
                 break;
 
             case 'e':     /* provide a script executed each time a firewall

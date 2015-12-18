@@ -85,10 +85,6 @@ static void purge_limbo_stale(void);
 /* release blocked attackers after their penalty expired */
 static void *pardonBlocked();
 
-/* create or destroy my own pidfile */
-static void my_pidfile_create(void);
-static void my_pidfile_destroy(void);
-
 int main(int argc, char *argv[]) {
     pthread_t tid;
     sourceid_t source_id;
@@ -120,12 +116,6 @@ int main(int argc, char *argv[]) {
 
     if (get_options_cmdline(argc, argv) != 0) {
         exit(64);
-    }
-
-    /* create pidfile, if requested */
-    if (opts.my_pidfile != NULL) {
-        my_pidfile_create();
-        atexit(my_pidfile_destroy);
     }
 
     if (fw_init() != FWALL_OK) {
@@ -463,21 +453,4 @@ static void process_blacklisted_addresses() {
     /* free temporary arrays */
     free(addresses);
     free(service_codes);
-}
-
-static void my_pidfile_create() {
-    FILE *p = fopen(opts.my_pidfile, "w");
-    if (p == NULL) {
-        sshguard_log(LOG_ERR, "Failed to create pid file: %m");
-        exit(73);
-    }
-
-    fprintf(p, "%d\n", (int)getpid());
-    fclose(p);
-}
-
-static void my_pidfile_destroy() {
-    if (unlink(opts.my_pidfile) != 0) {
-        sshguard_log(LOG_ERR, "Failed to remove pid file: %m");
-    }
 }
