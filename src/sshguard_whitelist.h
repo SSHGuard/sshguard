@@ -35,19 +35,6 @@
 void whitelist_init(void);
 
 /**
- * Start a session for configuring the whitelist.
- *
- * The whitelist subsystem must have been initialized first.
- * Calls to whitelist_add*() must occur only between this
- * function's call and whitelist_conf_fin()'s call.
- *
- * @return 0 if success, <0 if compile failed
- *
- * @see whitelist_conf_fin()
- */
-int whitelist_conf_init(void);
-
-/**
  * End a session for configuring the whitelist.
  */
 void whitelist_conf_fin(void);

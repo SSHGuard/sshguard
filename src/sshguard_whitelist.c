@@ -103,26 +103,6 @@ static int whitelist_compare(const void *a, const void *b) {
     return 0;
 }
 
-int whitelist_conf_init(void) {
-    /* IPv4 address regex */
-    if (regcomp(&wl_ip4reg, "^" REGEXLIB_IPV4 "$", REG_EXTENDED) != 0) {
-        return -1;
-    }
-
-    /* IPv6 address regex */
-    if (regcomp(&wl_ip6reg, "^" REGEXLIB_IPV6 "$", REG_EXTENDED) != 0) {
-        return -1;
-    }
-
-    /* hostname regex */
-    if (regcomp(&wl_hostreg, "^" REGEXLIB_HOSTNAME "$", REG_EXTENDED) != 0) {
-        whitelist_fin();
-        return -1;
-    }
-
-    return 0;
-}
-
 void whitelist_conf_fin() {
     regfree(&wl_ip4reg);
     regfree(&wl_ip6reg);
@@ -133,6 +113,18 @@ void whitelist_init() {
     list_init(&whitelist);
     list_attributes_copy(&whitelist, whitelist_meter, 1);
     list_attributes_comparator(&whitelist, whitelist_compare);
+
+    if (regcomp(&wl_ip4reg, "^" REGEXLIB_IPV4 "$", REG_EXTENDED) != 0) {
+        abort();
+    }
+
+    if (regcomp(&wl_ip6reg, "^" REGEXLIB_IPV6 "$", REG_EXTENDED) != 0) {
+        abort();
+    }
+
+    if (regcomp(&wl_hostreg, "^" REGEXLIB_HOSTNAME "$", REG_EXTENDED) != 0) {
+        abort();
+    }
 }
 
 void whitelist_fin() {

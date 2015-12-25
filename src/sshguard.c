@@ -109,10 +109,6 @@ int main(int argc, char *argv[]) {
     // Initialize procauth and whitelist before parsing arguments.
     procauth_init();
     whitelist_init();
-    if (whitelist_conf_init() != 0) {
-        fprintf(stderr, "Could not initialize the whitelist engine.\n");
-        exit(1);
-    }
 
     if (get_options_cmdline(argc, argv) != 0) {
         exit(64);
