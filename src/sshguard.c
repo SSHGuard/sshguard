@@ -68,9 +68,6 @@ list_t offenders;
 /* mutex against races between insertions and pruning of lists */
 pthread_mutex_t list_mutex;
 
-/* get log lines in here. Hide the actual source and the method. Fill buf up
- * to buflen chars, return 0 for success, -1 for failure */
-static int read_log_line(char *restrict buf, sourceid_t *restrict source_id);
 /* handler for termination-related signals */
 static void sigfin_handler();
 /* called at exit(): flush blocked addresses and finalize subsystems */
@@ -84,6 +81,19 @@ static void report_address(attack_t attack);
 static void purge_limbo_stale(void);
 /* release blocked attackers after their penalty expired */
 static void *pardonBlocked();
+
+/**
+ * Fill 'buf' with a line from a log source and set the 'source_id' pointer.
+ * Return 0 on success and -1 on failure.
+ */
+static int log_getline(char *restrict buf, sourceid_t *restrict source_id) {
+    if (opts.has_polled_files) {
+        return logsuck_getline(buf, MAX_LOGLINE_LEN, source_id);
+    } else {
+        *source_id = 0;
+        return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
+    }
+}
 
 int main(int argc, char *argv[]) {
     pthread_t tid;
@@ -148,10 +158,11 @@ int main(int argc, char *argv[]) {
     sshguard_log(LOG_INFO, "Monitoring attacks from %s",
             opts.has_polled_files ? "log files" : "stdin");
 
-    while (read_log_line(buf, &source_id) == 0) {
+    while (log_getline(buf, &source_id) == 0) {
         attack_t parsed_attack;
 
         if (parse_line(source_id, buf, &parsed_attack) != 0) {
+            // Skip lines that don't match any attack.
             continue;
         }
 
@@ -174,21 +185,6 @@ int main(int argc, char *argv[]) {
     } else {
         sshguard_log(LOG_ERR, "Unable to read any more log entries");
     }
-}
-
-static int read_log_line(char *restrict buf, sourceid_t *restrict source_id) {
-    /* must fill buf, and return 0 for success and -1 for error */
-
-    /* get logs from polled files ? */
-    if (opts.has_polled_files) {
-        /* logsuck_getline() reflects the 0/-1 codes already */
-        return logsuck_getline(buf, MAX_LOGLINE_LEN, source_id);
-    }
-
-    /* otherwise, get logs from stdin */
-    if (source_id != NULL) *source_id = 0;
-
-    return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
 }
 
 /*
