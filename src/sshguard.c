@@ -187,6 +187,28 @@ int main(int argc, char *argv[]) {
     }
 }
 
+void log_block(attacker_t *tmpent, attacker_t *offenderent) {
+    char *time_msg;
+    if (tmpent->pardontime > 0) {
+        if (asprintf(&time_msg, "for %lld secs",
+                     (long long)tmpent->pardontime) < 0) {
+            abort();
+        }
+    } else {
+        time_msg = "forever";
+    }
+    sshguard_log(LOG_NOTICE, "%s: blocking %s (%u attacks in %lld "
+                             "secs, after %d abuses over %lld secs)",
+                 tmpent->attack.address.value, time_msg, tmpent->numhits,
+                 (long long)(tmpent->whenlast - tmpent->whenfirst),
+                 offenderent->numhits,
+                 (long long)(offenderent->whenlast - offenderent->whenfirst));
+    if (tmpent->pardontime > 0) {
+        // Free time message only if previously allocated.
+        free(time_msg);
+    }
+}
+
 /*
  * This function is called every time an attack pattern is matched.
  * It does the following:
@@ -284,12 +306,8 @@ static void report_address(attack_t attack) {
         }
     }
     list_sort(& offenders, -1);
+    log_block(tmpent, offenderent);
 
-    sshguard_log(LOG_NOTICE, "%s: blocking for %lld secs (%u attacks in %lld secs, after %d abuses over %lld secs)",
-            tmpent->attack.address.value, (long long)tmpent->pardontime,
-            tmpent->numhits, (long long)(tmpent->whenlast - tmpent->whenfirst),
-            offenderent->numhits,
-            (long long)(offenderent->whenlast - offenderent->whenfirst));
     int ret = fw_block(attack.address.value,
             attack.address.kind, attack.service);
     if (ret != FWALL_OK) {
