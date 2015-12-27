@@ -18,6 +18,8 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <pthread.h>
 #include <signal.h>
