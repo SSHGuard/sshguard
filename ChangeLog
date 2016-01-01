@@ -1,4 +1,4 @@
-* 1.6.3     December 2015
+* 1.6.3     January 2016
     - Add sample systemd(8) unit file
     - Disable blacklisting by default
     - Fix `pfctl` command syntax with OpenBSD 5.8
