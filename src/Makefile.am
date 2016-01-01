@@ -3,7 +3,26 @@ SUBDIRS = parser fwalls
 AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE
 
 sbin_PROGRAMS = sshguard
-sshguard_SOURCES = sshguard.c sshguard_whitelist.c sshguard_log.c sshguard_procauth.c sshguard_blacklist.c sshguard_options.c sshguard_logsuck.c simclist.c hash_32a.c
+sshguard_SOURCES = \
+	fnv.h \
+	hash_32a.c \
+	simclist.c \
+	simclist.h \
+	sshguard.c \
+	sshguard.h \
+	sshguard_blacklist.c \
+	sshguard_blacklist.h \
+	sshguard_fw.h \
+	sshguard_log.c \
+	sshguard_log.h \
+	sshguard_logsuck.c \
+	sshguard_logsuck.h \
+	sshguard_options.c \
+	sshguard_options.h \
+	sshguard_procauth.c \
+	sshguard_procauth.h \
+	sshguard_whitelist.c \
+	sshguard_whitelist.h
 sshguard_LDADD = parser/libparser.a fwalls/libfwall.a
 
 noinst_PROGRAMS = sshg-parser
