@@ -76,7 +76,7 @@ static void sigfin_handler();
 static void finishup(void);
 
 /* load blacklisted addresses and block them (if blacklist enabled) */
-static void process_blacklisted_addresses();
+static void blacklist_load_and_block();
 /* handle an attack: addr is the author, addrkind its address kind, service the attacked service code */
 static void report_address(attack_t attack);
 /* cleanup false-alarm attackers from limbo list (ones with too few attacks in too much time) */
@@ -131,8 +131,9 @@ int main(int argc, char *argv[]) {
         exit(69);
     }
 
-    // Load blacklist and block listed addresses.
-    process_blacklisted_addresses();
+    if (opts.blacklist_filename != NULL) {
+        blacklist_load_and_block();
+    }
 
     /* termination signals */
     signal(SIGTERM, sigfin_handler);
@@ -337,43 +338,49 @@ static void purge_limbo_stale(void) {
     }
 }
 
-static void *pardonBlocked() {
-    time_t now;
+static void unblock_expired() {
     attacker_t *tmpel;
     int ret;
+    time_t now = time(NULL);
 
+    pthread_testcancel();
+    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
+    pthread_mutex_lock(&list_mutex);
+
+    for (unsigned int pos = 0; pos < list_size(&hell); pos++) {
+        tmpel = list_get_at(&hell, pos);
+        /* skip blacklisted hosts (pardontime = infinite/0) */
+        if (tmpel->pardontime == 0)
+            continue;
+        /* process hosts with finite pardon time */
+        if (now - tmpel->whenlast > tmpel->pardontime) {
+            /* pardon time passed, release block */
+            sshguard_log(LOG_INFO, "%s: unblocking after %lld secs",
+                         tmpel->attack.address.value,
+                         (long long)(now - tmpel->whenlast));
+            ret = fw_release(tmpel->attack.address.value,
+                    tmpel->attack.address.kind, tmpel->attack.service);
+            if (ret != FWALL_OK) {
+                sshguard_log(LOG_ERR, "fw: failed to unblock (%d)", ret);
+            }
+            list_delete_at(&hell, pos);
+            free(tmpel);
+            /* element removed, next element is at current index (don't step
+             * pos) */
+            pos--;
+        }
+    }
+
+    pthread_mutex_unlock(&list_mutex);
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &ret);
+    pthread_testcancel();
+}
+
+static void *pardonBlocked() {
     while (1) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
         sleep(1 + ((unsigned int)rand() % (1+opts.pardon_threshold/2)));
-        now = time(NULL);
-        pthread_testcancel();
-        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
-        pthread_mutex_lock(& list_mutex);
-
-        for (unsigned int pos = 0; pos < list_size(&hell); pos++) {
-            tmpel = list_get_at(&hell, pos);
-            /* skip blacklisted hosts (pardontime = infinite/0) */
-            if (tmpel->pardontime == 0) continue;
-            /* process hosts with finite pardon time */
-            if (now - tmpel->whenlast > tmpel->pardontime) {
-                /* pardon time passed, release block */
-                sshguard_log(LOG_INFO, "%s: unblocking after %lld secs",
-                        tmpel->attack.address.value,
-                        (long long)(now - tmpel->whenlast));
-                ret = fw_release(tmpel->attack.address.value, tmpel->attack.address.kind, tmpel->attack.service);
-                if (ret != FWALL_OK) {
-                    sshguard_log(LOG_ERR, "fw: failed to unblock (%d)", ret);
-                }
-                list_delete_at(&hell, pos);
-                free(tmpel);
-                /* element removed, next element is at current index (don't step pos) */
-                pos--;
-            }
-        }
-        
-        pthread_mutex_unlock(& list_mutex);
-        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &ret);
-        pthread_testcancel();
+        unblock_expired();
     }
 
     pthread_exit(NULL);
@@ -403,66 +410,25 @@ static void sigfin_handler(int sig) {
     exit(0);
 }
 
-static void process_blacklisted_addresses() {
-    list_t *blacklist;
-    const char **addresses;         /* NULL-terminated array of (string) addresses to block:  char *addresses[]  */
-    int *restrict service_codes;    /* array of service codes resp to the given addresses */
-
-    if (opts.blacklist_filename == NULL) {
-        // Return if blacklisting is not enabled.
-        return;
+static void block_list(list_t *list) {
+    list_iterator_start(list);
+    while (list_iterator_hasnext(list)) {
+        attacker_t *next = list_iterator_next(list);
+        fw_block(next->attack.address.value, next->attack.address.kind,
+                next->attack.service);
     }
+    list_iterator_stop(list);
+}
 
-    blacklist = blacklist_load(opts.blacklist_filename);
+static void blacklist_load_and_block() {
+    list_t *blacklist = blacklist_load(opts.blacklist_filename);
     if (blacklist == NULL) {
-        perror("Could not open blacklist");
-        sshguard_log(LOG_ERR, "blacklist: could not open %s",
+        sshguard_log(LOG_ERR, "blacklist: could not open %s: %m",
                 opts.blacklist_filename);
         exit(66);
     }
 
-    /* blacklist enabled */
-    size_t num_blacklisted = list_size(blacklist);
-    sshguard_log(LOG_INFO, "blacklist: blocking %lu addresses",
-            (long unsigned int)num_blacklisted);
-    /* prepare to call fw_block_list() to block in bulk */
-    /* two runs, one for each address kind (but allocate arrays once) */
-    addresses = (const char **)malloc(sizeof(const char *) * (num_blacklisted+1));
-    service_codes = (int *restrict)malloc(sizeof(int) * num_blacklisted);
-    int addrkind;
-    for (addrkind = ADDRKIND_IPv4; addrkind != -1; addrkind = (addrkind == ADDRKIND_IPv4 ? ADDRKIND_IPv6 : -1)) {
-        /* extract from blacklist only addresses (and resp. codes) of type addrkind */
-        int i = 0;
-        list_iterator_start(blacklist);
-        while (list_iterator_hasnext(blacklist)) {
-            const attacker_t *bl_attacker = list_iterator_next(blacklist);
-            if (bl_attacker->attack.address.kind != addrkind)
-                continue;
-
-            // Trim trailing newline from strchr().
-            char *time_str = ctime(&bl_attacker->whenlast);
-            char *newline = strchr(time_str, '\n');
-            assert(newline != NULL);
-            *newline = '\0';
-            sshguard_log(LOG_DEBUG,
-                    "blacklist: loaded %s (ip%d) on service %d: %s",
-                    bl_attacker->attack.address.value,
-                    bl_attacker->attack.address.kind,
-                    bl_attacker->attack.service, time_str);
-            addresses[i] = bl_attacker->attack.address.value;
-            service_codes[i] = bl_attacker->attack.service;
-            ++i;
-        }
-        list_iterator_stop(blacklist);
-        if (i == 0) continue;
-        /* terminate array list */
-        addresses[i] = NULL;
-        /* do block addresses of this kind */
-        if (fw_block_list(addresses, addrkind, service_codes) != FWALL_OK) {
-            sshguard_log(LOG_ERR, "blacklist: failed to block addresses");
-        }
-    }
-    /* free temporary arrays */
-    free(addresses);
-    free(service_codes);
+    sshguard_log(LOG_INFO, "blacklist: blocking %u addresses",
+            (unsigned int)list_size(blacklist));
+    block_list(blacklist);
 }
