@@ -84,6 +84,23 @@ static void purge_limbo_stale(void);
 /* release blocked attackers after their penalty expired */
 static void *pardonBlocked();
 
+static void my_pidfile_create() {
+    FILE *p = fopen(opts.my_pidfile, "w");
+    if (p == NULL) {
+        sshguard_log(LOG_ERR, "Failed to create pid file: %m");
+        exit(73);
+    }
+
+    fprintf(p, "%d\n", (int)getpid());
+    fclose(p);
+}
+
+static void my_pidfile_destroy() {
+    if (unlink(opts.my_pidfile) != 0) {
+        sshguard_log(LOG_ERR, "Failed to remove pid file: %m");
+    }
+}
+
 /**
  * Fill 'buf' with a line from a log source and set the 'source_id' pointer.
  * Return 0 on success and -1 on failure.
@@ -124,6 +141,11 @@ int main(int argc, char *argv[]) {
 
     if (get_options_cmdline(argc, argv) != 0) {
         exit(64);
+    }
+
+    if (opts.my_pidfile != NULL) {
+        my_pidfile_create();
+        atexit(my_pidfile_destroy);
     }
 
     if (fw_init() != FWALL_OK) {

@@ -32,6 +32,7 @@ SYNOPSIS
 [**-b** `thresh`:`file`]
 [**-e** `script`]
 [**-f** `service`:`pidfile`]
+[**-i** `pidfile`]
 [**-l** `source`]
 [**-p** `interval`]
 [**-s** `interval`]
@@ -74,6 +75,9 @@ OPTIONS
 
 **-f** `service`:`pidfile`
     See LOG VALIDATION below.
+
+**-i** `pidfile`
+    Write the PID of **sshguard** to `pidfile`.
 
 **-l** `source`
     Monitor `source` for log messages. By default, **sshguard** reads log
