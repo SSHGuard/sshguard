@@ -131,6 +131,7 @@ AC_PROG_CC_C99
 AC_PROG_EGREP
 AC_PROG_RANLIB
 AC_PROG_YACC
+AM_PROG_AR
 AM_PROG_LEX
 
 ##############################################################################
