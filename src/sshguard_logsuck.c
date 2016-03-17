@@ -116,19 +116,8 @@ int logsuck_add_logsource(const char *restrict filename) {
         ++num_sources_active;
     } else {
         struct stat fileinfo;
-
-        /* get current serial number */
-        if (stat(filename, & fileinfo) != 0) {
-            sshguard_log(LOG_ERR, "File '%s' vanished while adding!", filename);
-            return -1;
-        }
-
-        if (activate_source(& cursource, & fileinfo) != 0) {
-            sshguard_log(LOG_ERR, "Unable to open '%s': %s.", filename, strerror(errno));
-            return -1;
-        }
-        /* move to the end of file */
-        lseek(cursource.current_descriptor, 0, SEEK_END); /* safe to fail if file is named pipe */
+        activate_source(&cursource, &fileinfo);
+        lseek(cursource.current_descriptor, 0, SEEK_END);
     }
 
     /* do add */
@@ -296,7 +285,6 @@ static int activate_source(source_entry_t *restrict srcent, const struct stat *f
 
     srcent->current_descriptor = open(srcent->filename, O_RDONLY | O_NONBLOCK);
     if (srcent->current_descriptor < 0) {
-        sshguard_log(LOG_ERR, "Ouch!! File '%s' lost (%s)! Archiving it for later attempts.", srcent->filename, strerror(errno));
         return -1;
     }
     srcent->current_serial_number = fileinfo->st_ino;
