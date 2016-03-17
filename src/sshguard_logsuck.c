@@ -92,8 +92,6 @@ int logsuck_add_logsource(const char *restrict filename) {
         return -1;
     }
 
-    sshguard_log(LOG_DEBUG, "Adding '%s' to polled files.", filename);
-
     /* store filename */
     strcpy(cursource.filename, filename);
 
@@ -174,7 +172,6 @@ int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whic
             }
         }
         /* no data. Wait for something with exponential backoff, up to LOGSUCK_MAX_WAIT */
-        sshguard_log(LOG_DEBUG, "Sleeping %d ms before next poll.", sleep_interval);
         usleep(sleep_interval * 1000);
         /* update sleep interval for next call */
         if (sleep_interval < MAX_LOGPOLL_INTERVAL) {
@@ -263,7 +260,6 @@ static int refresh_files() {
         ++numchanged;
         if (! myentry->active) {
             /* entry was inactive, now available. Resume it */
-            sshguard_log(LOG_NOTICE, "Source '%s' reappeared. Reloading.", myentry->filename);
         } else {
             /* rotated (ie myentry->current_serial_number != fileinfo.st_ino) */
             sshguard_log(LOG_NOTICE, "Reloading rotated file %s.", myentry->filename);
@@ -274,8 +270,6 @@ static int refresh_files() {
         /* descriptor and source ready! */
     }
     list_iterator_stop(& sources_list);
-
-    sshguard_log(LOG_INFO, "Refreshing sources showed %u changes.", numchanged);
     return 0;
 }
 
