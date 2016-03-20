@@ -50,7 +50,7 @@ int attack_from_hostname(attack_t *attack, const char *name) {
         attack->address.kind = ADDRKIND_IPv4;
         foo4 = (struct sockaddr_in *)(addrinfo_result->ai_addr);
         if (inet_ntop(AF_INET, &foo4->sin_addr, attack->address.value,
-                      addrinfo_result->ai_addrlen) == NULL) {
+                      sizeof(attack->address.value)) == NULL) {
             freeaddrinfo(addrinfo_result);
             sshguard_log(LOG_ERR, "Unable to interpret resolution result as "
                                   "IPv4 address: %m. Giving up entry.");
@@ -66,7 +66,7 @@ int attack_from_hostname(attack_t *attack, const char *name) {
             attack->address.kind = ADDRKIND_IPv6;
             foo6 = (struct sockaddr_in6 *)(addrinfo_result->ai_addr);
             if (inet_ntop(AF_INET6, &foo6->sin6_addr, attack->address.value,
-                          addrinfo_result->ai_addrlen) == NULL) {
+                          sizeof(attack->address.value)) == NULL) {
                 sshguard_log(LOG_ERR, "Unable to interpret resolution result "
                                       "as IPv6 address: %m. Giving up entry.");
                 freeaddrinfo(addrinfo_result);
