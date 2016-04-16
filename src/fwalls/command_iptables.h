@@ -27,7 +27,7 @@
 #include "../config.h"
 
 /* backwards compatible with -w  */
-#define IPTBLCMD "TBL=iptables; if [ x$SSHG_ADDRKIND == x6 ]; then TBL=ip6tables; fi; iptblscmd() { " IPTABLES_PATH "/$TBL -w $@; r=$?; if [ $r == 2 ]; then exec " IPTABLES_PATH "/$TBL $@; fi; exit $r; }; iptblscmd "
+#define IPTBLCMD "TBL=iptables; if [ x$SSHG_ADDRKIND = x6 ]; then TBL=ip6tables; fi; iptblscmd() { " IPTABLES_PATH "/$TBL -w $@; r=$?; if [ $r -eq 2 ]; then exec " IPTABLES_PATH "/$TBL $@; fi; exit $r; }; iptblscmd "
 
 /* for initializing the firewall (+ make sure we have sufficient credentials) */
 #define COMMAND_INIT       IPTBLCMD "-L -n"
