@@ -180,6 +180,7 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* postfix */
 "warning: "({WORD}|{HOSTADDR})"["                               { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
 <postfix_loginerr>"]: SASL "[-A-Z0-9]+" authentication failed".*    { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
+"lost connection after AUTH from ".*"["                         { return POSTFIX_NO_AUTH_PREF; }
 
  /* FreeBSD's ftpd login errors */
 "FTP LOGIN FAILED FROM "                                        { BEGIN(freebsdftpd_loginerr); return FREEBSDFTPD_LOGINERR_PREF; }
