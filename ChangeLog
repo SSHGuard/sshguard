@@ -1,3 +1,14 @@
+* 1.6.4     April 2016
+    - Match Postfix pre-authentication disconnects
+    - Fix bashisms in iptables backend
+    - Fix size argument in inet_ntop() call
+    - Remove excessive logging when polling from files
+    - Keep looking for unreadable files while polling
+    - Update Dovecot signature for POP3
+    - Match "Connection reset" message for SSH
+    - Resurrect PID file option by popular demand
+    - Adjust default abuse threshold
+
 * 1.6.3     January 2016
     - Add sample systemd(8) unit file
     - Disable blacklisting by default
