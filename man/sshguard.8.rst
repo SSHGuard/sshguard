@@ -58,7 +58,7 @@ at http://www.sshguard.net/.
 
 OPTIONS
 =======
-**-a** `thresh` (default 40)
+**-a** `thresh` (default 30)
     Block an attacker when its dangerousness exceeds `thresh`. Each attack
     pattern that is matched contributes a fixed dangerousness of 10.
 
@@ -86,13 +86,13 @@ OPTIONS
     using this option, standard input is ignored, but can be re-added by
     giving '**-l** -'.
 
-**-p** `interval` (default 420 secs, or 7 minutes)
+**-p** `interval` (default 120 secs, or 2 minutes)
     Wait at least `interval` seconds before releasing a blocked address.
     Repeat attackers are blocked for 1.5 times longer after each attack.
     Because **sshguard** unblocks attackers only at infrequent intervals,
     this parameter is inexact (actual blocks will be longer).
 
-**-s** `interval` (default 1200 secs, or 20 minutes)
+**-s** `interval` (default 1800 secs, or 30 minutes)
     Forget about an attacker `interval` seconds after its last attempt. Its
     dangerousness will be reset to zero.
 
