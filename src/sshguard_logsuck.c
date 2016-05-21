@@ -50,7 +50,7 @@ typedef struct {
     /* current situation */
     int active;                         /* is the source active? 0/1 */
     int current_descriptor;             /* current file descriptor, if active */
-    unsigned long int current_serial_number;          /* current serial number of the source, if active */
+    ino_t last_inode;    //< File inode for rotation detection
 } source_entry_t;
 
 /* list of source_entry_t elements */
@@ -103,7 +103,7 @@ int logsuck_add_logsource(const char *restrict filename) {
         int fflags;
         /* read from standard input */
         cursource.current_descriptor = STDIN_FILENO;
-        cursource.current_serial_number = 0;
+        cursource.last_inode = 0;
         /* set O_NONBLOCK as the other sources (but this is already open) */
         fflags = fcntl(cursource.current_descriptor, F_GETFL, 0);
         if (fcntl(cursource.current_descriptor, F_SETFL, fflags | O_NONBLOCK) == -1) {
@@ -124,7 +124,9 @@ int logsuck_add_logsource(const char *restrict filename) {
     /* do add */
     list_append(& sources_list, & cursource);
 
-    sshguard_log(LOG_DEBUG, "File '%s' added, fd %d, serial %lu.", filename, cursource.current_descriptor, cursource.current_serial_number);
+    sshguard_log(LOG_DEBUG, "File '%s' added, fd %d, serial %lu.", filename,
+                 cursource.current_descriptor,
+                 (unsigned long)cursource.last_inode);
 
     return 0;
 }
@@ -256,15 +258,17 @@ static int refresh_files() {
             continue;
         }
 
-        /* no news good news? */
-        if (myentry->active && myentry->current_serial_number == fileinfo.st_ino) continue;
+        if (myentry->active && myentry->last_inode == fileinfo.st_ino) {
+            // File inode did not change; log was not rotated.
+            continue;
+        }
 
         /* there are news. Sort out if reappeared or rotated */
         ++numchanged;
         if (! myentry->active) {
             /* entry was inactive, now available. Resume it */
         } else {
-            /* rotated (ie myentry->current_serial_number != fileinfo.st_ino) */
+            /* rotated (ie myentry->last_inode != fileinfo.st_ino) */
             sshguard_log(LOG_NOTICE, "Reloading rotated file %s.", myentry->filename);
             deactivate_source(myentry);
         }
@@ -284,7 +288,7 @@ static int activate_source(source_entry_t *restrict srcent, const struct stat *f
     if (srcent->current_descriptor < 0) {
         return -1;
     }
-    srcent->current_serial_number = fileinfo->st_ino;
+    srcent->last_inode = fileinfo->st_ino;
     srcent->active = 1;
 
     ++num_sources_active;
