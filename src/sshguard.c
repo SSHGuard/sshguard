@@ -214,9 +214,9 @@ int main(int argc, char *argv[]) {
 
 void log_block(attacker_t *tmpent, attacker_t *offenderent) {
     char *time_msg;
-    if (tmpent->pardontime > 0) {
-        if (asprintf(&time_msg, "for %lld secs",
-                     (long long)tmpent->pardontime) < 0) {
+    const time_t time = tmpent->pardontime;
+    if (time > 0) {
+        if (asprintf(&time_msg, "for %lld secs", (long long)time) < 0) {
             abort();
         }
     } else {
@@ -228,7 +228,7 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
                  offenderent->numhits,
                  (long long)(offenderent->whenlast - offenderent->whenfirst));
-    if (tmpent->pardontime > 0) {
+    if (time > 0) {
         // Free time message only if previously allocated.
         free(time_msg);
     }
