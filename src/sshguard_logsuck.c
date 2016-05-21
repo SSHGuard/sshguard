@@ -114,6 +114,9 @@ int logsuck_add_logsource(const char *restrict filename) {
         ++num_sources_active;
     } else {
         struct stat fileinfo;
+        if (stat(filename, &fileinfo) != 0) {
+            fileinfo.st_ino = 0;
+        }
         activate_source(&cursource, &fileinfo);
         lseek(cursource.current_descriptor, 0, SEEK_END);
     }
