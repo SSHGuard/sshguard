@@ -162,16 +162,6 @@ preserve your configuration, you usually use the iptables-save and
 iptables-restore utilities. However, each Linux variant has its own "right
 way".
 
-ipf
-^^^
-Insert the following lines in *ipf.rules* where SSHGuard's rules should go::
-
-    ##sshguard-begin##
-    ##sshguard-end##
-
-SSHGuard will add or remove rules between these two lines and reload **ipf**
-after each change.
-
 TCP Wrapper
 ^^^^^^^^^^^
 Add the following lines to *hosts.allow*::

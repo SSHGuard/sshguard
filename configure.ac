@@ -10,35 +10,12 @@ AM_SILENT_RULES([yes])
 # Configuration Options
 
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
-            [Firewall backend (one of pf, ipfw, iptables, ipfilter, hosts, aix, or null)])],
+            [Firewall backend (one of pf, ipfw, iptables, hosts, or null)])],
 [
  FWALLSDIR="src/fwalls"
  case "$withval" in
-     aix)
-        cp $FWALLSDIR/command_aix.h $FWALLSDIR/command.h
-        useaix=true
-        AC_CHECK_PROG([genfiltpath], [genfilt])
-        if test x$genfiltpath = x
-        then
-            # genfilt not in PATH, use "/usr/sbin" as default path
-            genfiltpath=/usr/sbin
-            AC_MSG_WARN([genfilt program not in path! Using /usr/sbin as default unless --with-genfilt specified])
-        fi
-        ;;
      hosts)
         usehosts=true
-        ;;
-     ipfilter)
-        cp $FWALLSDIR/command_ipfilter.h $FWALLSDIR/command.h
-        useipfilter=true
-        # is ipf in PATH?
-        AC_CHECK_PROG([ipfpath], [ipf])
-        if test x$ipfpath = x
-        then
-            # if ipf is not in PATH not, use "/sbin" as default path
-            ipfpath=/sbin
-            AC_MSG_WARN([ipf program not in path! Using /sbin as default unless --with-ipf specified])
-        fi
         ;;
      ipfw)
         cp $FWALLSDIR/command_ipfw.h $FWALLSDIR/command.h
@@ -89,23 +66,10 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
 AC_MSG_ERROR([Please choose a firewall backend (see help)])
 ])
 
-AC_ARG_WITH([genfilt], [AS_HELP_STRING([--with-genfilt=path],
-            [Path to the genfilt command (default from PATH)])],
-            [genfiltpath=`dirname $withval`])
-
 AC_ARG_WITH([hosts], [AS_HELP_STRING([--with-hosts=file],
             [Path to allowed hosts file (default /etc/hosts.allow)])],
             [hostsfilepath=$withval],
             [hostsfilepath=/etc/hosts.allow])
-
-AC_ARG_WITH([ipf], [AS_HELP_STRING([--with-ipf=path],
-            [Path to the ipf command (default from PATH)])],
-            [ipfpath=`dirname $withval`])
-
-AC_ARG_WITH([ipfconf], [AS_HELP_STRING([--with-ipfconf=file],
-            [Path to ipf configuration file (default /etc/ipf.rules)])],
-            [ipfconf=$withval],
-            [ipfconf=/etc/ipf.rules])
 
 AC_ARG_WITH([ipfw], [AS_HELP_STRING([--with-ipfw=path],
             [Path to the ipfw command (default from PATH)])],
@@ -159,12 +123,8 @@ AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
 
 # set what firewall backend has been used, for automake
-# AIX chosen
-AM_CONDITIONAL(FWALL_AIX, test x$useaix = xtrue)
 # HOSTS chosen
 AM_CONDITIONAL(FWALL_HOSTS, test x$usehosts = xtrue)
-# IPF chosen
-AM_CONDITIONAL(FWALL_IPFILTER, test x$useipfilter = xtrue)
 # IPFW chosen
 AM_CONDITIONAL(FWALL_IPFW, test x$useipfw = xtrue)
 # IPTABLES chosen
@@ -178,14 +138,10 @@ AM_CONDITIONAL(FWALL_NULL, test x$usenull = xtrue)
 AC_DEFINE_UNQUOTED(FILT_PATH, "$genfiltpath", [path for the genfilt command])
 # define $hostsfilepath in config.h
 AC_DEFINE_UNQUOTED(HOSTSFILE_PATH, "$hostsfilepath", [file for /etc/hosts.allow])
-# define $ipfconf as ipfilter configuration filename in config.h
-AC_DEFINE_UNQUOTED(IPFILTER_CONFFILE, "$ipfconf", [filename of the ipfilter configuration file])
 # define $ipfwpath in config.h
 AC_DEFINE_UNQUOTED(IPFW_PATH, "$ipfwpath", [path for the ipfw command])
 # define $iptablespath in config.h
 AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$iptablespath", [path for the iptables command])
-# define $ipfpath in config.h
-AC_DEFINE_UNQUOTED(IPFPATH, "$ipfpath", [path for the ipf command])
 # define $pfctlpath in config.h
 AC_DEFINE_UNQUOTED(PFCTL_PATH, "$pfctlpath", [path for the pfctl command])
 # define a suitable "grep -E" in config.h
