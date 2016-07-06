@@ -52,10 +52,8 @@ AS_BOX([Program Checks])
 # Enable POSIX extensions on hosts that normally disable them.
 AC_USE_SYSTEM_EXTENSIONS
 
-AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CC_C99
-AC_PROG_EGREP
 AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_AR
@@ -92,10 +90,5 @@ AM_CONDITIONAL(FWALL_HOSTS, test x$usehosts = xtrue)
 AC_DEFINE_UNQUOTED([PREFIX], "$prefix", [Prefix])
 
 AC_DEFINE_UNQUOTED(HOSTSFILE_PATH, "$hostsfilepath", [Path to hosts.allow])
-
-# define a suitable "grep -E" in config.h
-AC_DEFINE_UNQUOTED(EGREP, $EGREP, [path and filename for a grep tool supporting -E])
-# define a suitable awk
-AC_DEFINE_UNQUOTED(AWK, $AWK, [path and filename for a suitable awk tool])
 
 AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile src/fwalls/sshg-fw])
