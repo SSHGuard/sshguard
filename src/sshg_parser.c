@@ -11,9 +11,8 @@
 #include "sshguard_log.h"
 
 static void print_attack(const attack_t *attack) {
-    printf("attack from %s on service %d with danger %d with pid %d\n",
-            attack->address.value, attack->service,
-            attack->dangerousness, attack->source);
+    printf("%d %s %d\n", attack->service, attack->address.value,
+           attack->dangerousness);
 }
 
 static void print_usage() {
