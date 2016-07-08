@@ -152,14 +152,12 @@ int logsuck_getline(char *restrict buf, size_t buflen, sourceid_t *restrict whic
             index_last_read = pos % list_size(& sources_list);
             readentry = (source_entry_t *restrict)list_get_at(& sources_list, index_last_read);
             if (! readentry->active) continue;
-            /* sshguard_log(LOG_DEBUG, "Attempting to read from '%s'.", readentry->filename); */
             ret = read(readentry->current_descriptor, & buf[0], 1);
             switch (ret) {
                 case 1:
                     /* ignore blank lines */
                     if (buf[0] == '\n') continue;
                     /* there is stuff. Read rest of the line */
-                    sshguard_log(LOG_DEBUG, "Read line from '%s'.", readentry->filename);
                     if (whichsource != NULL) *whichsource = readentry->source_id;
                     return read_from(readentry, & buf[1], buflen-1);
 
