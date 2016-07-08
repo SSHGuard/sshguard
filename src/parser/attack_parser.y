@@ -73,6 +73,7 @@ static struct {
 %token SSH_LOGINERR_PREF SSH_LOGINERR_SUFF SSH_LOGINERR_PAM
 %token SSH_VIA
 %token SSH_NOIDENTIFSTR SSH_BADPROTOCOLIDENTIF SSH_BADPROTOCOLIDENTIF_SUFF
+%token SSH_BADKEX_PREF SSH_BADKEX_SUFF
 %token SSH_DISCONNECT_PREF SSH_PREAUTH_SUFF
 /* dovecot */
 %token DOVECOT_IMAP_LOGINERR_PREF DOVECOT_IMAP_LOGINERR_SUFF
@@ -212,6 +213,7 @@ sshmsg:
     | ssh_authfail
     | ssh_noidentifstring
     | ssh_badprotocol
+    | ssh_badkex
     ;
 
 ssh_illegaluser:
@@ -234,6 +236,10 @@ ssh_noidentifstring:
 
 ssh_badprotocol:
     SSH_BADPROTOCOLIDENTIF addr SSH_BADPROTOCOLIDENTIF_SUFF
+    ;
+
+ssh_badkex:
+    SSH_BADKEX_PREF addr SSH_BADKEX_SUFF
     ;
 
 /* attack rules for dovecot imap */

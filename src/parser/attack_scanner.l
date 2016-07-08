@@ -38,7 +38,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 
  /* Start Conditions */
  /* for Login services */
-%s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto
+%s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex
  /* for Mail services */
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
@@ -150,6 +150,9 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* SSH: clients connecting with other application protocols */
 "Bad protocol version identification".*" from "                 { BEGIN(ssh_badproto); return SSH_BADPROTOCOLIDENTIF; }
 <ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
+
+.*"Unable to negotiate with "                                   { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
+<ssh_badkex>[: ].*"no matching key exchange method found".*     { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
 
  /* Cucipop */
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
