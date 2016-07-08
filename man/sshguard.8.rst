@@ -20,10 +20,10 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: December 11, 2015
+:Date: July 8, 2016
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 1.6.3
+:Version: 1.6.5
 
 SYNOPSIS
 ========
