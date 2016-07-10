@@ -34,7 +34,6 @@
 #include "sshguard.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
-#include "sshguard_logsuck.h"
 #include "sshguard_options.h"
 #include "sshguard_procauth.h"
 #include "sshguard_whitelist.h"
@@ -101,22 +100,12 @@ static void my_pidfile_destroy() {
     }
 }
 
-/**
- * Fill 'buf' with a line from a log source and set the 'source_id' pointer.
- * Return 0 on success and -1 on failure.
- */
-static int log_getline(char *restrict buf, sourceid_t *restrict source_id) {
-    if (opts.has_polled_files) {
-        return logsuck_getline(buf, MAX_LOGLINE_LEN, source_id);
-    } else {
-        *source_id = 0;
-        return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
-    }
+static int log_getline(char *restrict buf) {
+    return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
 }
 
 int main(int argc, char *argv[]) {
     pthread_t tid;
-    sourceid_t source_id;
     char buf[MAX_LOGLINE_LEN];
 
     int sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
@@ -183,10 +172,10 @@ int main(int argc, char *argv[]) {
     sshguard_log(LOG_INFO, "Monitoring attacks from %s",
             opts.has_polled_files ? "log files" : "stdin");
 
-    while (log_getline(buf, &source_id) == 0) {
+    while (log_getline(buf) == 0) {
         attack_t parsed_attack;
 
-        if (parse_line(source_id, buf, &parsed_attack) != 0) {
+        if (parse_line(buf, &parsed_attack) != 0) {
             // Skip lines that don't match any attack.
             continue;
         }
@@ -413,10 +402,6 @@ static void finishup(void) {
 
     if (fw_flush() != FWALL_OK) {
         sshguard_log(LOG_ERR, "fw: failed to flush blocked addresses");
-    }
-
-    if (opts.has_polled_files) {
-        logsuck_fin();
     }
 
     fw_fin();

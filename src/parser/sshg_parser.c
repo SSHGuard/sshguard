@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         attack_t attack;
-        if (parse_line(0, buf, &attack) == 0) {
+        if (parse_line(buf, &attack) == 0) {
             print_attack(&attack);
         }
     }

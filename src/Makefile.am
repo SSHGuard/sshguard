@@ -34,8 +34,6 @@ sshguard_SOURCES = \
 	sshguard_blacklist.h \
 	sshguard_log.c \
 	sshguard_log.h \
-	sshguard_logsuck.c \
-	sshguard_logsuck.h \
 	sshguard_options.c \
 	sshguard_options.h \
 	sshguard_procauth.c \

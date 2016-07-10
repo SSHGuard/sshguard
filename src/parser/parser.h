@@ -34,6 +34,6 @@ extern int yy_flex_debug;
  * Parse a single line of a log for an attack. If an attack is found, return
  * zero and store the attack in the given pointer.
  */
-int parse_line(int source_id, char *str, attack_t *attack);
+int parse_line(char *str, attack_t *attack);
 
 #endif

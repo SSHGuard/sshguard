@@ -30,7 +30,6 @@
 #endif
 
 #include "sshguard.h"
-#include "sshguard_logsuck.h"
 #include "sshguard_options.h"
 #include "sshguard_procauth.h"
 #include "sshguard_whitelist.h"
@@ -39,7 +38,7 @@ sshg_opts opts;
 
 static void usage(void) {
     fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file]\n"
-                    "\t\t[-f service:pid-file] [-i pidfile] [-l source] [-p interval]\n"
+                    "\t\t[-f service:pid-file] [-i pidfile] [-p interval]\n"
                     "\t\t[-s interval] [-w address | file]\n");
 }
 
@@ -65,7 +64,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
     options_init(&opts);
 
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:l:i:e:vh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:i:e:vh")) != -1) {
         switch (optch) {
             case 'b':
                 opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
@@ -134,17 +133,6 @@ int get_options_cmdline(int argc, char *argv[]) {
                     usage();
                     return -1;
                 }
-                break;
-
-            case 'l':   /* add source for log sucker */
-                if (! opts.has_polled_files) {
-                    logsuck_init();
-                }
-                if (logsuck_add_logsource(optarg) != 0) {
-                    fprintf(stderr, "Unable to poll from '%s'!\n", optarg);
-                    return -1;
-                }
-                opts.has_polled_files = 1;
                 break;
 
             case 'i':   /* specify pidfile for my PID */

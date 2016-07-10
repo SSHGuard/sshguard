@@ -25,7 +25,6 @@
 
 #include "parser/parser.h"
 #include "sshguard.h"
-#include "sshguard_logsuck.h"
 
  /* stuff exported by the scanner */
 extern void scanner_init();
@@ -37,7 +36,6 @@ static void yyerror(attack_t *, const char *);
  /* Metadata used by the parser */
  /* per-source metadata */
 typedef struct {
-    sourceid_t id;
     int last_was_recognized;
     attack_t last_attack;
     unsigned int last_multiplicity;
@@ -300,17 +298,16 @@ vsftpdmsg:
 static void yyerror(__attribute__((unused)) attack_t *a,
     __attribute__((unused)) const char *s) { /* do nothing */ }
 
-static void init_structures(unsigned int source_id, attack_t *attack) {
+static void init_structures(attack_t *attack) {
     unsigned int cnt;
 
     /* add metadata for this source, if new */
     for (cnt = 0; cnt < parser_metadata.num_sources; ++cnt) {
-        if (parser_metadata.sources[cnt].id == source_id) break;
+        break;
     }
     if (cnt == parser_metadata.num_sources) {
         /* new source! */
         assert(cnt < MAX_FILES_POLLED);
-        parser_metadata.sources[cnt].id = source_id;
         parser_metadata.sources[cnt].last_was_recognized = 0;
         parser_metadata.sources[cnt].last_multiplicity = 1;
 
@@ -325,11 +322,11 @@ static void init_structures(unsigned int source_id, attack_t *attack) {
     parser_metadata.current_source_index = cnt;
 }
 
-int parse_line(int source_id, char *str, attack_t *attack) {
+int parse_line(char *str, attack_t *attack) {
     int ret;
 
     /* initialize parser structures */
-    init_structures(source_id, attack);
+    init_structures(attack);
 
     /* initialize scanner, do parse, finalize scanner */
     scanner_init(str);
