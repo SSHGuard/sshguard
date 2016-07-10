@@ -23,8 +23,6 @@ sshg_blocker_SOURCES = \
 	fwalls/fw.h \
 	hash_32a.c \
 	parser/attack.c \
-	parser/attack_parser.y \
-	parser/attack_scanner.l \
 	simclist.c \
 	simclist.h \
 	sshguard.c \

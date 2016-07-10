@@ -10,8 +10,8 @@
 #include "parser/parser.h"
 
 static void print_attack(const attack_t *attack) {
-    printf("%d %s %d\n", attack->service, attack->address.value,
-           attack->dangerousness);
+    printf("%d %s %d %d\n", attack->service, attack->address.value,
+           attack->address.kind, attack->dangerousness);
 }
 
 static void print_usage() {

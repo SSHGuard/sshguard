@@ -37,8 +37,6 @@
 #include "sshguard_options.h"
 #include "sshguard_whitelist.h"
 
-#define MAX_LOGLINE_LEN     1000
-
 /** Keep track of the exit signal received. */
 static volatile sig_atomic_t exit_sig = 0;
 
@@ -99,18 +97,11 @@ static void my_pidfile_destroy() {
     }
 }
 
-static int log_getline(char *restrict buf) {
-    return (fgets(buf, MAX_LOGLINE_LEN, stdin) != NULL ? 0 : -1);
-}
-
 int main(int argc, char *argv[]) {
     pthread_t tid;
-    char buf[MAX_LOGLINE_LEN];
 
     int sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
     sshguard_log_init(sshg_debugging);
-    yy_flex_debug = sshg_debugging;
-    yydebug = sshg_debugging;
 
     srand(time(NULL));
 
@@ -169,18 +160,18 @@ int main(int argc, char *argv[]) {
 
     sshguard_log(LOG_INFO, "Monitoring attacks");
 
-    while (log_getline(buf) == 0) {
-        attack_t parsed_attack;
-
-        if (parse_line(buf, &parsed_attack) != 0) {
-            // Skip lines that don't match any attack.
-            continue;
+    char buf[1024];
+    attack_t parsed_attack;
+    while (fgets(buf, sizeof(buf), stdin) != NULL) {
+        if (sscanf(buf, "%d %46s %d %d\n", &parsed_attack.service,
+                  parsed_attack.address.value, &parsed_attack.address.kind,
+                  &parsed_attack.dangerousness) == 4) {
+            sshguard_log(LOG_DEBUG,
+                         "Attack from %s on service %d with danger %u",
+                         parsed_attack.address.value, parsed_attack.service,
+                         parsed_attack.dangerousness);
+            report_address(parsed_attack);
         }
-
-        sshguard_log(LOG_DEBUG, "Attack from %s on service %d with danger %u",
-                parsed_attack.address.value, parsed_attack.service,
-                parsed_attack.dangerousness);
-        report_address(parsed_attack);
     }
 
     if (feof(stdin)) {
