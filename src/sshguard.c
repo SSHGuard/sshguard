@@ -35,7 +35,6 @@
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
 #include "sshguard_options.h"
-#include "sshguard_procauth.h"
 #include "sshguard_whitelist.h"
 
 #define MAX_LOGLINE_LEN     1000
@@ -124,8 +123,7 @@ int main(int argc, char *argv[]) {
     list_attributes_seeker(& offenders, attack_addr_seeker);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
 
-    // Initialize procauth and whitelist before parsing arguments.
-    procauth_init();
+    // Initialize whitelist before parsing arguments.
     whitelist_init();
 
     if (get_options_cmdline(argc, argv) != 0) {
@@ -177,14 +175,6 @@ int main(int argc, char *argv[]) {
 
         if (parse_line(buf, &parsed_attack) != 0) {
             // Skip lines that don't match any attack.
-            continue;
-        }
-
-        if (parsed_attack.source != 0 && procauth_isauthoritative(
-                    parsed_attack.service, parsed_attack.source) == -1) {
-            sshguard_log(LOG_NOTICE,
-                    "Ignoring message from pid %d on service %d",
-                    parsed_attack.source, parsed_attack.service);
             continue;
         }
 
@@ -406,7 +396,6 @@ static void finishup(void) {
 
     fw_fin();
     whitelist_fin();
-    procauth_fin();
     sshguard_log_fin();
 }
 

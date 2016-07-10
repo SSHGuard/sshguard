@@ -121,7 +121,7 @@ text:
 syslogent:
      /* timestamp hostname procname[pid]: logmsg */
     /*TIMESTAMP_SYSLOG hostname procname '[' INTEGER ']' ':' logmsg   {*/
-    SYSLOG_BANNER_PID logmsg { attack->source = $1; }
+    SYSLOG_BANNER_PID logmsg { }
 
     /*| TIMESTAMP_SYSLOG hostname procname ':' logmsg*/
     | SYSLOG_BANNER logmsg
@@ -138,7 +138,7 @@ metalogent:
 
 /* a socklog-generated log entry */
 socklogent:
-    SOCKLOG_BANNER_PID logmsg { attack->source = $1; }
+    SOCKLOG_BANNER_PID logmsg { }
     | SOCKLOG_BANNER logmsg
     ;
 
@@ -316,7 +316,6 @@ static void init_structures(attack_t *attack) {
     
     /* initialize the attack structure */
     attack->dangerousness = DEFAULT_ATTACKS_DANGEROUSNESS;
-    attack->source = 0;
 
     /* set current source index */
     parser_metadata.current_source_index = cnt;

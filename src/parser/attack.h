@@ -45,7 +45,6 @@ enum service {
 typedef struct {
     sshg_address_t address;     //< Address
     enum service service;       //< Service
-    int source;                 //< Source PID, or zero if unknown
     int dangerousness;          //< Danger level
 } attack_t;
 

@@ -36,8 +36,6 @@ sshguard_SOURCES = \
 	sshguard_log.h \
 	sshguard_options.c \
 	sshguard_options.h \
-	sshguard_procauth.c \
-	sshguard_procauth.h \
 	sshguard_whitelist.c \
 	sshguard_whitelist.h
 

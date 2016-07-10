@@ -31,14 +31,13 @@
 
 #include "sshguard.h"
 #include "sshguard_options.h"
-#include "sshguard_procauth.h"
 #include "sshguard_whitelist.h"
 
 sshg_opts opts;
 
 static void usage(void) {
     fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file]\n"
-                    "\t\t[-f service:pid-file] [-i pidfile] [-p interval]\n"
+                    "\t\t[-i pidfile] [-p interval]\n"
                     "\t\t[-s interval] [-w address | file]\n");
 }
 
@@ -64,7 +63,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
     options_init(&opts);
 
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:f:i:e:vh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:e:vh")) != -1) {
         switch (optch) {
             case 'b':
                 opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
@@ -124,14 +123,6 @@ int get_options_cmdline(int argc, char *argv[]) {
                         usage();
                         return -1;
                     }
-                }
-                break;
-
-            case 'f':   /* process pid authorization */
-                if (procauth_addprocess(optarg) != 0) {
-                    fprintf(stderr, "Could not parse service pid configuration '%s'.\n", optarg);
-                    usage();
-                    return -1;
                 }
                 break;
 
