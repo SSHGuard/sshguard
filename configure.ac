@@ -3,7 +3,7 @@ AC_PREREQ([2.60])
 AC_INIT([sshguard], [1.7.0], [sshguard-users@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/simclist.c])
 AM_CONFIG_HEADER([src/config.h])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_SILENT_RULES([yes])
 
 ##############################################################################
@@ -79,4 +79,4 @@ AC_DEFINE_UNQUOTED([PREFIX], "$prefix", [Prefix])
 
 AC_DEFINE_UNQUOTED(HOSTSFILE_PATH, "$hostsfilepath", [Path to hosts.allow])
 
-AC_OUTPUT([Makefile man/Makefile src/Makefile src/parser/Makefile src/fwalls/Makefile src/fwalls/sshg-fw])
+AC_OUTPUT([Makefile man/Makefile src/Makefile src/fwalls/sshg-fw])
