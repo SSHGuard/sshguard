@@ -3,11 +3,11 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 
 #include "attack.h"
-#include "sshguard_log.h"
 
 int attackt_whenlast_comparator(const void *a, const void *b) {
     const attacker_t *aa = (const attacker_t *)a;
@@ -52,8 +52,7 @@ int attack_from_hostname(attack_t *attack, const char *name) {
         if (inet_ntop(AF_INET, &foo4->sin_addr, attack->address.value,
                       sizeof(attack->address.value)) == NULL) {
             freeaddrinfo(addrinfo_result);
-            sshguard_log(LOG_ERR, "Unable to interpret resolution result as "
-                                  "IPv4 address: %m. Giving up entry.");
+            perror("Unable to resolve hostname to IP4 address");
             return false;
         }
     } else {
@@ -67,21 +66,16 @@ int attack_from_hostname(attack_t *attack, const char *name) {
             foo6 = (struct sockaddr_in6 *)(addrinfo_result->ai_addr);
             if (inet_ntop(AF_INET6, &foo6->sin6_addr, attack->address.value,
                           sizeof(attack->address.value)) == NULL) {
-                sshguard_log(LOG_ERR, "Unable to interpret resolution result "
-                                      "as IPv6 address: %m. Giving up entry.");
+                perror("Unable to resolve hostname to IP6 address");
                 freeaddrinfo(addrinfo_result);
                 return false;
             }
         } else {
-            sshguard_log(LOG_ERR, "Could not resolv '%s' in neither of "
-                                  "IPv{4,6}. Giving up entry.",
-                         name);
+            fprintf(stderr, "Could not resolve '%s' to address\n", name);
             return false;
         }
     }
 
-    sshguard_log(LOG_INFO, "Successfully resolved '%s' --> %d:'%s'.", name,
-                 attack->address.kind, attack->address.value);
     freeaddrinfo(addrinfo_result);
     return true;
 }

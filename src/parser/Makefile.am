@@ -10,3 +10,7 @@ libparser_a_SOURCES = \
 	attack_parser.y \
 	attack_scanner.l \
 	parser.h
+
+libexec_PROGRAMS = sshg-parser
+sshg_parser_SOURCES = sshg_parser.c
+sshg_parser_LDADD = libparser.a

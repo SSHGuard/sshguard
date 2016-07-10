@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "parser/parser.h"
-#include "sshguard_log.h"
 
 static void print_attack(const attack_t *attack) {
     printf("%d %s %d\n", attack->service, attack->address.value,
@@ -38,8 +37,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Initialize necessary subsystems.
-    sshguard_log_init(true);
     yydebug = yy_flex_debug = debug;
 
     while (fgets(buf, sizeof(buf), stdin) != NULL) {

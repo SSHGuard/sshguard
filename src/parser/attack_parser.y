@@ -24,7 +24,6 @@
 
 #include "parser/parser.h"
 #include "sshguard.h"
-#include "sshguard_log.h"
 #include "sshguard_logsuck.h"
 
  /* stuff exported by the scanner */
