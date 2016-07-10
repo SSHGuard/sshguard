@@ -23,6 +23,7 @@ dist_libexec_SCRIPTS = sshg-logtail
 sshg_blocker_SOURCES = \
 	fnv.h \
 	fwalls/fw.h \
+	fwalls/fw.c \
 	hash_32a.c \
 	parser/attack.c \
 	simclist.c \
@@ -37,9 +38,3 @@ sshg_blocker_SOURCES = \
 	sshguard_options.h \
 	sshguard_whitelist.c \
 	sshguard_whitelist.h
-
-if FWALL_HOSTS
-sshg_blocker_SOURCES += fwalls/hosts.c
-else
-sshg_blocker_SOURCES += fwalls/fw.c
-endif

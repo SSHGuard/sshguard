@@ -13,16 +13,13 @@ AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--disable-sandbox],
               [Disable Capsicum sandboxing])], [], [sandbox_enable=yes])
 
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
-            [Firewall backend (one of pf, ipfw, iptables, hosts, or null)])],
+            [Firewall backend (one of pf, ipfw, iptables, or null)])],
 [
  # Substitute the correct commands into the firewall script.
  AC_SUBST_FILE([sshg_fw_subr])
  sshg_fw_subr=src/fwalls/$withval.sh
 
  case "$withval" in
-     hosts)
-        usehosts=true
-        ;;
      ipfw)
         useipfw=true
         ;;
@@ -43,11 +40,6 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
 [
 AC_MSG_ERROR([Please choose a firewall backend (see help)])
 ])
-
-AC_ARG_WITH([hosts], [AS_HELP_STRING([--with-hosts=file],
-            [Path to allowed hosts file (default /etc/hosts.allow)])],
-            [hostsfilepath=$withval],
-            [hostsfilepath=/etc/hosts.allow])
 
 ##############################################################################
 AS_BOX([Program Checks])
@@ -83,11 +75,5 @@ AS_BOX([Library Functions])
 AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
-
-# set what firewall backend has been used, for automake
-# HOSTS chosen
-AM_CONDITIONAL(FWALL_HOSTS, test x$usehosts = xtrue)
-
-AC_DEFINE_UNQUOTED(HOSTSFILE_PATH, "$hostsfilepath", [Path to hosts.allow])
 
 AC_OUTPUT([Makefile src/Makefile src/fwalls/sshg-fw])
