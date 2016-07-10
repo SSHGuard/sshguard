@@ -52,7 +52,6 @@ AS_BOX([Program Checks])
 # Enable POSIX extensions on hosts that normally disable them.
 AC_USE_SYSTEM_EXTENSIONS
 
-AC_PROG_CC
 AC_PROG_CC_C99
 AC_PROG_RANLIB
 AC_PROG_YACC
@@ -63,18 +62,7 @@ AM_PROG_LEX
 AS_BOX([Headers, Types, and Compiler Checks])
 
 # Header Files
-AC_HEADER_STDC
 AC_CHECK_HEADERS([getopt.h])
-
-# Types
-AC_TYPE_OFF_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-
-# Compiler Characteristics
-AC_C_CONST
-AC_C_INLINE
-AC_C_RESTRICT
 
 ##############################################################################
 AS_BOX([Library Functions])
