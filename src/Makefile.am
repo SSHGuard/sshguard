@@ -6,7 +6,7 @@ AM_YFLAGS = -d
 
 BUILT_SOURCES = parser/attack_parser.h
 
-libexec_PROGRAMS = sshg-parser
+libexec_PROGRAMS = sshg-blocker sshg-parser
 sshg_parser_SOURCES = \
 	parser/address.h \
 	parser/attack.c \
@@ -18,8 +18,7 @@ sshg_parser_SOURCES = \
 
 dist_libexec_SCRIPTS = sshg-logtail
 
-sbin_PROGRAMS = sshguard
-sshguard_SOURCES = \
+sshg_blocker_SOURCES = \
 	fnv.h \
 	fwalls/fw.h \
 	hash_32a.c \
@@ -40,7 +39,7 @@ sshguard_SOURCES = \
 	sshguard_whitelist.h
 
 if FWALL_HOSTS
-sshguard_SOURCES += fwalls/hosts.c
+sshg_blocker_SOURCES += fwalls/hosts.c
 else
-sshguard_SOURCES += fwalls/fw.c
+sshg_blocker_SOURCES += fwalls/fw.c
 endif
