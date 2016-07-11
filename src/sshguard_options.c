@@ -38,7 +38,7 @@
 sshg_opts opts;
 
 static void usage(void) {
-    fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file] [-e script]\n"
+    fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file]\n"
                     "\t\t[-f service:pid-file] [-i pidfile] [-l source] [-p interval]\n"
                     "\t\t[-s interval] [-w address | file]\n");
 }
@@ -61,8 +61,6 @@ static void options_init(sshg_opts *opt) {
 }
 
 int get_options_cmdline(int argc, char *argv[]) {
-    struct stat event_script_buf;
-    int status;
     int optch;
 
     options_init(&opts);
@@ -151,16 +149,6 @@ int get_options_cmdline(int argc, char *argv[]) {
 
             case 'i':   /* specify pidfile for my PID */
                 opts.my_pidfile = optarg;
-                break;
-
-            case 'e':     /* provide a script executed each time a firewall
-                           event is risen */
-                status = stat(optarg, &event_script_buf);
-                /* check the existence of the file */
-                if (status == 0)
-                    setenv("SSHGUARD_EVENT_EXECUTE", optarg, 1);
-                else
-                    fprintf(stderr, "Unable to access file %s. Ignoring hook.\n", optarg);
                 break;
 
             case 'v':     /* version */
