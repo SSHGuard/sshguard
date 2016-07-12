@@ -1,5 +1,5 @@
 libexec_SCRIPTS = fw/sshg-fw
-EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh
+EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
 
 AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
@@ -38,3 +38,11 @@ sshg_blocker_SOURCES = \
 	blocker/sshguard_whitelist.c \
 	blocker/sshguard_whitelist.h \
 	parser/attack.c
+
+script_subst = sed \
+	-e 's|@libexecdir[@]|$(libexecdir)|g' \
+	-e 's|@sysconfdir[@]|$(sysconfdir)|g'
+
+sbin_SCRIPTS = sshguard
+sshguard: Makefile sshguard.in
+	$(script_subst) $@.in > $@

@@ -1,0 +1,4 @@
+#!/bin/sh
+# sshguard.conf -- SSHGuard configuration
+
+FILES="/var/log/auth.log /var/log/maillog"
