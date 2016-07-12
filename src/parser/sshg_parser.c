@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
         attack_t attack;
         if (parse_line(buf, &attack) == 0) {
             print_attack(&attack);
+            fflush(stdout);
         }
     }
 }
