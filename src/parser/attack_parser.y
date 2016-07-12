@@ -296,7 +296,7 @@ vsftpdmsg:
 
 %%
 
-static void yyerror(attack_t *attack, const char *msg) { /* do nothing */ }
+static void yyerror() { /* do nothing */ }
 
 static void init_structures(unsigned int source_id, attack_t *attack) {
     unsigned int cnt;
