@@ -28,7 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "fwalls/fw.h"
+#include "fw.h"
 #include "parser/parser.h"
 #include "sandbox.h"
 #include "simclist.h"

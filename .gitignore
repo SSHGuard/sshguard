@@ -19,7 +19,7 @@ missing
 src/config.h
 src/config.h.in
 src/config.h.in~
-src/fwalls/sshg-fw
+src/fw/sshg-fw
 src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
 src/sshg-blocker

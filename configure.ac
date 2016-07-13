@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.60])
 AC_INIT([sshguard], [1.7.0], [sshguard-users@lists.sourceforge.net])
-AC_CONFIG_SRCDIR([src/simclist.c])
+AC_CONFIG_SRCDIR([src/sshguard.in])
 AM_CONFIG_HEADER([src/config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_SILENT_RULES([yes])
@@ -17,7 +17,7 @@ AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
 [
  # Substitute the correct commands into the firewall script.
  AC_SUBST_FILE([sshg_fw_subr])
- sshg_fw_subr=src/fwalls/$withval.sh
+ sshg_fw_subr=src/fw/$withval.sh
 
  case "$withval" in
      ipfw)
@@ -76,4 +76,4 @@ AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
 
-AC_OUTPUT([Makefile src/Makefile src/fwalls/sshg-fw])
+AC_OUTPUT([Makefile src/Makefile src/fw/sshg-fw])

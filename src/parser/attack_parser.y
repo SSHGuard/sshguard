@@ -22,8 +22,8 @@
 
 #include <string.h>
 
-#include "parser/parser.h"
-#include "sshguard.h"
+#include "blocker/sshguard.h"
+#include "parser.h"
 
  /* stuff exported by the scanner */
 extern void scanner_init();

@@ -1,5 +1,5 @@
-libexec_SCRIPTS = fwalls/sshg-fw
-EXTRA_DIST = fwalls/ipfw.sh fwalls/iptables.sh fwalls/null.sh fwalls/pf.sh
+libexec_SCRIPTS = fw/sshg-fw
+EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh
 
 AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
@@ -21,20 +21,20 @@ sshg_parser_SOURCES = \
 dist_libexec_SCRIPTS = sshg-logtail
 
 sshg_blocker_SOURCES = \
-	fnv.h \
-	fwalls/fw.h \
-	fwalls/fw.c \
-	hash_32a.c \
-	parser/attack.c \
-	simclist.c \
-	simclist.h \
-	sshguard.c \
-	sshguard.h \
-	sshguard_blacklist.c \
-	sshguard_blacklist.h \
-	sshguard_log.c \
-	sshguard_log.h \
-	sshguard_options.c \
-	sshguard_options.h \
-	sshguard_whitelist.c \
-	sshguard_whitelist.h
+	blocker/fnv.h \
+	blocker/fw.c \
+	blocker/fw.h \
+	blocker/hash_32a.c \
+	blocker/simclist.c \
+	blocker/simclist.h \
+	blocker/sshguard.c \
+	blocker/sshguard.h \
+	blocker/sshguard_blacklist.c \
+	blocker/sshguard_blacklist.h \
+	blocker/sshguard_log.c \
+	blocker/sshguard_log.h \
+	blocker/sshguard_options.c \
+	blocker/sshguard_options.h \
+	blocker/sshguard_whitelist.c \
+	blocker/sshguard_whitelist.h \
+	parser/attack.c
