@@ -77,4 +77,4 @@ AM_CONDITIONAL(FWALL_HOSTS, test x$usehosts = xtrue)
 
 AC_DEFINE_UNQUOTED(HOSTSFILE_PATH, "$hostsfilepath", [Path to hosts.allow])
 
-AC_OUTPUT([Makefile man/Makefile src/Makefile src/fwalls/sshg-fw])
+AC_OUTPUT([Makefile src/Makefile src/fwalls/sshg-fw])
