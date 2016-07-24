@@ -4,27 +4,24 @@
 
 @sshg_fw_subr@
 
-fw_log() {
-    logger -p auth.debug -t sshg-fw
-}
-
 fw_init
 if [ $? -ne 0 ]; then
-    echo "Could not initialize firewall; check permissions and firewall setup" >&2
+    echo "Could not initialize firewall" >&2
     exit 1
 fi
 
 while [ true ]; do
     read cmd address addrtype
-    if [ "$cmd" == "block" ]; then
-        fw_block $address $addrtype
-    elif [ "$cmd" == "release" ]; then
-        fw_release $address $addrtype
-    elif [ "$cmd" == "flush" ]; then
-        fw_flush
-    else
-        break
-    fi
+    case $cmd in
+        block)
+            fw_block $address $addrtype;;
+        release)
+            fw_release $address $addrtype;;
+        flush)
+            fw_flush;;
+        *)
+            break;;
+    esac
 done
 
 fw_fin
