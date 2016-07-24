@@ -10,8 +10,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-while [ true ]; do
-    read cmd address addrtype
+cleanup() {
+    trap "" EXIT
+    fw_fin
+}
+
+trap cleanup EXIT INT
+
+while read cmd address addrtype; do
     case $cmd in
         block)
             fw_block $address $addrtype;;
@@ -23,5 +29,3 @@ while [ true ]; do
             break;;
     esac
 done
-
-fw_fin
