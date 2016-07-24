@@ -167,8 +167,7 @@ int main(int argc, char *argv[]) {
         exit(2);
     }
 
-    sshguard_log(LOG_INFO, "Monitoring attacks from %s",
-            opts.has_polled_files ? "log files" : "stdin");
+    sshguard_log(LOG_INFO, "Monitoring attacks");
 
     while (log_getline(buf) == 0) {
         attack_t parsed_attack;
@@ -184,10 +183,8 @@ int main(int argc, char *argv[]) {
         report_address(parsed_attack);
     }
 
-    if (!opts.has_polled_files && feof(stdin)) {
+    if (feof(stdin)) {
         sshguard_log(LOG_NOTICE, "Received EOF from stdin");
-    } else {
-        sshguard_log(LOG_ERR, "Unable to read any more log entries");
     }
 }
 

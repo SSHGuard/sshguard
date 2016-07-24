@@ -55,7 +55,6 @@ static void options_init(sshg_opts *opt) {
     opt->blacklist_threshold = 0;
     opt->my_pidfile = NULL;
     opt->blacklist_filename = NULL;
-    opt->has_polled_files = 0;
 }
 
 int get_options_cmdline(int argc, char *argv[]) {

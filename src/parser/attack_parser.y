@@ -20,7 +20,6 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#include <assert.h>
 #include <string.h>
 
 #include "parser/parser.h"
@@ -32,21 +31,6 @@ extern void scanner_fin();
 extern int yylex();
 
 static void yyerror(attack_t *, const char *);
-
- /* Metadata used by the parser */
- /* per-source metadata */
-typedef struct {
-    int last_was_recognized;
-    attack_t last_attack;
-    unsigned int last_multiplicity;
-} source_metadata_t;
-
- /* parser metadata */
-static struct {
-    unsigned int num_sources;
-    int current_source_index;
-    source_metadata_t sources[MAX_FILES_POLLED];
-} parser_metadata = { 0, -1 };
 
 %}
 
@@ -62,7 +46,7 @@ static struct {
 
 /* semantic values for tokens */
 %token <str> IPv4 IPv6 HOSTADDR WORD
-%token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID LAST_LINE_REPEATED_N_TIMES
+%token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID
 
 /* flat tokens */
 %token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 METALOG_BANNER SOCKLOG_BANNER
@@ -97,9 +81,6 @@ static struct {
 /* vsftpd */
 %token VSFTPD_LOGINERR_PREF VSFTPD_LOGINERR_SUFF
 
-/* msg_multiple returns the multiplicity degree of its recognized message */
-%type <num> msg_multiple
-
 %%
 
 /* log source */
@@ -121,7 +102,7 @@ text:
 syslogent:
      /* timestamp hostname procname[pid]: logmsg */
     /*TIMESTAMP_SYSLOG hostname procname '[' INTEGER ']' ':' logmsg   {*/
-    SYSLOG_BANNER_PID logmsg { }
+    SYSLOG_BANNER_PID logmsg
 
     /*| TIMESTAMP_SYSLOG hostname procname ':' logmsg*/
     | SYSLOG_BANNER logmsg
@@ -138,16 +119,13 @@ metalogent:
 
 /* a socklog-generated log entry */
 socklogent:
-    SOCKLOG_BANNER_PID logmsg { }
+    SOCKLOG_BANNER_PID logmsg
     | SOCKLOG_BANNER logmsg
     ;
 
 /* the "payload" of a log entry: the oridinal message generated from a process */
 logmsg:
-      /* individual messages */
-    msg_single          {   parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity = 1;    }
-      /* messages with repeated attacks -- eg syslog's "last line repeated N times" */
-    | msg_multiple      {   parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity = $1; }
+    msg_single
     ;
 
 msg_single:
@@ -163,25 +141,6 @@ msg_single:
     | proftpdmsg        {   attack->service = SERVICES_PROFTPD; }
     | pureftpdmsg       {   attack->service = SERVICES_PUREFTPD; }
     | vsftpdmsg         {   attack->service = SERVICES_VSFTPD; }
-    ;
-
-msg_multiple:
-    /* syslog style  "last message repeated N times"  message */
-    LAST_LINE_REPEATED_N_TIMES     {
-                        /* the message repeated, was it an attack? */
-                        if (! parser_metadata.sources[parser_metadata.current_source_index].last_was_recognized) {
-                            /* make sure this doesn't get recognized as an attack */
-                            YYABORT;
-                        }
-                        
-                        /* got a repeated attack */
-                        *attack = parser_metadata.sources[parser_metadata.current_source_index].last_attack;
-                        /* restore previous "genuine" dangerousness, and build new one */
-                        attack->dangerousness = $1 * (attack->dangerousness / parser_metadata.sources[parser_metadata.current_source_index].last_multiplicity);
-
-                        /* pass up the multiplicity of this attack */
-                        $$ = $1;
-                    }
     ;
 
 /* an address */
@@ -298,50 +257,12 @@ vsftpdmsg:
 static void yyerror(__attribute__((unused)) attack_t *a,
     __attribute__((unused)) const char *s) { /* do nothing */ }
 
-static void init_structures(attack_t *attack) {
-    unsigned int cnt;
-
-    /* add metadata for this source, if new */
-    for (cnt = 0; cnt < parser_metadata.num_sources; ++cnt) {
-        break;
-    }
-    if (cnt == parser_metadata.num_sources) {
-        /* new source! */
-        assert(cnt < MAX_FILES_POLLED);
-        parser_metadata.sources[cnt].last_was_recognized = 0;
-        parser_metadata.sources[cnt].last_multiplicity = 1;
-
-        parser_metadata.num_sources++;
-    }
-    
-    /* initialize the attack structure */
+int parse_line(char *str, attack_t *attack) {
     attack->dangerousness = DEFAULT_ATTACKS_DANGEROUSNESS;
 
-    /* set current source index */
-    parser_metadata.current_source_index = cnt;
-}
-
-int parse_line(char *str, attack_t *attack) {
-    int ret;
-
-    /* initialize parser structures */
-    init_structures(attack);
-
-    /* initialize scanner, do parse, finalize scanner */
     scanner_init(str);
-    ret = yyparse(attack);
+    int ret = yyparse(attack);
     scanner_fin();
-
-    /* do post-parsing oeprations */
-    if (ret == 0) {
-        /* message recognized */
-        /* update metadata on this source */
-        parser_metadata.sources[parser_metadata.current_source_index].last_was_recognized = 1;
-        parser_metadata.sources[parser_metadata.current_source_index].last_attack = *attack;
-    } else {
-        /* message not recognized */
-        parser_metadata.sources[parser_metadata.current_source_index].last_was_recognized = 0;
-    }
 
     return ret;
 }

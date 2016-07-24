@@ -97,13 +97,6 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 ({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+{FACLEVEL}?[ ]*([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+({PROCESSNAME}("/"{PROCESSNAME})?":")?   { return SYSLOG_BANNER; }
 
 
- /* syslog style  "last message repeated N times" */
-"last message repeated "([1-9][0-9]*)" times"                   {
-                                                                    /* extract number of times */
-                                                                    yylval.num = (int)strtol(& yytext[sizeof("last message repeated ")-1], (char **)NULL, 10);
-                                                                    return LAST_LINE_REPEATED_N_TIMES;
-                                                                }
-
  /* metalog banner */
 {TIMESTAMP_SYSLOG}" ["{PROCESSNAME}("/"{PROCESSNAME})?"] "                         { return METALOG_BANNER; }
 
