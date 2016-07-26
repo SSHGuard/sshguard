@@ -21,6 +21,7 @@
  */
 
 #include <assert.h>
+#include <string.h>
 
 #include "parser/parser.h"
 #include "sshguard.h"
