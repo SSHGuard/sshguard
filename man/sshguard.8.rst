@@ -20,7 +20,7 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: July 10, 2016
+:Date: July 26, 2016
 :Manual group: SSHGuard Manual
 :Manual section: 8
 :Version: 1.7.0
@@ -30,7 +30,6 @@ SYNOPSIS
 **sshguard** [**-v**]
 [**-a** `thresh`]
 [**-b** `thresh`:`file`]
-[**-e** `script`]
 [**-f** `service`:`pidfile`]
 [**-i** `pidfile`]
 [**-l** `source`]
@@ -69,10 +68,6 @@ OPTIONS
     but it is good practice to periodically clean out stale blacklist
     entries.
 
-**-e** `script`
-    Execute an external program when an event is triggered. See EXTERNAL
-    PROGRAMS below.
-
 **-f** `service`:`pidfile`
     See LOG VALIDATION below.
 
@@ -108,59 +103,6 @@ ENVIRONMENT
 ===========
 SSHGUARD_DEBUG
     Enable additional debugging information.
-
-EXTERNAL PROGRAMS
-=================
-**sshguard** can be instructed to execute an external program whenever an event
-relevant to the firewall is triggered.
-
-The logic and capabilities of external programs are similar to those of a
-database trigger. When an event is triggered, the external program can:
-
-* add behavior to the firewall action (e.g. custom notifications)
-* change behavior of the firewall action (e.g. block different address)
-* cancel the firewall action (e.g. custom whitelisting)
-
-External programs are run on all firewall events. Every external program has
-these responsibilities:
-
-* to define the behavior associated with every event (action), and especially to
-  not behave on events of disinterest.
-* to run the final firewall intended firewall action (or not).
-* to exit with a relevant status for success (0) or failure (non-0).
-
-The action that the external process is called to carry out determines the
-information passed to it. All information passed from **sshguard** to external
-programs is via environment variables:
-
-SSHG_ACTION
-  (all actions) The name of the trigger event: one value amongst:
-
-  * init
-  * fin
-  * block (*)
-  * block_list (*)
-  * release (*)
-  * flush
-
-SSHG_PID
-  (all actions) The PID of the **sshguard** process running the program.
-
-SSHG_FWCMD
-  (all actions) The firewall command that **sshguard** intended to run if no
-  extra program were given. The external program shall run this within a shell.
-
-SSHG_ADDR
-  (marked actions) The address, or the comma-separated list of addresses, to
-  operate.
-
-SSHG_ADDRKIND
-  (marked actions) The type of the address(es) to operate: '4' for IPv4, '6'
-  for IPv6.
-
-SSHG_SERVICE
-  (marked actions) The service target of the event, expressed as service code.
-  See http://www.sshguard.net/docs/reference/service-codes/.
 
 WHITELISTING
 ============
