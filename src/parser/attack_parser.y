@@ -32,7 +32,7 @@ extern void scanner_init();
 extern void scanner_fin();
 extern int yylex();
 
-static void yyerror(attack_t *attack, const char *msg);
+static void yyerror(attack_t *, const char *);
 
  /* Metadata used by the parser */
  /* per-source metadata */
@@ -297,7 +297,8 @@ vsftpdmsg:
 
 %%
 
-static void yyerror() { /* do nothing */ }
+static void yyerror(__attribute__((unused)) attack_t *a,
+    __attribute__((unused)) const char *s) { /* do nothing */ }
 
 static void init_structures(unsigned int source_id, attack_t *attack) {
     unsigned int cnt;
