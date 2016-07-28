@@ -25,6 +25,8 @@ while read cmd address addrtype; do
             fw_release $address $addrtype;;
         flush)
             fw_flush;;
+        noop)
+            ;;
         *)
             break;;
     esac
