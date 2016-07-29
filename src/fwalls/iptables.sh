@@ -1,12 +1,13 @@
 run_iptables() {
     cmd=iptables
-    if [ "$2" == "6" ]; then
+    if [ "6" == "$2" ]; then
         cmd=ip6tables
     fi
 
-    $cmd -w $1
-    ret=$?
-    if [ $ret -eq 2 ]; then
+    # Check if iptables supports the '-w' flag.
+    if $cmd -w -V 2>&1 >/dev/null; then
+        $cmd -w $1
+    else
         $cmd $1
     fi
 }
@@ -29,4 +30,5 @@ fw_flush() {
 }
 
 fw_fin() {
+    :
 }
