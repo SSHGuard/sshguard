@@ -1,17 +1,17 @@
-###################
+===================
 Setting Up SSHGuard
-###################
+===================
 
 .. contents::
 
 
 Reading system logs
--------------------
+===================
 SSHGuard can monitor system logs by reading from a log daemon or by polling
 log files.
 
 syslog
-^^^^^^
+------
 **syslogd** can be configured to pipe logs to SSHGuard using *syslog.conf*::
 
     auth.info;authpriv.info        |exec /path/to/sshguard
@@ -24,7 +24,7 @@ services other than **sshd**, add the appropriate log facilities to
 .. note:: **syslogd** will terminate and restart SSHGuard when it receives *SIGHUP* from **newsyslog**, flushing any blocked addresses. This may occur several times a day, depending on how often logs are rotated on your system. If this behavior is undesirable, use *log polling* instead.
 
 syslog-ng
-^^^^^^^^^
+---------
 For **syslog-ng 2.x**, add the following lines to *syslog-ng.conf*::
 
     # pass only entries with auth+authpriv facilities from programs other than sshguard
@@ -57,7 +57,7 @@ services other than **sshd**, add the appropriate log facilities to
 *syslog-ng.conf*.
 
 metalog
-^^^^^^^
+-------
 Add the following lines to *metalog.conf*::
 
     Stuff to protect from brute force attacks :
@@ -72,7 +72,7 @@ After restarting **metalog**, log entries will appear in
 */var/log/sshguard*.  Use *log polling* to monitor the *current* log.
 
 Log polling (Log Sucker)
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 SSHGuard can poll multiple files for log entries using the ``-l`` option. It
 re-opens rotated logs and handles disappearing files automatically. The
 following example polls two log files::
@@ -87,14 +87,14 @@ files to poll.
 
 
 Blocking attackers
-------------------
+==================
 SSHGuard can block attackers using one of several firewall backends that is
 selected at compile-time.
 
 .. warning:: Read the documentation for your firewall. Make sure you fully understand each rule or command in the examples below before using them. They may need to be adjusted to suit your particular configuration.
 
 pf
-^^
+--
 SSHGuard adds attackers to table *<sshguard>*. Create the table and block
 attackers by adding the following lines to *pf.conf*::
 
@@ -107,7 +107,7 @@ the table using::
     # pfctl -t sshguard -T show
 
 ipfw
-^^^^
+----
 SSHGuard creates and adds attackers to table 22. The table can be used to
 block attackers in your ruleset. For example::
 
@@ -118,7 +118,7 @@ You can inspect the contents of the table using::
     # ipfw table 22 list
 
 netfilter/iptables
-^^^^^^^^^^^^^^^^^^
+------------------
 Create a chain for SSHGuard::
 
     # iptables -N sshguard      # for IPv4
@@ -163,7 +163,7 @@ iptables-restore utilities. However, each Linux variant has its own "right
 way".
 
 TCP Wrapper
-^^^^^^^^^^^
+-----------
 Add the following lines to *hosts.allow*::
 
     ##sshguard##
