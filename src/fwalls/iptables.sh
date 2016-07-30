@@ -1,6 +1,6 @@
 run_iptables() {
     cmd=iptables
-    if [ "6" == "$2" ]; then
+    if [ "6" = "$2" ]; then
         cmd=ip6tables
     fi
 
