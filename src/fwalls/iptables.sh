@@ -5,7 +5,7 @@ run_iptables() {
     fi
 
     # Check if iptables supports the '-w' flag.
-    if $cmd -w -V 2>&1 >/dev/null; then
+    if $cmd -w -V >/dev/null 2>&1; then
         $cmd -w $1
     else
         $cmd $1
