@@ -1,7 +1,7 @@
 libexec_SCRIPTS = fwalls/sshg-fw
 EXTRA_DIST = fwalls/ipfw.sh fwalls/iptables.sh fwalls/null.sh fwalls/pf.sh
 
-AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE
+AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
 
 BUILT_SOURCES = parser/attack_parser.h

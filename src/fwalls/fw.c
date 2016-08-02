@@ -41,7 +41,7 @@ static void fw_sigpipe() {
 
 int fw_init() {
     signal(SIGPIPE, fw_sigpipe);
-    fw_pipe = popen("exec " PREFIX "/libexec/sshg-fw", "w");
+    fw_pipe = popen("exec " LIBEXECDIR "/sshg-fw", "w");
 
     // Wait for sshg-fw to initialize and check if it's still up.
     sleep(1);
