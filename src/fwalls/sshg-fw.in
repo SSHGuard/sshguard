@@ -2,6 +2,10 @@
 # sshg-fw -- control firewall backends
 # This file is part of SSHGuard.
 
+# DEVELOPER NOTE: sshg-fw is built from sshg-fw.in and the backend script
+# only when the 'configure' script is run. If you change either source files,
+# you should re-run 'configure'.
+
 @sshg_fw_subr@
 
 fw_init
