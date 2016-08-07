@@ -1,3 +1,15 @@
+* 1.7.0     August 2016
+    - Accept socklog messages without a timestamp
+    - Add sshg-logtail
+    - Fix excessive logging causing endless looping in logsuck
+    - Control firewall using sshg-fw
+    - Fix undefined assignment of initial inode number
+    - Improve parallel build by using non-recursive make
+    - Install sshg-parser in libexec/
+    - Match "no matching key exchange method" for SSH
+    - Remove external hooks
+    - Remove support for genfilt and ipfilter backends
+
 * 1.6.4     April 2016
     - Match Postfix pre-authentication disconnects
     - Fix bashisms in iptables backend
