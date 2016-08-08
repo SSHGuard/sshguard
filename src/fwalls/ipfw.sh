@@ -17,4 +17,5 @@ fw_flush() {
 }
 
 fw_fin() {
+	:
 }
