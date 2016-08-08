@@ -1,4 +1,4 @@
 SUBDIRS = src
 
-EXTRA_DIST = doc/setup.rst doc/sshguard.8 doc/sshguard.8.rst examples/ README.rst
+EXTRA_DIST = doc/ examples/ CHANGELOG.rst README.rst
 man_MANS = doc/sshguard.8
