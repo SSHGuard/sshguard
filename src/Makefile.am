@@ -19,6 +19,8 @@ sshg_parser_SOURCES = \
 	parser/sshg_parser.c
 
 sshg_blocker_SOURCES = \
+	blocker/blocklist.c \
+	blocker/blocklist.h \
 	blocker/fnv.h \
 	blocker/fw.c \
 	blocker/fw.h \

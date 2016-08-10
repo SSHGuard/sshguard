@@ -21,13 +21,13 @@
 #include "config.h"
 
 #include <assert.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include "blocklist.h"
 #include "fw.h"
 #include "parser/parser.h"
 #include "sandbox.h"
@@ -59,27 +59,18 @@ static volatile sig_atomic_t exit_sig = 0;
  */
 /* list of addresses that failed some times, but not enough to get blocked */
 list_t limbo;
-/* list of addresses currently blocked (offenders) */
-list_t hell;
 /* list of offenders (addresses already blocked in the past) */
 list_t offenders;
-
-/* mutex against races between insertions and pruning of lists */
-pthread_mutex_t list_mutex;
 
 /* handler for termination-related signals */
 static void sigfin_handler();
 /* called at exit(): flush blocked addresses and finalize subsystems */
 static void finishup(void);
 
-/* load blacklisted addresses and block them (if blacklist enabled) */
-static void blacklist_load_and_block();
 /* handle an attack: addr is the author, addrkind its address kind, service the attacked service code */
 static void report_address(attack_t attack);
 /* cleanup false-alarm attackers from limbo list (ones with too few attacks in too much time) */
 static void purge_limbo_stale(void);
-/* release blocked attackers after their penalty expired */
-static void *pardonBlocked();
 
 static void my_pidfile_create() {
     FILE *p = fopen(opts.my_pidfile, "w");
@@ -99,8 +90,6 @@ static void my_pidfile_destroy() {
 }
 
 int main(int argc, char *argv[]) {
-    pthread_t tid;
-
     int sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
     sshguard_log_init(sshg_debugging);
 
@@ -109,8 +98,7 @@ int main(int argc, char *argv[]) {
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
     list_attributes_seeker(& limbo, attack_addr_seeker);
-    list_init(&hell);
-    list_attributes_seeker(& hell, attack_addr_seeker);
+    blocklist_init();
     list_init(&offenders);
     list_attributes_seeker(& offenders, attack_addr_seeker);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
@@ -151,13 +139,6 @@ int main(int argc, char *argv[]) {
     }
 
     whitelist_conf_fin();
-
-    /* start thread for purging stale blocked addresses */
-    pthread_mutex_init(&list_mutex, NULL);
-    if (pthread_create(&tid, NULL, pardonBlocked, NULL) != 0) {
-        perror("pthread_create()");
-        exit(2);
-    }
 
     sshguard_log(LOG_INFO, "Monitoring attacks");
 
@@ -224,10 +205,7 @@ static void report_address(attack_t attack) {
     purge_limbo_stale();
 
     /* address already blocked? (can happen for 100 reasons) */
-    pthread_mutex_lock(& list_mutex);
-    tmpent = list_seek(& hell, & attack.address);
-    pthread_mutex_unlock(& list_mutex);
-    if (tmpent != NULL) {
+    if (blocklist_contains(attack)) {
         sshguard_log(LOG_WARNING, "%s has already been blocked",
                 attack.address.value);
         return;
@@ -304,15 +282,8 @@ static void report_address(attack_t attack) {
     list_sort(& offenders, -1);
     log_block(tmpent, offenderent);
 
-    int ret = fw_block(&attack);
-    if (ret != FWALL_OK) {
-        sshguard_log(LOG_ERR, "fw: failed to block (%d)", ret);
-    }
-
     /* append blocked attacker to the blocked list, and remove it from the pending list */
-    pthread_mutex_lock(& list_mutex);
-    list_append(& hell, tmpent);
-    pthread_mutex_unlock(& list_mutex);
+    blocklist_add(tmpent);
     assert(list_locate(& limbo, tmpent) >= 0);
     list_delete_at(& limbo, list_locate(& limbo, tmpent));
 }
@@ -330,54 +301,6 @@ static void purge_limbo_stale(void) {
     }
 }
 
-static void unblock_expired() {
-    attacker_t *tmpel;
-    int ret;
-    time_t now = time(NULL);
-
-    pthread_testcancel();
-    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
-    pthread_mutex_lock(&list_mutex);
-
-    for (unsigned int pos = 0; pos < list_size(&hell); pos++) {
-        tmpel = list_get_at(&hell, pos);
-        /* skip blacklisted hosts (pardontime = infinite/0) */
-        if (tmpel->pardontime == 0)
-            continue;
-        /* process hosts with finite pardon time */
-        if (now - tmpel->whenlast > tmpel->pardontime) {
-            /* pardon time passed, release block */
-            sshguard_log(LOG_DEBUG, "Unblocking %s after %lld secs",
-                         tmpel->attack.address.value,
-                         (long long)(now - tmpel->whenlast));
-            ret = fw_release(&tmpel->attack);
-            if (ret != FWALL_OK) {
-                sshguard_log(LOG_ERR, "fw: failed to unblock (%d)", ret);
-            }
-            list_delete_at(&hell, pos);
-            free(tmpel);
-            /* element removed, next element is at current index (don't step
-             * pos) */
-            pos--;
-        }
-    }
-
-    pthread_mutex_unlock(&list_mutex);
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &ret);
-    pthread_testcancel();
-}
-
-static void *pardonBlocked() {
-    while (1) {
-        /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
-        sleep(1 + ((unsigned int)rand() % (1+opts.pardon_threshold/2)));
-        unblock_expired();
-    }
-
-    pthread_exit(NULL);
-    return NULL;
-}
-
 static void finishup(void) {
     sshguard_log(LOG_INFO, "Exiting on %s",
             exit_sig == SIGHUP ? "SIGHUP" : "signal");
@@ -389,26 +312,4 @@ static void finishup(void) {
 static void sigfin_handler(int sig) {
     exit_sig = sig;
     exit(0);
-}
-
-static void block_list(list_t *list) {
-    list_iterator_start(list);
-    while (list_iterator_hasnext(list)) {
-        attacker_t *next = list_iterator_next(list);
-        fw_block(&next->attack);
-    }
-    list_iterator_stop(list);
-}
-
-static void blacklist_load_and_block() {
-    list_t *blacklist = blacklist_load(opts.blacklist_filename);
-    if (blacklist == NULL) {
-        sshguard_log(LOG_ERR, "blacklist: could not open %s: %m",
-                opts.blacklist_filename);
-        exit(66);
-    }
-
-    sshguard_log(LOG_INFO, "blacklist: blocking %u addresses",
-            (unsigned int)list_size(blacklist));
-    block_list(blacklist);
 }
