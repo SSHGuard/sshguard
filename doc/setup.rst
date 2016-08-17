@@ -4,11 +4,20 @@ Setting Up SSHGuard
 
 .. contents::
 
-
 Reading system logs
 ===================
-SSHGuard can monitor system logs by reading from a log daemon or by polling
-log files.
+SSHGuard can monitor log files or read attacks from standard input.
+
+Log file monitoring
+-------------------
+To monitor log files, pass one or more paths to log files as positional
+arguments to SSHGuard. For example::
+
+    # sshguard /var/log/auth.log /var/log/maillog
+
+Internally, SSHGuard runs ``sshg-logtail``, which in turn executes the
+system ``tail`` utility. Consult your system man pages for implementation
+details. This is the recommended way to run SSHGuard.
 
 syslog
 ------
@@ -21,7 +30,7 @@ with level ``auth.info`` or ``authpriv.info`` arrives. If you are monitoring
 services other than **sshd**, add the appropriate log facilities to
 *syslog.conf*. See *syslog.conf(5)* for more details.
 
-.. note:: **syslogd** will terminate and restart SSHGuard when it receives *SIGHUP* from **newsyslog**, flushing any blocked addresses. This may occur several times a day, depending on how often logs are rotated on your system. If this behavior is undesirable, use *log polling* instead.
+.. note:: **syslogd** will terminate and restart SSHGuard when it receives *SIGHUP* from **newsyslog**, flushing any blocked addresses. This may occur several times a day, depending on how often logs are rotated on your system. Using **syslogd** is discouraged.
 
 syslog-ng
 ---------
@@ -70,20 +79,6 @@ Add the following lines to *metalog.conf*::
 
 After restarting **metalog**, log entries will appear in
 */var/log/sshguard*.  Use *log polling* to monitor the *current* log.
-
-Log polling (Log Sucker)
-------------------------
-SSHGuard can poll multiple files for log entries using the ``-l`` option. It
-re-opens rotated logs and handles disappearing files automatically. The
-following example polls two log files::
-
-    # sshguard -l /var/log/auth.log -l /var/log/maillog
-
-By default, SSHGuard does not read log entries from standard input when log
-polling is enabled. Add ``-l -`` to include standard input in the list of
-files to poll.
-
-.. note:: Some entries might be incorrectly discarded when using log validation combined with log polling. Avoid using both features at the same time.
 
 
 Blocking attackers
@@ -161,12 +156,3 @@ When rebooting, most systems reset the firewall configuration by default. To
 preserve your configuration, you usually use the iptables-save and
 iptables-restore utilities. However, each Linux variant has its own "right
 way".
-
-TCP Wrapper
------------
-Add the following lines to *hosts.allow*::
-
-    ##sshguard##
-    ##sshguard##
-
-SSHGuard will add or remove rules between these two lines.
