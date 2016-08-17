@@ -40,20 +40,21 @@ static void fw_sigpipe() {
 }
 
 int fw_init() {
-    signal(SIGPIPE, fw_sigpipe);
     fw_pipe = popen("exec " LIBEXECDIR "/sshg-fw", "w");
+    if (fw_pipe == NULL) {
+        sshguard_log(LOG_CRIT, "sshg-blocker: could not popen() sshg-fw\n");
+        return FWALL_ERR;
+    }
 
-    // Wait for sshg-fw to initialize and check if it's still up.
+    // Wait for sshg-fw to initialize and set flushonexit.
+    signal(SIGPIPE, fw_sigpipe);
     sleep(1);
-    fprintf(fw_pipe, "noop\n");
+    fprintf(fw_pipe, "flushonexit\n");
     fflush(fw_pipe);
-
-    return fw_pipe == NULL ? FWALL_ERR : FWALL_OK;
+    return FWALL_OK;
 }
 
 int fw_fin() {
-    fprintf(fw_pipe, "\n");
-    fflush(fw_pipe);
     return pclose(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
 }
 

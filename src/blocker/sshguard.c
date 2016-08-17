@@ -378,11 +378,6 @@ static void *pardonBlocked() {
 static void finishup(void) {
     sshguard_log(LOG_INFO, "Exiting on %s",
             exit_sig == SIGHUP ? "SIGHUP" : "signal");
-
-    if (fw_flush() != FWALL_OK) {
-        sshguard_log(LOG_ERR, "fw: failed to flush blocked addresses");
-    }
-
     fw_fin();
     whitelist_fin();
     sshguard_log_fin();
