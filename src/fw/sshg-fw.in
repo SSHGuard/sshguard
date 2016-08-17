@@ -8,14 +8,18 @@
 
 @sshg_fw_subr@
 
-fw_init
-if [ $? -ne 0 ]; then
-    echo "Could not initialize firewall" >&2
-    exit 1
-fi
+die() {
+    echo "sshg-fw: $2" >&2
+    exit $1
+}
+
+fw_init || die 69 "Could not initialize firewall"
 
 cleanup() {
     trap "" EXIT
+    if [ "YES" = "$flushonexit" ]; then
+        fw_flush
+    fi
     fw_fin
 }
 
@@ -29,9 +33,9 @@ while read cmd address addrtype; do
             fw_release $address $addrtype;;
         flush)
             fw_flush;;
-        noop)
-            ;;
+        flushonexit)
+            flushonexit=YES;;
         *)
-            break;;
+            die 65 "Invalid command";;
     esac
 done
