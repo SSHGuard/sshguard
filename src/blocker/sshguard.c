@@ -172,6 +172,9 @@ int main(int argc, char *argv[]) {
                          parsed_attack.address.value, parsed_attack.service,
                          parsed_attack.dangerousness);
             report_address(parsed_attack);
+        } else {
+            sshguard_log(LOG_ERR, "Could not parse attack data");
+            exit(65);
         }
     }
 
