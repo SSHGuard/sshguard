@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.60])
-AC_INIT([sshguard], [1.7.0], [sshguard-users@lists.sourceforge.net])
+AC_INIT([sshguard], [2.0.0], [sshguard-users@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/sshguard.in])
 AM_CONFIG_HEADER([src/config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])

@@ -20,22 +20,21 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: July 26, 2016
+:Date: August 16, 2016
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 1.7.0
+:Version: 2.0.0
 
 SYNOPSIS
 ========
 **sshguard** [**-v**]
 [**-a** `thresh`]
 [**-b** `thresh`:`file`]
-[**-f** `service`:`pidfile`]
 [**-i** `pidfile`]
-[**-l** `source`]
 [**-p** `interval`]
 [**-s** `interval`]
 [**-w** `address` | `file`]
+[`file` ...]
 
 DESCRIPTION
 ===========
@@ -68,18 +67,8 @@ OPTIONS
     but it is good practice to periodically clean out stale blacklist
     entries.
 
-**-f** `service`:`pidfile`
-    See LOG VALIDATION below.
-
 **-i** `pidfile`
     Write the PID of **sshguard** to `pidfile`.
-
-**-l** `source`
-    Monitor `source` for log messages. By default, **sshguard** reads log
-    messages from standard input. Give this option once for every source to
-    monitor instead. **sshguard** transparently handles log rotations. When
-    using this option, standard input is ignored, but can be re-added by
-    giving '**-l** -'.
 
 **-p** `interval` (default 120 secs, or 2 minutes)
     Wait at least `interval` seconds before releasing a blocked address.
@@ -174,53 +163,8 @@ file
 The -w option can be used only once for files. For addresses, host names and
 address blocks it can be used with any multiplicity, even with mixes of them.
 
-LOG VALIDATION
-==============
-Syslog and syslog-ng typically insert a PID of the generating process in every
-log message. This can be checked for authenticating the source of the message
-and avoid false attacks to be detected because malicious local users inject
-crafted log messages. This way **sshguard** can be safely used even on hosts
-where this assumption does not hold.
-
-Log validation is only needed when **sshguard** is fed log messages from syslog
-or from syslog-ng. When a process logs directly to a raw file and sshguard is
-configured for polling logs directly from it, you only need to adjust the log
-file permissions so that only root can write on it.
-
-For enabling log validation on a given service the -f option is used as
-follows::
-
-      -f 100:/var/run/sshd.pid
-
-which associates the given pidfile to the ssh service (code 100). A list of
-well-known service codes is available at
-http://www.sshguard.net/docs/reference/service-codes/.
-
-The -f option can be used multiple times for associating different services with
-their pidfile::
-
-      sshguard -f 100:/var/run/sshd.pid -f 123:/var/run/mydaemon.pid
-
-Services that are not configured for log validation follow a default-allow
-policy (all of their log messages are accepted by default).
-
-PIDs are checked with the following policy:
-
-1. the logging service is searched in the list of services configured for
-   validation. If not found, the entry is accepted.
-2. the logged PID is compared with the pidfile. If it matches, the entry is
-   accepted
-3. the PID is checked for being a direct child of the authoritative process. If
-   it is, the entry is accepted.
-4. the entry is ignored.
-
-Low I/O load is committed to the operating system because of an internal caching
-mechanism. Changes in the pidfile value are handled transparently.
-
 SEE ALSO
 ========
-syslog(1), syslog.conf(5), hosts_access(5)
-
 Glossary: http://www.sshguard.net/docs/terminology/
 
 Website: http://www.sshguard.net/
