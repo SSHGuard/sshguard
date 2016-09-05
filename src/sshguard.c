@@ -376,7 +376,7 @@ static void unblock_expired() {
         /* process hosts with finite pardon time */
         if (now - tmpel->whenlast > tmpel->pardontime) {
             /* pardon time passed, release block */
-            sshguard_log(LOG_INFO, "%s: unblocking after %lld secs",
+            sshguard_log(LOG_DEBUG, "%s: unblocking after %lld secs",
                          tmpel->attack.address.value,
                          (long long)(now - tmpel->whenlast));
             ret = fw_release(&tmpel->attack);
