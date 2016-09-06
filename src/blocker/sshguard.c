@@ -193,7 +193,7 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
     } else {
         time_msg = "forever";
     }
-    sshguard_log(LOG_NOTICE, "%s: blocking %s (%u attacks in %lld "
+    sshguard_log(LOG_NOTICE, "Blocking %s %s (%u attacks in %lld "
                              "secs, after %d abuses over %lld secs)",
                  tmpent->attack.address.value, time_msg, tmpent->numhits,
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
@@ -228,7 +228,7 @@ static void report_address(attack_t attack) {
     tmpent = list_seek(& hell, & attack.address);
     pthread_mutex_unlock(& list_mutex);
     if (tmpent != NULL) {
-        sshguard_log(LOG_WARNING, "%s: should already have been blocked",
+        sshguard_log(LOG_WARNING, "%s has already been blocked",
                 attack.address.value);
         return;
     }
@@ -347,7 +347,7 @@ static void unblock_expired() {
         /* process hosts with finite pardon time */
         if (now - tmpel->whenlast > tmpel->pardontime) {
             /* pardon time passed, release block */
-            sshguard_log(LOG_DEBUG, "%s: unblocking after %lld secs",
+            sshguard_log(LOG_DEBUG, "Unblocking %s after %lld secs",
                          tmpel->attack.address.value,
                          (long long)(now - tmpel->whenlast));
             ret = fw_release(&tmpel->attack);
