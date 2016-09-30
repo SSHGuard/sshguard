@@ -1,14 +1,14 @@
-libexec_SCRIPTS = fw/sshg-fw
-EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
-
 AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
-
 BUILT_SOURCES = parser/attack_parser.h
 
+dist_libexec_SCRIPTS = sshg-logtail sshg-fw-ipfw sshg-fw-iptables sshg-fw-null sshg-fw-pf
+libexec_PROGRAMS = sshg-blocker sshg-parser
+sbin_SCRIPTS = sshguard
+
+EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
 noinst_HEADERS = sandbox.h
 
-libexec_PROGRAMS = sshg-blocker sshg-parser
 sshg_parser_SOURCES = \
 	parser/address.h \
 	parser/attack.c \
@@ -17,8 +17,6 @@ sshg_parser_SOURCES = \
 	parser/attack_scanner.l \
 	parser/parser.h \
 	parser/sshg_parser.c
-
-dist_libexec_SCRIPTS = sshg-logtail
 
 sshg_blocker_SOURCES = \
 	blocker/fnv.h \
@@ -43,6 +41,10 @@ script_subst = sed \
 	-e 's|@libexecdir[@]|$(libexecdir)|g' \
 	-e 's|@sysconfdir[@]|$(sysconfdir)|g'
 
-sbin_SCRIPTS = sshguard
 sshguard: Makefile sshguard.in
 	$(script_subst) $@.in > $@
+
+# This rule uses GMake pattern matching. Since the target is shipped in the
+# distfile, only those compiling from Git need GMake.
+sshg-fw-%: fw/%.sh fw/sshg-fw.in
+	cat fw/$*.sh fw/sshg-fw.in > $@

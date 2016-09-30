@@ -15,10 +15,6 @@ AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--disable-sandbox],
 AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
             [Firewall backend (one of pf, ipfw, iptables, or null)])],
 [
- # Substitute the correct commands into the firewall script.
- AC_SUBST_FILE([sshg_fw_subr])
- sshg_fw_subr=src/fw/$withval.sh
-
  case "$withval" in
      ipfw)
         useipfw=true
@@ -76,4 +72,4 @@ AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
 
-AC_OUTPUT([Makefile src/Makefile src/fw/sshg-fw])
+AC_OUTPUT([Makefile src/Makefile])

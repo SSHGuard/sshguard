@@ -1,3 +1,7 @@
+#!/bin/sh
+# sshg-fw-iptables
+# This file is part of SSHGuard.
+
 run_iptables() {
     cmd=iptables
     if [ "6" = "$2" ]; then

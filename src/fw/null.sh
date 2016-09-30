@@ -1,3 +1,7 @@
+#!/bin/sh
+# sshg-fw-null
+# This file is part of SSHGuard.
+
 fw_init() {
     echo "===>>> Initializing (null) firewall"
 }

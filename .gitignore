@@ -19,10 +19,13 @@ missing
 src/config.h
 src/config.h.in
 src/config.h.in~
-src/fw/sshg-fw
 src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
 src/sshg-blocker
+src/sshg-fw-ipfw
+src/sshg-fw-iptables
+src/sshg-fw-null
+src/sshg-fw-pf
 src/sshg-parser
 src/sshguard
 src/stamp-h1

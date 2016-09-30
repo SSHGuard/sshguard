@@ -1,3 +1,7 @@
+#!/bin/sh
+# sshg-fw-pf
+# This file is part of SSHGuard.
+
 fw_init() {
     pfctl -q -t sshguard -T show > /dev/null
 }

@@ -1,3 +1,7 @@
+#!/bin/sh
+# sshg-fw-ipfw
+# This file is part of SSHGuard.
+
 IPFW_TABLE=22
 
 fw_init() {
