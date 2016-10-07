@@ -3,28 +3,43 @@
 
 libexec="@libexecdir@"
 
-# Source configuration file.
-config="@sysconfdir@/sshguard.conf"
-if [ -r $config ]; then
-    . $config
-fi
-
-# Parse command-line arguments.
+# Parse command-line arguments
 while getopts "b:p:s:a:w:i:e:vh" opt; do
     flags="$flags -$opt $OPTARG"
 done
 
-# Files on the command-line override the configuration file.
+# Source configuration file
+config="@sysconfdir@/sshguard.conf"
+if [ ! -r $config ]; then
+    echo "sshguard: Could not read $config" >&2
+    echo "Please configure SSHGuard or run 'sshguard-setup'" >&2
+    exit 78
+fi
+
+. $config
+
+# Files on the command-line override the configuration file
 shift $((OPTIND-1))
 if [ -n "$@" ]; then
     FILES="$@"
 fi
 
-# Monitor standard input if no files are given.
+# Check backend
+if [ -z $BACKEND ]; then
+    echo "sshguard: BACKEND must be set in $config" >&2
+    exit 78
+fi
+
+if [ ! -x $BACKEND ]; then
+    echo "sshguard: $BACKEND is not executable" >&2
+    exit 78
+fi
+
+# Monitor standard input if no files are given
 if [ -z "$FILES" ]; then
     tailcmd="cat"
 else
     tailcmd="$libexec/sshg-logtail $FILES"
 fi
 
-eval $tailcmd | $libexec/sshg-parser | $libexec/sshg-blocker $flags
+eval $tailcmd | $libexec/sshg-parser | $libexec/sshg-blocker $flags | $BACKEND
