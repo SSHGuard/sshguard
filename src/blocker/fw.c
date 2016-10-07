@@ -32,43 +32,35 @@
 #include "parser/address.h"
 #include "sshguard_log.h"
 
-static FILE *fw_pipe;
-
 static void fw_sigpipe() {
     sshguard_log(LOG_CRIT, "fw: broken pipe");
     exit(EXIT_FAILURE);
 }
 
 int fw_init() {
-    fw_pipe = popen("exec " LIBEXECDIR "/sshg-fw", "w");
-    if (fw_pipe == NULL) {
-        sshguard_log(LOG_CRIT, "sshg-blocker: could not popen() sshg-fw\n");
-        return FWALL_ERR;
-    }
-
-    // Wait for sshg-fw to initialize and set flushonexit.
-    signal(SIGPIPE, fw_sigpipe);
-    sleep(1);
-    fprintf(fw_pipe, "flushonexit\n");
-    fflush(fw_pipe);
+    printf("flushonexit\n");
+    fflush(stdout);
     return FWALL_OK;
 }
 
 int fw_fin() {
-    return pclose(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
+    return FWALL_OK;
 }
 
 int fw_block(const attack_t *attack) {
-    fprintf(fw_pipe, "block %s %d\n", attack->address.value, attack->address.kind);
-    return fflush(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
+    printf("block %s %d\n", attack->address.value, attack->address.kind);
+    fflush(stdout);
+    return FWALL_OK;
 }
 
 int fw_release(const attack_t *attack) {
-    fprintf(fw_pipe, "release %s %d\n", attack->address.value, attack->address.kind);
-    return fflush(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
+    printf("release %s %d\n", attack->address.value, attack->address.kind);
+    fflush(stdout);
+    return FWALL_OK;
 }
 
 int fw_flush() {
-    fprintf(fw_pipe, "flush\n");
-    return fflush(fw_pipe) == 0 ? FWALL_OK : FWALL_ERR;
+    printf("flush\n");
+    fflush(stdout);
+    return FWALL_OK;
 }
