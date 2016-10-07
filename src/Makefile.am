@@ -1,9 +1,9 @@
-AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
+AM_CFLAGS=-I. -I blocker -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
 BUILT_SOURCES = parser/attack_parser.h
 
 dist_libexec_SCRIPTS = sshg-logtail sshg-fw-ipfw sshg-fw-iptables sshg-fw-null sshg-fw-pf
-libexec_PROGRAMS = sshg-blocker sshg-parser
+libexec_PROGRAMS = sshg-blocker sshg-fw-hosts sshg-parser
 sbin_SCRIPTS = sshguard
 
 EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
@@ -38,6 +38,8 @@ sshg_blocker_SOURCES = \
 	blocker/sshguard_whitelist.c \
 	blocker/sshguard_whitelist.h \
 	parser/attack.c
+
+sshg_fw_hosts_SOURCES = fw/hosts.c blocker/simclist.c
 
 script_subst = sed \
 	-e 's|@libexecdir[@]|$(libexecdir)|g' \

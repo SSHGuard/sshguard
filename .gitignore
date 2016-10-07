@@ -22,6 +22,7 @@ src/config.h.in~
 src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
 src/sshg-blocker
+src/sshg-fw-hosts
 src/sshg-fw-ipfw
 src/sshg-fw-iptables
 src/sshg-fw-null
