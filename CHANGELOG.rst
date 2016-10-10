@@ -10,6 +10,26 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+1.7.1
+=====
+October 2016
+
+**Changed**
+
+- Allow multiple forward slashes in process name
+- Log released addresses only when debugging
+
+**Deprecated**
+
+- Process validation (``-f`` option) is deprecated
+
+**Fixed**
+
+- Adjust TIMESTAMP_ISO8601 for Mac OS X 10.12
+- Fix build error in hosts backend
+- Fix empty functions in firewall scripts causing errors with Bash
+- Flush stdout after every line in sshg-parser
+
 1.7.0
 =====
 August 2016
