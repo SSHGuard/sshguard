@@ -58,7 +58,7 @@ TIMEZONE    Z|[-+]{HOUR}(:?{MINPS})?
 TIMESTAMP_SYSLOG    {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
 TIMESTAMP_TAI64     [0-9A-Fa-f]{24}
 SOLARIS_MSGID_TAG   "[ID "[0-9]+" "{WORD}"."{WORD}"]"
-TIMESTAMP_ISO8601   {YEAR}-{MONTHNO}-{DAYNO}T{HOUR}:?{MINPS}:?{SECONDFRAC}{TIMEZONE}?
+TIMESTAMP_ISO8601   {YEAR}-{MONTHNO}-{DAYNO}(T|" "){HOUR}:?{MINPS}:?{SECONDFRAC}{TIMEZONE}?
 
  /* all words but "sshguard" provided that posix regex don't support negation nor intersection:
   * 1) all words of 2 to 7 characters or 8-* chars
