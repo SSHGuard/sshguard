@@ -146,12 +146,12 @@ int fw_fin() {
     return FWALL_OK;
 }
 
-int fw_block(const char *restrict addr, int addrkind, int service) {
+int fw_block(const attack_t *attack) {
     addr_service_t ads;
 
-    strcpy(ads.addr, addr);
-    ads.service = service;
-    ads.addrkind = addrkind;
+    strcpy(ads.addr, attack->address.value);
+    ads.addrkind = attack->address.kind;
+    ads.service = attack->service;
     list_append(&hosts_blockedaddrs, &ads);
 
     return hosts_updatelist();
@@ -172,10 +172,10 @@ int fw_block_list(const char *restrict addresses[], int addrkind, const int serv
     return hosts_updatelist();
 }
 
-int fw_release(const char *restrict addr, int addrkind, int services) {
+int fw_release(const attack_t *attack) {
     int pos;
 
-    if ((pos = list_locate(&hosts_blockedaddrs, addr)) < 0) {
+    if ((pos = list_locate(&hosts_blockedaddrs, attack->address.value)) < 0) {
         return FWALL_ERR;
     }
 
