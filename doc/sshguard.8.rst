@@ -20,10 +20,10 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: July 26, 2016
+:Date: October 11, 2016
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 1.7.0
+:Version: 1.7.1
 
 SYNOPSIS
 ========
@@ -69,7 +69,7 @@ OPTIONS
     entries.
 
 **-f** `service`:`pidfile`
-    See LOG VALIDATION below.
+    Deprecated. See LOG VALIDATION below.
 
 **-i** `pidfile`
     Write the PID of **sshguard** to `pidfile`.

@@ -14,6 +14,10 @@ un-deprecated, contact the project mailing list.
 =====
 October 2016
 
+**Added**
+
+- Add sample Mac OS X 10.12 style launchd.plist
+
 **Changed**
 
 - Allow multiple forward slashes in process name
