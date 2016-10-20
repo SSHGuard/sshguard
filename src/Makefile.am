@@ -1,4 +1,6 @@
+if !FWALL_HOSTS
 libexec_SCRIPTS = fwalls/sshg-fw
+endif
 EXTRA_DIST = fwalls/ipfw.sh fwalls/iptables.sh fwalls/null.sh fwalls/pf.sh
 
 AM_CFLAGS=-I. -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
