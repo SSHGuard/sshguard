@@ -1,5 +1,5 @@
 die() {
-    echo "sshg-fw: $2" >&2
+    echo "`basename $0`: $2" >&2
     exit $1
 }
 
