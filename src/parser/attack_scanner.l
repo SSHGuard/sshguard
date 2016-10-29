@@ -145,7 +145,7 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 <ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
 
 .*"Unable to negotiate with "                                   { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
-<ssh_badkex>[: ].*"no matching key exchange method found".*     { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
+<ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
 
  /* Cucipop */
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
