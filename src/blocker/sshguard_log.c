@@ -33,7 +33,7 @@ void sshguard_log_init(int debug) {
 
     // Set local time zone and open log before entering sandbox.
     tzset();
-    openlog("sshguard", flags, LOG_AUTH);
+    openlog("sshg-blocker", flags, LOG_AUTH);
 }
 
 void sshguard_log_fin() {
