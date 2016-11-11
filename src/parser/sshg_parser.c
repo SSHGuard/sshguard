@@ -16,7 +16,7 @@ static void print_attack(const attack_t *attack) {
 }
 
 static void print_usage() {
-    fprintf(stderr, "usage: sshg-parser [-h] [-v]\n");
+    fprintf(stderr, "usage: sshg-parser [-d]\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -26,14 +26,14 @@ int main(int argc, char *argv[]) {
 
     sandbox_init();
 
-    while ((flag = getopt(argc, argv, "hv")) != -1) {
+    while ((flag = getopt(argc, argv, "dh")) != -1) {
         switch (flag) {
+        case 'd':
+            debug = true;
+            break;
         case 'h':
             print_usage();
             return 0;
-        case 'v':
-            debug = true;
-            break;
         case '?':
             print_usage();
             return 1;
