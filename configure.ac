@@ -12,31 +12,6 @@ AM_SILENT_RULES([yes])
 AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--disable-sandbox],
               [Disable Capsicum sandboxing])], [], [sandbox_enable=yes])
 
-AC_ARG_WITH([firewall], [AS_HELP_STRING([--with-firewall=fw],
-            [Firewall backend (one of pf, ipfw, iptables, or null)])],
-[
- case "$withval" in
-     ipfw)
-        useipfw=true
-        ;;
-     iptables)
-        useiptables=true
-        ;;
-     pf)
-        usepf=true
-        ;;
-     null)
-        usenull=true
-        ;;
-     *)
-        AC_MSG_ERROR([Invalid firewall backend (see help)])
-        ;;
-    esac
-],
-[
-AC_MSG_ERROR([Please choose a firewall backend (see help)])
-])
-
 ##############################################################################
 AS_BOX([Program Checks])
 
@@ -56,8 +31,6 @@ AS_BOX([Headers, Types, and Compiler Checks])
 AC_CHECK_HEADERS([getopt.h])
 
 AS_IF([test "$sandbox_enable" == "yes"], [
-       AS_IF([test "$usehosts" == "true"],
-             [AC_MSG_ERROR([Hosts backend requires configuring with '--disable-sandbox'])])
        AC_CHECK_HEADERS([sys/capsicum.h sys/capability.h],
                         [capsicum_found=yes; break])
        AS_IF([test "$capsicum_found" == "yes"],
