@@ -42,4 +42,6 @@ else
     tailcmd="$libexec/sshg-logtail $FILES"
 fi
 
-eval $tailcmd | $libexec/sshg-parser | $libexec/sshg-blocker $flags | $BACKEND
+eval $tailcmd | $libexec/sshg-parser | \
+    ($libexec/sshg-blocker $flags || kill -PIPE $$) | \
+    ($BACKEND || kill -PIPE $$)
