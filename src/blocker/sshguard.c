@@ -165,14 +165,12 @@ int main(int argc, char *argv[]) {
 }
 
 void log_block(attacker_t *tmpent, attacker_t *offenderent) {
-    char *time_msg;
+    char time_msg[128] = "forever";
     const time_t time = tmpent->pardontime;
     if (time > 0) {
-        if (asprintf(&time_msg, "for %lld secs", (long long)time) < 0) {
+        if (snprintf(time_msg, sizeof(time_msg), "for %lld secs", (long long)time) < 0) {
             abort();
         }
-    } else {
-        time_msg = "forever";
     }
     sshguard_log(LOG_NOTICE, "Blocking %s %s (%u attacks in %lld "
                              "secs, after %d abuses over %lld secs)",
@@ -180,10 +178,6 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
                  offenderent->numhits,
                  (long long)(offenderent->whenlast - offenderent->whenfirst));
-    if (time > 0) {
-        // Free time message only if previously allocated.
-        free(time_msg);
-    }
 }
 
 /*
