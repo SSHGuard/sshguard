@@ -16,7 +16,7 @@ static void print_attack(const attack_t *attack) {
 }
 
 static void print_usage() {
-    fprintf(stderr, "usage: sshg-parser [-d]\n");
+    fprintf(stderr, "usage: sshg-parser [-d] [-h]\n");
 }
 
 int main(int argc, char *argv[]) {
