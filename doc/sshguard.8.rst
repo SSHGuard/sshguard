@@ -40,14 +40,15 @@ DESCRIPTION
 ===========
 **sshguard** protects hosts from brute-force attacks against SSH and other
 services. It aggregates system logs and blocks repeat offenders using one of
-several firewall backends, including ``iptables``, ``ipfw``, and ``pf``.
+several firewall backends, including ``firewalld``, ``ipfw``, ``ipset``,
+``iptables`` and ``pf``.
 
 **sshguard** can read log messages from standard input (suitable for piping
-from ``syslog``) or monitor one or more log files. Log messages are parsed,
-line-by-line, for recognized patterns. If an attack, such as several login
-failures within a few seconds, is detected, the offending IP is blocked.
-Offenders are unblocked after a set interval, but can be semi-permanently
-banned using the blacklist option.
+from ``syslog`` or ``journalctl``) or monitor one or more log files. Log
+messages are parsed, line-by-line, for recognized patterns. If an attack,
+such as several login failures within a few seconds, is detected, the
+offending IP is blocked. Offenders are unblocked after a set interval, but
+can be semi-permanently banned using the blacklist option.
 
 See http://www.sshguard.net/docs/setup/ for setup instructions.
 

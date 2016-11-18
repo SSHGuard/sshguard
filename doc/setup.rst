@@ -19,6 +19,15 @@ Internally, SSHGuard runs ``sshg-logtail``, which in turn executes the
 system ``tail`` utility. Consult your system man pages for implementation
 details. This is the recommended way to run SSHGuard.
 
+systemd journal
+---------------
+**journalctl** can be configured to pipe logs to SSHGuard using::
+
+    # LANG=C /usr/bin/journalctl -afb -p info -n1 -o cat | /path/to/sshguard
+
+For performance, specific programs/sources logs can be specified with
+the ``-t`` flag, e.g. ``-t ssh -t sendmail``.
+
 syslog
 ------
 **syslogd** can be configured to pipe logs to SSHGuard using *syslog.conf*::
@@ -111,6 +120,34 @@ block attackers in your ruleset. For example::
 You can inspect the contents of the table using::
 
     # ipfw table 22 list
+
+
+firewalld
+---------
+Blocked attackers are added to two ipsets named sshguard4 and sshguard6.
+The entries in the ipsets are blocked by default in the default firewall
+zone. Additional firewall zones can be configured using::
+
+    # firewall-cmd --zone=zone-name --permanent \
+        --add-rich-rule="rule source ipset=sshguard4 drop"
+    # firewall-cmd --zone=zone-name --permanent \
+        --add-rich-rule="rule source ipset=sshguard6 drop"
+
+You can inspect the entries in the two ipsets using::
+
+    # firewall-cmd --permanent --info-ipset=sshguard4
+    # firewall-cmd --permanent --info-ipset=sshguard6
+
+
+ipset
+-----
+Blocked attackers are added to two ipsets named sshguard4 and sshguard6.
+Nothing is blocked by default, but can used as a source for iptables
+and other tools. E.g.::
+
+    # iptables  -I INPUT -m set --match-set sshguard4 src -j DROP
+    # ip6tables -I INPUT -m set --match-set sshguard6 src -j DROP
+
 
 netfilter/iptables
 ------------------
