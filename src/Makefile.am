@@ -2,11 +2,11 @@ AM_CFLAGS=-I. -I blocker -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\
 AM_YFLAGS = -d
 BUILT_SOURCES = parser/attack_parser.h
 
-dist_libexec_SCRIPTS = sshg-logtail sshg-fw-ipfw sshg-fw-iptables sshg-fw-null sshg-fw-pf
+dist_libexec_SCRIPTS = sshg-logtail sshg-fw-firewalld sshg-fw-ipfw sshg-fw-iptables sshg-fw-null sshg-fw-pf
 libexec_PROGRAMS = sshg-blocker sshg-fw-hosts sshg-parser
 sbin_SCRIPTS = sshguard
 
-EXTRA_DIST = fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
+EXTRA_DIST = fw/firewalld.sh fw/ipfw.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
 noinst_HEADERS = sandbox.h
 
 sshg_parser_SOURCES = \
