@@ -1,4 +1,11 @@
 #!/bin/sh
 # sshguard.conf -- SSHGuard configuration
 
+# Backed must be oath to one of sshg-fw-firewalld, sshg-fw-hosts,
+# sshg-fw-ipfw, sshg-fw-ipset, sshg-fw-iptables, sshg-fw-null,
+# sshg-fw-pf, or other compatible executable.
+# BACKEND=""
+
+# Space separated list of log files to monitor. Alternatively, unset
+# the option and pipe in logs over standard input.
 FILES="/var/log/auth.log /var/log/maillog"
