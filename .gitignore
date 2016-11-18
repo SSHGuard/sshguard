@@ -25,6 +25,7 @@ src/sshg-blocker
 src/sshg-fw-firewalld
 src/sshg-fw-hosts
 src/sshg-fw-ipfw
+src/sshg-fw-ipset
 src/sshg-fw-iptables
 src/sshg-fw-null
 src/sshg-fw-pf
