@@ -331,8 +331,8 @@ static bool fill_attack(attack_t *attack, const char *addr, const char *type) {
         return false;
     }
 
-    long long addrtype = strtonum(type, 4, 6, NULL);
-    if (addrtype == 0) {
+    long long addrtype = strtoll(type, NULL, 10);
+    if (addrtype != 4 && addrtype != 6) {
         return false;
     }
 
