@@ -170,6 +170,8 @@ Glossary: http://www.sshguard.net/docs/terminology/
 
 Website: http://www.sshguard.net/
 
+``sshguard.conf.sample``
+
 AUTHORS
 =======
 Michele Mazzucchi <mij@bitchx.it>,

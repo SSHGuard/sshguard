@@ -35,8 +35,10 @@ if [ ! -x $BACKEND ]; then
     exit 78
 fi
 
-# Monitor standard input if no files are given
-if [ -z "$FILES" ]; then
+# Monitor standard input if no logreader or files are given
+if [ ! -z "$LOGREADER" ]; then
+    tailcmd="$LOGREADER"
+elif [ -z "$FILES" ]; then
     tailcmd="cat"
 else
     tailcmd="$libexec/sshg-logtail $FILES"

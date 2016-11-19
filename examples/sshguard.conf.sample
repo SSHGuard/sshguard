@@ -6,6 +6,13 @@
 # sshg-fw-pf, or other compatible executable.
 # BACKEND=""
 
-# Space separated list of log files to monitor. Alternatively, unset
-# the option and pipe in logs over standard input.
+
+# Configure either FILES or LOGREADER. The latter takes precedence.
+# Alternatively, unset both options and pipe in logs over standard input.
+
+# Space separated list of log files to monitor.
 FILES="/var/log/auth.log /var/log/maillog"
+
+# Custom command that is expected to pipe tailed log entries over
+# standard output to SSHGuard.
+# LOGREADER="LANG=C /usr/bin/journalctl -afb -p info -n1 -t ssh -t sendmail -o cat"

@@ -6,7 +6,8 @@ Setting Up SSHGuard
 
 Reading system logs
 ===================
-SSHGuard can monitor log files or read attacks from standard input.
+SSHGuard can monitor log files, a custom log reader command, or read attacks
+from standard input.
 
 Log file monitoring
 -------------------
@@ -18,6 +19,12 @@ arguments to SSHGuard. For example::
 Internally, SSHGuard runs ``sshg-logtail``, which in turn executes the
 system ``tail`` utility. Consult your system man pages for implementation
 details. This is the recommended way to run SSHGuard.
+
+Custom log reader command
+-------------------------
+Instead of piping logs over standard input, a command can be configured that
+will piped tailed log entries to SSHGuard over standard output with the
+``LOGREADER`` option in ``sshguard.conf``.
 
 systemd journal
 ---------------
