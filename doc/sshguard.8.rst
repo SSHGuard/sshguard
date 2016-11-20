@@ -27,12 +27,12 @@ block brute-force attacks by aggregating system logs
 
 SYNOPSIS
 ========
-**sshguard** [**-v**]
-[**-a** `thresh`]
-[**-b** `thresh`:`file`]
-[**-i** `pidfile`]
-[**-p** `interval`]
-[**-s** `interval`]
+**sshguard** [**-v**] [**-h**]
+[**-a** `blacklist-threshold`]
+[**-b** `blacklist-file`]
+[**-i** `pid-file`]
+[**-p** `block-time`]
+[**-s** `detection-time`]
 [**-w** `address` | `file`]
 [`file` ...]
 
@@ -57,34 +57,37 @@ at http://www.sshguard.net/.
 
 OPTIONS
 =======
-**-a** `thresh` (default 30)
-    Block an attacker when its dangerousness exceeds `thresh`. Each attack
-    pattern that is matched contributes a fixed dangerousness of 10.
+**-a** `blacklist-threshold` (default 30)
+    Block an attacker when its dangerousness exceeds `blacklist-threshold`.
+    Each attack pattern that is matched contributes a fixed dangerousness
+    of 10.
 
-**-b** `thresh`:`file`
-    Blacklist an attacker when its dangerousness exceeds `thresh`.
-    Blacklisted addresses are added to `file` so they can be read at the
-    next startup. Blacklisted addresses are never automatically unblocked,
-    but it is good practice to periodically clean out stale blacklist
-    entries.
+**-b** `blacklist-file`
+    Blacklist an attacker when its dangerousness exceeds `blacklist-threshold`.
+    Blacklisted addresses are added to `blacklist-file` so they can be read at
+    the next startup. Blacklisted addresses are never automatically unblocked,
+    but it is good practice to periodically clean out stale blacklist entries.
 
-**-i** `pidfile`
+**-i** `pid-file`
     Write the PID of **sshguard** to `pidfile`.
 
-**-p** `interval` (default 120 secs, or 2 minutes)
-    Wait at least `interval` seconds before releasing a blocked address.
+**-p** `block-time` (default 120 secs, or 2 minutes)
+    Wait at least `block-time` seconds before releasing a blocked address.
     Repeat attackers are blocked for 1.5 times longer after each attack.
     Because **sshguard** unblocks attackers only at infrequent intervals,
     this parameter is inexact (actual blocks will be longer).
 
-**-s** `interval` (default 1800 secs, or 30 minutes)
-    Forget about an attacker `interval` seconds after its last attempt. Its
-    dangerousness will be reset to zero.
+**-s** `detection-time` (default 1800 secs, or 30 minutes)
+    Forget about an attacker `detection-time` seconds after its last attempt.
+    Its  dangerousness will be reset to zero.
 
-**-w** `address` | `file`
+**-w** `ip-address` | `whitelist-file`
     Whitelist the given address, hostname, or address block. Alternatively,
-    read whitelist entires from `file`. This option can be given multiple
-    times. See WHITELISTING below for details.
+    read whitelist entires from `whitelist-file`. This option can be given
+    multiple times. See WHITELISTING below for details.
+
+**-h**
+    Print usage information and exit.
 
 **-v**
     Print version information and exit.
@@ -96,7 +99,7 @@ SSHGUARD_DEBUG
 
 WHITELISTING
 ============
-**sshguard** supports address whitelisting. Whitelisted addresses are not
+**sshguard** supports IP address whitelisting. Whitelisted addresses are not
 blocked even if they appear to generate attacks. This is useful for protecting
 lame LAN users (or external friendly users) from being incidentally blocked.
 

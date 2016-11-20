@@ -3,46 +3,75 @@
 
 libexec="@libexecdir@"
 
-# Parse command-line arguments
-while getopts "b:p:s:a:w:i:e:vh" opt; do
-    flags="$flags -$opt $OPTARG"
-done
-
 # Source configuration file
 config="@sysconfdir@/sshguard.conf"
 if [ ! -r $config ]; then
-    echo "sshguard: Could not read $config" >&2
+    echo "sshguard: Could not read '$config'" >&2
     echo "Please configure SSHGuard or run 'sshguard-setup'" >&2
     exit 78
 fi
 
 . $config
 
-# Files on the command-line override the configuration file
-shift $((OPTIND-1))
-if [ -n "$@" ]; then
-    FILES="$@"
+# Override configuration options with runtime arguments
+while getopts "b:p:s:a:w:i:hv" opt; do
+    case $opt in
+        a) BLACKLIST_THRESHOLD=$OPTARG;;
+        b) BLACKLIST_FILE=$OPTARG;;
+        i) PID_FILE=$OPTARG;;
+        p) BLOCK_TIME=$OPTARG;;
+        s) DETECTION_TIME=$OPTARG;;
+        w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
+        h) flags="$flags -h";;
+        v) flags="$flags -v";;
+    esac
+done
+
+# Read config in to flags
+if [ ! -z "$BLACKLIST_THRESHOLD" ]; then
+    flags="$flags -a $BLACKLIST_THRESHOLD"
+fi
+if [ ! -z "$BLACKLIST_FILE" ]; then
+    flags="$flags -b $BLACKLIST_FILE"
+fi
+if [ ! -z "$PID_FILE" ]; then
+    flags="$flags -i $PID_FILE"
+fi
+if [ ! -z "$BLOCK_TIME" ]; then
+    flags="$flags -p $BLOCK_TIME"
+fi
+if [ ! -z "$DETECTION_TIME" ]; then
+    flags="$flags -s $DETECTION_TIME"
+fi
+if [ ! -z "$WHITELIST_ARG" ]; then
+    for good_guy in $WHITELIST_ARG; do
+      flags="$flags -w $WHITELIST_FILE"
+    done
+elif [ ! -z "$WHITELIST_FILE" ]; then
+    flags="$flags -w $WHITELIST_FILE"
 fi
 
 # Check backend
-if [ -z $BACKEND ]; then
-    echo "sshguard: BACKEND must be set in $config" >&2
+if [ -z "$BACKEND" ]; then
+    echo "sshguard: BACKEND must be set in '$config'" >&2
+    exit 78
+elif [ ! -x "$BACKEND" ]; then
+    echo "sshguard: '$BACKEND' is not executable" >&2
     exit 78
 fi
 
-if [ ! -x $BACKEND ]; then
-    echo "sshguard: $BACKEND is not executable" >&2
-    exit 78
-fi
-
-# Monitor standard input if no logreader or files are given
-if [ ! -z "$LOGREADER" ]; then
+# Log source selection order: runtime args, logreader, files, or stdin
+shift $((OPTIND-1))
+if [ ! -z "$@" ]; then
+    tailcmd="$libexec/sshg-logtail $@"
+elif [ ! -z "$LOGREADER" ]; then
     tailcmd="$LOGREADER"
-elif [ -z "$FILES" ]; then
-    tailcmd="cat"
-else
+elif [ ! -z "$FILES" ]; then
     tailcmd="$libexec/sshg-logtail $FILES"
+elif [ -z "$tailcmd" ]; then
+    tailcmd="cat"
 fi
+
 
 eval $tailcmd | $libexec/sshg-parser | \
     ($libexec/sshg-blocker $flags || kill -PIPE $$) | \

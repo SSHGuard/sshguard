@@ -1,18 +1,43 @@
 #!/bin/sh
 # sshguard.conf -- SSHGuard configuration
 
+# Options that are uncommented in this example are set to their default
+# values. Options without defaults are commented out.
+
 # Full path to one of sshg-fw-firewalld, sshg-fw-hosts,
 # sshg-fw-ipfw, sshg-fw-ipset, sshg-fw-iptables, sshg-fw-null,
 # sshg-fw-pf, or other compatible executable.
 # BACKEND=""
 
+# By default, attackers are never blocked longer than the runtime of
+# SSHGuard. By introducing a BLACKLIST_FILE, attackers will be added
+# to it and re-blocked on the next run.
+# BLACKLIST_FILE=/var/lib/sshguard/enemies
 
-# Configure either FILES or LOGREADER. The latter takes precedence.
+# Each attack is given a fixed dangerousness score of 10. Attackers are
+# blocked when their score exceeds BLACKLIST_THRESHOLD.
+BLACKLIST_THRESHOLD=30
+
+# Detected attackers are blocked for BLOCK_TIME seconds. Subsequent
+# attacks will be blocked for 1.5 * BLOCK_TIME.
+BLOCK_TIME=120
+
+# Attempted attack events are only remembered for up to DETECTION_TIME
+# seconds before resetting their dangerousness score.
+DETECTION_TIME=1800
+
+# Configure either FILES or a LOGREADER. The latter takes precedence.
 # Alternatively, unset both options and pipe in logs over standard input.
 
 # Space separated list of log files to monitor.
-FILES="/var/log/auth.log /var/log/maillog"
+# FILES="/var/log/auth.log /var/log/maillog"
 
 # Custom command that is expected to pipe tailed log entries over
 # standard output to SSHGuard.
 # LOGREADER="LANG=C /usr/bin/journalctl -afb -p info -n1 -t ssh -t sendmail -o cat"
+
+# PID_FILE=/run/sshguard.pid
+
+# IP addresses listed in the WHITELIST_FILE are considered to be
+# friendlies and will never be blocked.
+# WHITELIST_FILE=/etc/friends
