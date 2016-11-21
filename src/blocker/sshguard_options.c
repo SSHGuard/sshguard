@@ -36,9 +36,10 @@
 sshg_opts opts;
 
 static void usage(void) {
-    fprintf(stderr, "usage: sshguard [-v] [-a thresh] [-b thresh:file]\n"
-                    "\t\t[-i pidfile] [-p interval]\n"
-                    "\t\t[-s interval] [-w address | file]\n");
+    fprintf(stderr, "Usage: sshguard [-v] [-h] \n"
+                    "\t\t[-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE]\n"
+                    "\t\t[-i PID-FILE] [-p BLOCK_TIME]\n"
+                    "\t\t[-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]\n");
 }
 
 static void version(void) {
