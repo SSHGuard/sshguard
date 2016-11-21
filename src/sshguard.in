@@ -73,7 +73,6 @@ elif [ -z "$tailcmd" ]; then
     tailcmd="cat"
 fi
 
-
 eval $tailcmd | $libexec/sshg-parser | \
     ($libexec/sshg-blocker $flags || kill -PIPE $$) | \
     ($BACKEND || kill -PIPE $$)
