@@ -2,6 +2,7 @@
 # sshguard -- protect hosts from brute-force attacks
 
 libexec="@libexecdir@"
+version="@sshguardversion@"
 
 # Source configuration file
 config="@sysconfdir@/sshguard.conf"
@@ -23,7 +24,7 @@ while getopts "b:p:s:a:w:i:hv" opt; do
         s) DETECTION_TIME=$OPTARG;;
         w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
         h) flags="$flags -h";;
-        v) flags="$flags -v";;
+        v) echo "SSHGuard $version"; exit;;
     esac
 done
 

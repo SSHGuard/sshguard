@@ -129,10 +129,6 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.my_pidfile = optarg;
                 break;
 
-            case 'v':     /* version */
-                version();
-                return -1;
-
             case 'h':   /* help */
             default:    /* or anything else: print help */
                 usage();

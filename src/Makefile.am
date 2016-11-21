@@ -43,7 +43,8 @@ sshg_fw_hosts_SOURCES = fw/hosts.c blocker/simclist.c
 
 script_subst = sed \
 	-e 's|@libexecdir[@]|$(libexecdir)|g' \
-	-e 's|@sysconfdir[@]|$(sysconfdir)|g'
+	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
+	-e 's|@sshguardversion[@]|$(VERSION)|g'
 
 sshguard: Makefile sshguard.in
 	$(script_subst) $@.in > $@
