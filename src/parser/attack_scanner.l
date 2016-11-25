@@ -40,7 +40,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for Login services */
 %s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure sendmail_noissue postfix_loginerr
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
 
@@ -161,6 +161,10 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* Sendmail */
 [A-Za-z0-9]+": AUTH failure ("[A-Za-z0-9-]+"): ".+"relay=".*"[" { BEGIN(sendmail_authfailure); return SENDMAIL_AUTHFAILURE_PREF; }
 <sendmail_authfailure>"]".*                                     { BEGIN(INITIAL); return SENDMAIL_AUTHFAILURE_SUFF; }
+
+ /* Sendmail */
+.*"["                                                           { BEGIN(sendmail_noissue); return SENDMAIL_NOISSUE_PREF; }
+<sendmail_noissue>"] ".*"did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA"    { BEGIN(INITIAL); return SENDMAIL_NOISSUE_SUFF; }
 
  /* dovecot */
 (imap|pop3)"-login: Aborted login (auth failed, "{NUMBER}" attempts".*"): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
