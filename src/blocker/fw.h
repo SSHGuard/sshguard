@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef FW_H
-#define FW_H
+#pragma once
 
 #include "parser/attack.h"
 
@@ -50,5 +49,3 @@ int fw_release(const attack_t *attack);
  * Release all blocked addresses.
  */
 int fw_flush(void);
-
-#endif

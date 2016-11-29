@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
 /* also define global var yydebug = 1 for enabling debugging at runtime */
 #define YYDEBUG 1
@@ -35,5 +34,3 @@ extern int yy_flex_debug;
  * zero and store the attack in the given pointer.
  */
 int parse_line(char *str, attack_t *attack);
-
-#endif

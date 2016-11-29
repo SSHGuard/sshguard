@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef SSHGUARD_ADDRESSKIND_H
-#define SSHGUARD_ADDRESSKIND_H
+#pragma once
 
 /* maximum length of an address string */
 #ifndef INET_ADDRSTRLEN
@@ -50,5 +49,3 @@ typedef struct {
     char value[ADDRLEN];             /* address of offender */
     int kind;                   /* type of address addr */
 } sshg_address_t;
-
-#endif

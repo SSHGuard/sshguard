@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef SSHGUARD_BLACKLIST_H
-#define SSHGUARD_BLACKLIST_H
+#pragma once
 
 /**
  * Load blacklist from the given file. Return a list with the contents of the
@@ -46,5 +45,3 @@ void blacklist_add(const attacker_t *restrict newel);
  * @return          <0 if error; 1 if (addr,addrkind) present in blacklist, 0 otherwise
  */
 int blacklist_contains(const sshg_address_t *restrict addr);
-
-#endif

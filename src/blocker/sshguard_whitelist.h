@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef SSHGUARD_WHITELIST_H
-#define SSHGUARD_WHITELIST_H
+#pragma once
 
 /**
  * Initialize the whitelisting subsystem.
@@ -136,5 +135,3 @@ int whitelist_add_host(const char *restrict host);
  * @return 1 if the address exists in the whitelist, 0 if it doesn't
  */
 int whitelist_match(const char *restrict addr, int addrkind);
-
-#endif

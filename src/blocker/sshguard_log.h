@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef SSHGUARD_LOG_H
-#define SSHGUARD_LOG_H
+#pragma once
 
 #include <syslog.h>
 #include <stdarg.h>
@@ -36,5 +35,3 @@ void sshguard_log_init(int debug);
 void sshguard_log_fin();
 
 #define sshguard_log syslog
-
-#endif

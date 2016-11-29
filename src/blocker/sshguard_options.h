@@ -18,8 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef SSHGUARD_OPTIONS
-#define SSHGUARD_OPTIONS
+#pragma once
 
 /* dynamic configuration options */
 typedef struct {
@@ -43,5 +42,3 @@ extern sshg_opts opts;
  * @return  0 iff success; -1 if failure
  */
 int get_options_cmdline(int argc, char *argv[]);
-
-#endif

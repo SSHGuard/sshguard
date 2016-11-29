@@ -1,5 +1,4 @@
-#ifndef _SANDBOX_H
-#define _SANDBOX_H
+#pragma once
 
 #include "config.h"
 
@@ -20,5 +19,3 @@ static inline void sandbox_init() {
     }
 #endif
 }
-
-#endif

@@ -18,10 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
-#ifndef SSHGUARD_H
-#define SSHGUARD_H
+#pragma once
 
 /* default "weight" of an attack */
 #define DEFAULT_ATTACKS_DANGEROUSNESS           10
-
-#endif
