@@ -24,6 +24,7 @@ src/parser/attack_scanner.c
 src/sshg-blocker
 src/sshg-fw-firewalld
 src/sshg-fw-hosts
+src/sshg-fw-ipfilter
 src/sshg-fw-ipfw
 src/sshg-fw-ipset
 src/sshg-fw-iptables
