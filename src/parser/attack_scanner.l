@@ -162,10 +162,6 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 [A-Za-z0-9]+": AUTH failure ("[A-Za-z0-9-]+"): ".+"relay=".*"[" { BEGIN(sendmail_authfailure); return SENDMAIL_AUTHFAILURE_PREF; }
 <sendmail_authfailure>"]".*                                     { BEGIN(INITIAL); return SENDMAIL_AUTHFAILURE_SUFF; }
 
- /* Sendmail */
-.*"["                                                           { BEGIN(sendmail_noissue); return SENDMAIL_NOISSUE_PREF; }
-<sendmail_noissue>"] ".*"did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA"    { BEGIN(INITIAL); return SENDMAIL_NOISSUE_SUFF; }
-
  /* dovecot */
 (imap|pop3)"-login: Aborted login (auth failed, "{NUMBER}" attempts".*"): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
 <dovecot_loginerr>", lip=".+                                        { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
@@ -192,6 +188,10 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* another log entry from ProFTPd */
 {HOSTADDR}" ("[[]+"["                                           { BEGIN(proftpd_loginerr); return PROFTPD_LOGINERR_PREF; }
 "]) - USER "{WORD}" (Login failed): ".*                         { BEGIN(INITIAL); return PROFTPD_LOGINERR_SUFF; }
+
+ /* Sendmail -- this rule must be here to avoid shadowing earlier matches */
+.*"["                                                           { BEGIN(sendmail_noissue); return SENDMAIL_NOISSUE_PREF; }
+<sendmail_noissue>"] ".*"did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA"    { BEGIN(INITIAL); return SENDMAIL_NOISSUE_SUFF; }
 
  /* Pure-FTPd */
 "pure-ftpd: "?"("("?"|{WORD}|{HOSTADDR})"@"                     { BEGIN(pureftpd_loginerr); return PUREFTPD_LOGINERR_PREF; }
