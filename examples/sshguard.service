@@ -10,7 +10,7 @@ After=firewalld.service
 
 [Service]
 ExecStartPre=-/usr/sbin/iptables -N sshguard
-ExecStart=/usr/sbin/sshguard -w /etc/sshguard.whitelist -l /var/log/secure -b 60:/var/db/sshguard/blacklist.db
+ExecStart=/usr/sbin/sshguard
 Restart=always
 
 [Install]
