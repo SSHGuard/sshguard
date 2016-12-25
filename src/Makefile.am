@@ -1,12 +1,14 @@
+SUBDIRS = fw
+
 AM_CFLAGS=-I. -I blocker -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
 BUILT_SOURCES = parser/attack_parser.h
 
-dist_libexec_SCRIPTS = sshg-logtail sshg-fw-firewalld sshg-fw-ipfilter sshg-fw-ipfw sshg-fw-ipset sshg-fw-iptables sshg-fw-null sshg-fw-pf
-libexec_PROGRAMS = sshg-blocker sshg-fw-hosts sshg-parser
+dist_libexec_SCRIPTS = sshg-logtail
+libexec_PROGRAMS = sshg-blocker sshg-parser
 sbin_SCRIPTS = sshguard
 
-EXTRA_DIST = fw/firewalld.sh fw/ipfilter.sh fw/ipfw.sh fw/ipset.sh fw/iptables.sh fw/null.sh fw/pf.sh sshguard.in
+EXTRA_DIST = sshguard.in
 noinst_HEADERS = sandbox.h
 
 sshg_parser_SOURCES = \
@@ -36,8 +38,6 @@ sshg_blocker_SOURCES = \
 	blocker/sshguard_whitelist.h \
 	parser/attack.c
 
-sshg_fw_hosts_SOURCES = fw/fw.h fw/hosts.c blocker/simclist.c
-
 script_subst = sed \
 	-e 's|@libexecdir[@]|$(libexecdir)|g' \
 	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
@@ -45,8 +45,3 @@ script_subst = sed \
 
 sshguard: Makefile sshguard.in
 	$(script_subst) $@.in > $@
-
-# This rule uses GMake pattern matching. Since the target is shipped in the
-# distfile, only those compiling from Git need GMake.
-sshg-fw-%: fw/%.sh fw/sshg-fw.in
-	cat fw/$*.sh fw/sshg-fw.in > $@
