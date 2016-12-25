@@ -172,8 +172,8 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
             abort();
         }
     }
-    sshguard_log(LOG_NOTICE, "Blocking %s %s (%u attacks in %lld "
-                             "secs, after %d abuses over %lld secs)",
+    sshguard_log(LOG_INFO, "Blocking %s %s (%u attacks in %lld "
+                           "secs, after %d abuses over %lld secs)",
                  tmpent->attack.address.value, time_msg, tmpent->numhits,
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
                  offenderent->numhits,

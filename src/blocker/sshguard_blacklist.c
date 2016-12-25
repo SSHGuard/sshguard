@@ -87,7 +87,7 @@ list_t *blacklist_load(const char *filename) {
                     &blacklist_time, &service_no,
                     &newattacker.attack.address.kind,
                     newattacker.attack.address.value) != 4) {
-            sshguard_log(LOG_NOTICE,
+            sshguard_log(LOG_WARNING,
                     "blacklist: ignoring malformed line %d", linecnt);
             continue;
         }
@@ -97,7 +97,7 @@ list_t *blacklist_load(const char *filename) {
         if (newattacker.attack.address.kind != ADDRKIND_IPv4 &&
                 newattacker.attack.address.kind != ADDRKIND_IPv6) {
             /* unknown address type */
-            sshguard_log(LOG_NOTICE,
+            sshguard_log(LOG_WARNING,
                     "blacklist: unknown address type on line %d", linecnt);
             continue;
         }
@@ -129,7 +129,7 @@ void blacklist_add(const attacker_t *restrict newel) {
             (long long)newel->whenlast, newel->attack.service,
             newel->attack.address.kind, newel->attack.address.value);
     if (retval > 0) {
-        sshguard_log(LOG_NOTICE, "blacklist: added %s",
+        sshguard_log(LOG_DEBUG, "blacklist: added %s",
                 newel->attack.address.value);
         fflush(blacklist_file);
         list_append(blacklist, newel);
