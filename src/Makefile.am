@@ -22,8 +22,6 @@ sshg_blocker_SOURCES = \
 	blocker/blocklist.c \
 	blocker/blocklist.h \
 	blocker/fnv.h \
-	blocker/fw.c \
-	blocker/fw.h \
 	blocker/hash_32a.c \
 	blocker/simclist.c \
 	blocker/simclist.h \
@@ -38,7 +36,7 @@ sshg_blocker_SOURCES = \
 	blocker/sshguard_whitelist.h \
 	parser/attack.c
 
-sshg_fw_hosts_SOURCES = fw/hosts.c blocker/simclist.c
+sshg_fw_hosts_SOURCES = fw/fw.h fw/hosts.c blocker/simclist.c
 
 script_subst = sed \
 	-e 's|@libexecdir[@]|$(libexecdir)|g' \

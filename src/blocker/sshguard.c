@@ -29,7 +29,6 @@
 #include <unistd.h>
 
 #include "blocklist.h"
-#include "fw.h"
 #include "parser/parser.h"
 #include "sandbox.h"
 #include "simclist.h"
@@ -130,10 +129,9 @@ int main(int argc, char *argv[]) {
         atexit(my_pidfile_destroy);
     }
 
-    if (fw_init() != FWALL_OK) {
-        sshguard_log(LOG_ERR, "Failed to initialize firewall");
-        exit(69);
-    }
+    // Initialize firewall
+    printf("flushonexit\n");
+    fflush(stdout);
 
     if (opts.blacklist_filename != NULL) {
         blacklist_load_and_block();
@@ -313,7 +311,6 @@ static void purge_limbo_stale(void) {
 static void finishup(void) {
     sshguard_log(LOG_INFO, "Exiting on %s",
             exit_sig == SIGHUP ? "SIGHUP" : "signal");
-    fw_fin();
     whitelist_fin();
     closelog();
 }

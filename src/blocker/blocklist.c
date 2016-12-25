@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #include "blocklist.h"
-#include "fw.h"
 #include "simclist.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
@@ -15,6 +14,16 @@ static list_t hell;
 
 /* mutex against races between insertions and pruning of lists */
 static pthread_mutex_t list_mutex;
+
+static void fw_block(const attack_t *attack) {
+    printf("block %s %d\n", attack->address.value, attack->address.kind);
+    fflush(stdout);
+}
+
+static void fw_release(const attack_t *attack) {
+    printf("release %s %d\n", attack->address.value, attack->address.kind);
+    fflush(stdout);
+}
 
 static void unblock_expired() {
     attacker_t *tmpel;
