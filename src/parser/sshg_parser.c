@@ -16,18 +16,21 @@ static void print_attack(const attack_t *attack) {
 }
 
 static void print_usage() {
-    fprintf(stderr, "usage: sshg-parser [-d] [-h]\n");
+    fprintf(stderr, "usage: sshg-parser [-adh]\n");
 }
 
 int main(int argc, char *argv[]) {
-    bool debug = false;
+    bool annotate = false, debug = false;
     char buf[1000];
     int flag;
 
     sandbox_init();
 
-    while ((flag = getopt(argc, argv, "dh")) != -1) {
+    while ((flag = getopt(argc, argv, "adh")) != -1) {
         switch (flag) {
+        case 'a':
+            annotate = true;
+            break;
         case 'd':
             debug = true;
             break;
@@ -44,9 +47,20 @@ int main(int argc, char *argv[]) {
 
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         attack_t attack;
-        if (parse_line(buf, &attack) == 0) {
-            print_attack(&attack);
+        bool is_attack = !parse_line(buf, &attack);
+        if (annotate) {
+            if (is_attack) {
+                fputs("* ", stdout);
+            } else {
+                fputs("  ", stdout);
+            }
+            fputs(buf, stdout);
             fflush(stdout);
+        } else {
+            if (is_attack) {
+                print_attack(&attack);
+                fflush(stdout);
+            }
         }
     }
 }
