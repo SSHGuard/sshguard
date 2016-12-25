@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "blocklist.h"
@@ -89,9 +90,23 @@ static void my_pidfile_destroy() {
     }
 }
 
+static void init_log(int debug) {
+    int flags = LOG_NDELAY | LOG_PID;
+
+    if (debug) {
+        flags |= LOG_PERROR;
+    } else {
+        setlogmask(LOG_UPTO(LOG_INFO));
+    }
+
+    // Set local time zone and open log before entering sandbox.
+    tzset();
+    openlog("sshg-blocker", flags, LOG_AUTH);
+}
+
 int main(int argc, char *argv[]) {
     int sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
-    sshguard_log_init(sshg_debugging);
+    init_log(sshg_debugging);
 
     srand(time(NULL));
 
@@ -300,7 +315,7 @@ static void finishup(void) {
             exit_sig == SIGHUP ? "SIGHUP" : "signal");
     fw_fin();
     whitelist_fin();
-    sshguard_log_fin();
+    closelog();
 }
 
 static void sigfin_handler(int sig) {

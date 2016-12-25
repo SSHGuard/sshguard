@@ -31,7 +31,6 @@ sshg_blocker_SOURCES = \
 	blocker/sshguard.h \
 	blocker/sshguard_blacklist.c \
 	blocker/sshguard_blacklist.h \
-	blocker/sshguard_log.c \
 	blocker/sshguard_log.h \
 	blocker/sshguard_options.c \
 	blocker/sshguard_options.h \

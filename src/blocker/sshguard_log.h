@@ -23,15 +23,4 @@
 #include <syslog.h>
 #include <stdarg.h>
 
-/**
- * Initialize the logging system. Must be called before sshguard_log().
- * @param debug     Enable debugging if set to non-zero value
- */
-void sshguard_log_init(int debug);
-
-/**
- * Clean up the logging system.
- */
-void sshguard_log_fin();
-
 #define sshguard_log syslog
