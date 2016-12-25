@@ -40,7 +40,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for Login services */
 %s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure sendmail_noissue postfix_loginerr
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
 
@@ -188,10 +188,6 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* another log entry from ProFTPd */
 {HOSTADDR}" ("[[]+"["                                           { BEGIN(proftpd_loginerr); return PROFTPD_LOGINERR_PREF; }
 "]) - USER "{WORD}" (Login failed): ".*                         { BEGIN(INITIAL); return PROFTPD_LOGINERR_SUFF; }
-
- /* Sendmail -- this rule must be here to avoid shadowing earlier matches */
-.*"["                                                           { BEGIN(sendmail_noissue); return SENDMAIL_NOISSUE_PREF; }
-<sendmail_noissue>"] ".*"did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA"    { BEGIN(INITIAL); return SENDMAIL_NOISSUE_SUFF; }
 
  /* Pure-FTPd */
 "pure-ftpd: "?"("("?"|{WORD}|{HOSTADDR})"@"                     { BEGIN(pureftpd_loginerr); return PUREFTPD_LOGINERR_PREF; }
