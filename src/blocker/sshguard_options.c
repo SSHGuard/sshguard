@@ -42,10 +42,6 @@ static void usage(void) {
                     "\t\t[-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]\n");
 }
 
-static void version(void) {
-    fprintf(stderr, PACKAGE_STRING "\n");
-}
-
 /**
  * Initialize options to defaults.
  */

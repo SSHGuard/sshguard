@@ -32,11 +32,6 @@
 #include "parser/address.h"
 #include "sshguard_log.h"
 
-static void fw_sigpipe() {
-    sshguard_log(LOG_CRIT, "fw: broken pipe");
-    exit(EXIT_FAILURE);
-}
-
 int fw_init() {
     printf("flushonexit\n");
     fflush(stdout);
