@@ -16,9 +16,10 @@ configure
 depcomp
 install-sh
 missing
-src/config.h
-src/config.h.in
-src/config.h.in~
+src/common/config.h
+src/common/config.h.in
+src/common/config.h.in~
+src/common/stamp-h1
 src/fw/sshg-fw-firewalld
 src/fw/sshg-fw-hosts
 src/fw/sshg-fw-ipfilter
@@ -32,5 +33,4 @@ src/parser/attack_scanner.c
 src/sshg-blocker
 src/sshg-parser
 src/sshguard
-src/stamp-h1
 ylwrap

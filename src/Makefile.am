@@ -1,6 +1,6 @@
 SUBDIRS = fw
 
-AM_CFLAGS=-I. -I blocker -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
+AM_CFLAGS=-I common -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
 AM_YFLAGS = -d
 BUILT_SOURCES = parser/attack_parser.h
 
@@ -9,24 +9,21 @@ libexec_PROGRAMS = sshg-blocker sshg-parser
 sbin_SCRIPTS = sshguard
 
 EXTRA_DIST = sshguard.in
-noinst_HEADERS = sandbox.h
+noinst_HEADERS = common/address.h common/attack.h common/sandbox.h common/simclist.h
 
 sshg_parser_SOURCES = \
-	parser/address.h \
 	parser/attack.c \
-	parser/attack.h \
 	parser/attack_parser.y \
 	parser/attack_scanner.l \
 	parser/parser.h \
 	parser/sshg_parser.c
 
 sshg_blocker_SOURCES = \
+	blocker/attack.c \
 	blocker/blocklist.c \
 	blocker/blocklist.h \
 	blocker/fnv.h \
 	blocker/hash_32a.c \
-	blocker/simclist.c \
-	blocker/simclist.h \
 	blocker/sshguard.c \
 	blocker/sshguard.h \
 	blocker/sshguard_blacklist.c \
@@ -36,7 +33,7 @@ sshg_blocker_SOURCES = \
 	blocker/sshguard_options.h \
 	blocker/sshguard_whitelist.c \
 	blocker/sshguard_whitelist.h \
-	parser/attack.c
+	common/simclist.c
 
 script_subst = sed \
 	-e 's|@libexecdir[@]|$(libexecdir)|g' \

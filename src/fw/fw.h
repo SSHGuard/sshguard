@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "parser/attack.h"
+#include "attack.h"
 
 #define FWALL_OK    0
 #define FWALL_ERR  -1

@@ -27,8 +27,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../blocker/simclist.h"
 #include "fw.h"
+#include "simclist.h"
 
 #ifndef HOSTSFILE_PATH
 #   define HOSTSFILE_PATH     "/etc/hosts.allow"

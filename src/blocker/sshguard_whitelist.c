@@ -29,7 +29,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "parser/address.h"
+#include "address.h"
 #include "simclist.h"
 #include "sshguard_log.h"
 #include "sshguard_whitelist.h"

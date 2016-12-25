@@ -27,7 +27,7 @@ extern int yydebug;
 extern int yy_flex_debug;
 #endif
 
-#include "parser/attack.h"
+#include "attack.h"
 
 /**
  * Parse a single line of a log for an attack. If an attack is found, return

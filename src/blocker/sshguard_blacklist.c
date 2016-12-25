@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "parser/attack.h"
+#include "attack.h"
 #include "simclist.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
