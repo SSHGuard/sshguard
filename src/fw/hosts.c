@@ -204,11 +204,10 @@ int hosts_updatelist() {
     }
 
     if (list_size(& hosts_blockedaddrs) > 0) {
-        unsigned int cnt;
         addr_service_t *curr;
 
         fprintf(tmp, "ALL :");
-        for (cnt = 0; cnt < (int)list_size(&hosts_blockedaddrs); cnt++) {
+        for (unsigned int cnt = 0; cnt < list_size(&hosts_blockedaddrs); cnt++) {
             curr = (addr_service_t *)list_get_at(&hosts_blockedaddrs, cnt);
 
             /* block lines differ depending on IP Version */
