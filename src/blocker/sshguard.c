@@ -206,7 +206,7 @@ static void report_address(attack_t attack) {
     }
 
     if (whitelist_match(attack.address.value, attack.address.kind)) {
-        sshguard_log(LOG_INFO, "%s: not blocking (on whitelist)",
+        sshguard_log(LOG_DEBUG, "%s: not blocking (on whitelist)",
                 attack.address.value);
         return;
     }
