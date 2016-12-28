@@ -90,18 +90,6 @@ int get_options_cmdline(int argc, char *argv[]) {
 
             case 'a':   /* abuse threshold count */
                 opts.abuse_threshold = strtol(optarg, (char **)NULL, 10);
-                if (opts.abuse_threshold < DEFAULT_ATTACKS_DANGEROUSNESS) {
-                    fprintf(stderr,
-                            "Abuse threshold should be greater than one attack (%d danger)\n",
-                            DEFAULT_ATTACKS_DANGEROUSNESS);
-                    return -1;
-                }
-
-                if (opts.abuse_threshold % DEFAULT_ATTACKS_DANGEROUSNESS != 0) {
-                    fprintf(stderr,
-                            "Warning: abuse threshold should be a multiple of %d\n",
-                            DEFAULT_ATTACKS_DANGEROUSNESS);
-                }
                 break;
 
             case 'w':   /* whitelist entries */
