@@ -351,10 +351,9 @@ void backend_main(const char *name) {
     char buf[128];
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         const char *sep = " \n";
-        char *token = buf;
-        char *cmd = strsep(&token, sep);
-        char *address = strsep(&token, sep);
-        char *type = strsep(&token, sep);
+        char *cmd = strtok(buf, sep);
+        char *address = strtok(NULL, sep);
+        char *type = strtok(NULL, sep);
         if (strcmp(cmd, "block") == 0) {
             attack_t attack;
             if (!fill_attack(&attack, address, type)) {
