@@ -5,7 +5,9 @@
 IPFW_TABLE=22
 
 fw_init() {
-    ipfw table ${IPFW_TABLE} list > /dev/null
+    # Starting in FreeBSD 11, tables must first be created.
+    ipfw table ${IPFW_TABLE} create 2>/dev/null || \
+        ipfw table ${IPFW_TABLE} list > /dev/null
 }
 
 fw_block() {
@@ -21,5 +23,5 @@ fw_flush() {
 }
 
 fw_fin() {
-    :
+    ipfw table ${IPFW_TABLE} destroy 2>/dev/null
 }
