@@ -163,7 +163,7 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 <sendmail_authfailure>"]".*                                     { BEGIN(INITIAL); return SENDMAIL_AUTHFAILURE_SUFF; }
 
  /* dovecot */
-(imap|pop3)"-login: Aborted login (auth failed, "{NUMBER}" attempts".*"): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
+("(libdovecot."[0-9\.]+".dylib) ")?(imap|pop3)"-login: "("Aborted login"|Disconnected)" (auth failed, "{NUMBER}" attempts".*"): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
 <dovecot_loginerr>", lip=".+                                        { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
 
  /* UWimap login errors */
