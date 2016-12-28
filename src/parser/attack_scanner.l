@@ -22,8 +22,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "parser/parser.h"  // attack_t, required by the parser header
-
+#include "attack.h"
 #include "attack_parser.h"
 
 static int getsyslogpid(char *syslogbanner, int length);

@@ -1,22 +1,13 @@
-SUBDIRS = fw
+SUBDIRS = fw parser
 
 AM_CFLAGS=-I common -DSIMCLIST_NO_DUMPRESTORE -DLIBEXECDIR=\"$(libexecdir)\"
-AM_YFLAGS = -d
-BUILT_SOURCES = parser/attack_parser.h
 
 dist_libexec_SCRIPTS = sshg-logtail
-libexec_PROGRAMS = sshg-blocker sshg-parser
+libexec_PROGRAMS = sshg-blocker
 sbin_SCRIPTS = sshguard
 
 EXTRA_DIST = sshguard.in
 noinst_HEADERS = common/address.h common/attack.h common/sandbox.h common/simclist.h
-
-sshg_parser_SOURCES = \
-	parser/attack.c \
-	parser/attack_parser.y \
-	parser/attack_scanner.l \
-	parser/parser.h \
-	parser/sshg_parser.c
 
 sshg_blocker_SOURCES = \
 	blocker/attack.c \
