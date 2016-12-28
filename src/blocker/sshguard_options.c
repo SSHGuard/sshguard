@@ -29,7 +29,6 @@
 #include <getopt.h>
 #endif
 
-#include "sshguard.h"
 #include "sshguard_options.h"
 #include "sshguard_whitelist.h"
 

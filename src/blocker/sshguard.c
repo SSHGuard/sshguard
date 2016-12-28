@@ -32,7 +32,6 @@
 #include "parser/parser.h"
 #include "sandbox.h"
 #include "simclist.h"
-#include "sshguard.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
 #include "sshguard_options.h"
