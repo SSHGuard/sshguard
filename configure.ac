@@ -9,9 +9,6 @@ AM_SILENT_RULES([yes])
 ##############################################################################
 # Configuration Options
 
-AC_ARG_ENABLE([sandbox], [AS_HELP_STRING([--disable-sandbox],
-              [Disable Capsicum sandboxing])], [], [sandbox_enable=yes])
-
 ##############################################################################
 AS_BOX([Program Checks])
 
@@ -30,16 +27,11 @@ AS_BOX([Headers, Types, and Compiler Checks])
 # Header Files
 AC_CHECK_HEADERS([getopt.h])
 
-AS_IF([test "$sandbox_enable" == "yes"], [
-       AC_CHECK_HEADERS([sys/capsicum.h sys/capability.h],
-                        capsicum_found=candidate)
-       AS_IF([test "$capsicum_found" == "candidate"],
-           AC_CHECK_FUNCS([cap_enter cap_rights_limit],
-                          capsicum_found=yes))
-       AS_IF([test "$capsicum_found" == "yes"],
-             [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])],
-             [AC_WARN([Capsicum not found; sandboxing not available])])
-])
+AC_CHECK_HEADERS([sys/capsicum.h sys/capability.h], capsicum_found=candidate)
+AS_IF([test "$capsicum_found" == "candidate"],
+      AC_CHECK_FUNCS([cap_enter cap_rights_limit], capsicum_found=yes))
+AS_IF([test "$capsicum_found" == "yes"],
+      [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])])
 
 ##############################################################################
 AS_BOX([Library Functions])
