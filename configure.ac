@@ -6,25 +6,17 @@ AM_CONFIG_HEADER([src/common/config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_SILENT_RULES([yes])
 
-##############################################################################
-# Configuration Options
-
-##############################################################################
-AS_BOX([Program Checks])
-
 # Enable POSIX extensions on hosts that normally disable them.
 AC_USE_SYSTEM_EXTENSIONS
 
+AS_BOX([Program Checks])
 AC_PROG_CC_C99
 AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_AR
 AM_PROG_LEX
 
-##############################################################################
 AS_BOX([Headers, Types, and Compiler Checks])
-
-# Header Files
 AC_CHECK_HEADERS([getopt.h])
 
 AC_CHECK_HEADERS([sys/capsicum.h sys/capability.h], capsicum_found=candidate)
@@ -33,9 +25,7 @@ AS_IF([test "$capsicum_found" == "candidate"],
 AS_IF([test "$capsicum_found" == "yes"],
       [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])])
 
-##############################################################################
 AS_BOX([Library Functions])
-
 AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
