@@ -18,4 +18,9 @@ static inline void sandbox_init() {
         perror("Could not enter capability mode");
     }
 #endif
+#ifdef __OpenBSD__
+    if (pledge("dns stdio", NULL) != 0) {
+        perror("Could not pledge");
+    }
+#endif
 }
