@@ -7,5 +7,5 @@ sshg_parser_SOURCES = \
 	attack.c \
 	attack_parser.y \
 	attack_scanner.l \
-	parser.h \
-	sshg_parser.c
+	parser.c \
+	parser.h
