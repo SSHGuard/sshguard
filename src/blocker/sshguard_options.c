@@ -35,10 +35,7 @@
 sshg_opts opts;
 
 static void usage(void) {
-    fprintf(stderr, "Usage: sshguard [-v] [-h] \n"
-                    "\t\t[-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE]\n"
-                    "\t\t[-i PID-FILE] [-p BLOCK_TIME]\n"
-                    "\t\t[-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]\n");
+    fprintf(stderr, "sshg-blocker: invalid command-line\n");
 }
 
 /**
@@ -58,7 +55,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
     options_init(&opts);
 
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:e:vh")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:")) != -1) {
         switch (optch) {
             case 'b':
                 opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
@@ -113,7 +110,6 @@ int get_options_cmdline(int argc, char *argv[]) {
                 opts.my_pidfile = optarg;
                 break;
 
-            case 'h':   /* help */
             default:    /* or anything else: print help */
                 usage();
                 return -1;

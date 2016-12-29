@@ -14,6 +14,15 @@ fi
 
 . $config
 
+usage() {
+    cat << EOF
+Usage: sshguard [-v] [-h]
+[-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE]
+[-i PID-FILE] [-p BLOCK_TIME]
+[-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]
+EOF
+}
+
 # Override configuration options with runtime arguments
 while getopts "b:p:s:a:w:i:hv" opt; do
     case $opt in
@@ -23,7 +32,7 @@ while getopts "b:p:s:a:w:i:hv" opt; do
         p) BLOCK_TIME=$OPTARG;;
         s) DETECTION_TIME=$OPTARG;;
         w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
-        h) flags="$flags -h";;
+        h) usage; exit;;
         v) echo "SSHGuard $version"; exit;;
     esac
 done
