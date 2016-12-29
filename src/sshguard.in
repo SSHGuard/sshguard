@@ -54,8 +54,8 @@ if [ ! -z "$DETECTION_TIME" ]; then
     flags="$flags -s $DETECTION_TIME"
 fi
 if [ ! -z "$WHITELIST_ARG" ]; then
-    for good_guy in $WHITELIST_ARG; do
-      flags="$flags -w $WHITELIST_FILE"
+    for arg in $WHITELIST_ARG; do
+      flags="$flags -w $arg"
     done
 elif [ ! -z "$WHITELIST_FILE" ]; then
     flags="$flags -w $WHITELIST_FILE"
