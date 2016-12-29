@@ -24,11 +24,12 @@ EOF
 }
 
 # Override configuration options with runtime arguments
-while getopts "b:p:s:a:w:i:hv" opt; do
+while getopts "b:l:p:s:a:w:i:hv" opt; do
     case $opt in
         a) BLACKLIST_THRESHOLD=$OPTARG;;
         b) BLACKLIST_FILE=$OPTARG;;
         i) PID_FILE=$OPTARG;;
+        l) FILES="$FILES $OPTARG";;
         p) BLOCK_TIME=$OPTARG;;
         s) DETECTION_TIME=$OPTARG;;
         w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
