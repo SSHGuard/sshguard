@@ -29,7 +29,6 @@
 #include <unistd.h>
 
 #include "blocklist.h"
-#include "parser/parser.h"
 #include "sandbox.h"
 #include "simclist.h"
 #include "sshguard_blacklist.h"

@@ -16,6 +16,7 @@ configure
 depcomp
 install-sh
 missing
+src/blocker/sshg-blocker
 src/common/config.h
 src/common/config.h.in
 src/common/config.h.in~
@@ -31,6 +32,5 @@ src/fw/sshg-fw-pf
 src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
 src/parser/sshg-parser
-src/sshg-blocker
 src/sshguard
 ylwrap

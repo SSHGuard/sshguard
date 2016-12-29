@@ -30,4 +30,4 @@ AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
 
-AC_OUTPUT([Makefile src/Makefile src/fw/Makefile src/parser/Makefile])
+AC_OUTPUT([Makefile src/Makefile src/blocker/Makefile src/fw/Makefile src/parser/Makefile])
