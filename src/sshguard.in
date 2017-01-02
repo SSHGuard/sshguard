@@ -26,7 +26,7 @@ EOF
 # Override configuration options with runtime arguments
 while getopts "b:l:p:s:a:w:i:hv" opt; do
     case $opt in
-        a) BLACKLIST_THRESHOLD=$OPTARG;;
+        a) THRESHOLD=$OPTARG;;
         b) BLACKLIST_FILE=$OPTARG;;
         i) PID_FILE=$OPTARG;;
         l) FILES="$FILES $OPTARG";;
@@ -39,8 +39,8 @@ while getopts "b:l:p:s:a:w:i:hv" opt; do
 done
 
 # Read config in to flags
-if [ ! -z "$BLACKLIST_THRESHOLD" ]; then
-    flags="$flags -a $BLACKLIST_THRESHOLD"
+if [ ! -z "$THRESHOLD" ]; then
+    flags="$flags -a $THRESHOLD"
 fi
 if [ ! -z "$BLACKLIST_FILE" ]; then
     flags="$flags -b $BLACKLIST_FILE"
