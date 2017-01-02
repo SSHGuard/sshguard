@@ -34,7 +34,10 @@ DETECTION_TIME=1800
 
 # Custom command that is expected to pipe tailed log entries over
 # standard output to SSHGuard.
+# Example 1: ssh and sendmail from systemd journal:
 # LOGREADER="LANG=C /usr/bin/journalctl -afb -p info -n1 -t ssh -t sendmail -o cat"
+# Example 2: ssh from os_log (macOS 10.12+)
+# LOGREADER="/usr/bin/log stream --style syslog --predicate '(processImagePath contains \"sshd\")'"
 
 # PID_FILE=/run/sshguard.pid
 

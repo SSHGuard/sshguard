@@ -9,7 +9,7 @@
 	<array>
 		<string>/bin/sh</string>
 		<string>-c</string>
-		<string>/usr/bin/log stream --style syslog --predicate '(processImagePath contains "sshd")' | /usr/local/sbin/sshguard</string>
+		<string>/usr/local/sbin/sshguard</string>
 	</array>
 	<key>RunAtLoad</key>
 	<false/>
