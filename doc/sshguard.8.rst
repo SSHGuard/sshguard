@@ -20,28 +20,27 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: August 16, 2016
+:Date: January 4, 2017
 :Manual group: SSHGuard Manual
 :Manual section: 8
 :Version: 2.0.0
 
 SYNOPSIS
 ========
-**sshguard** [**-v**] [**-h**]
-[**-a** `blacklist-threshold`]
-[**-b** `blacklist-file`]
-[**-i** `pid-file`]
-[**-p** `block-time`]
-[**-s** `detection-time`]
-[**-w** `address` | `file`]
-[`file` ...]
+**sshguard** [**-hv**]
+[**-a** *threshold*]
+[**-b** *threshold*:*blacklist_file*]
+[**-i** *pidfile*]
+[**-p** *blocktime*]
+[**-s** *detection_time*]
+[**-w** *address* | *whitelist_file*]
+[*file* ...]
 
 DESCRIPTION
 ===========
 **sshguard** protects hosts from brute-force attacks against SSH and other
 services. It aggregates system logs and blocks repeat offenders using one of
-several firewall backends, including ``firewalld``, ``ipfw``, ``ipset``,
-``iptables`` and ``pf``.
+several firewall backends.
 
 **sshguard** can read log messages from standard input (suitable for piping
 from ``syslog`` or ``journalctl``) or monitor one or more log files. Log
@@ -52,39 +51,35 @@ can be semi-permanently banned using the blacklist option.
 
 See http://www.sshguard.net/docs/setup/ for setup instructions.
 
-Other features, attack signatures, and additional documentation can be found
-at http://www.sshguard.net/.
-
 OPTIONS
 =======
-**-a** `blacklist-threshold` (default 30)
-    Block an attacker when its dangerousness exceeds `blacklist-threshold`.
-    Each attack pattern that is matched contributes a fixed dangerousness
-    of 10.
+**-a** *threshold* (default 30)
+    Block attackers when their cumulative attack score exceeds *threshold*.
+    Most attacks have a score of 10.
 
-**-b** `blacklist-file`
-    Blacklist an attacker when its dangerousness exceeds `blacklist-threshold`.
-    Blacklisted addresses are added to `blacklist-file` so they can be read at
-    the next startup. Blacklisted addresses are never automatically unblocked,
-    but it is good practice to periodically clean out stale blacklist entries.
+**-b** *threshold*:*blacklist_file*
+    Blacklist an attacker when its score exceeds *threshold*. Blacklisted
+    addresses are loaded from and added to *blacklist-file*.
 
-**-i** `pid-file`
+**-i** *pidfile*
     Write the PID of **sshguard** to `pidfile`.
 
-**-p** `block-time` (default 120 secs, or 2 minutes)
-    Wait at least `block-time` seconds before releasing a blocked address.
-    Repeat attackers are blocked for 1.5 times longer after each attack.
-    Because **sshguard** unblocks attackers only at infrequent intervals,
-    this parameter is inexact (actual blocks will be longer).
+**-p** *blocktime* (default 120)
+    Block attackers for initially *blocktime* seconds after exceeding
+    *threshold*. Subsequent blocks increase by a factor of 1.5.
 
-**-s** `detection-time` (default 1800 secs, or 30 minutes)
-    Forget about an attacker `detection-time` seconds after its last attempt.
-    Its  dangerousness will be reset to zero.
+    **sshguard** unblocks attacks at random intervals, so actual block times
+    will be longer.
 
-**-w** `ip-address` | `whitelist-file`
-    Whitelist the given address, hostname, or address block. Alternatively,
-    read whitelist entires from `whitelist-file`. This option can be given
-    multiple times. See WHITELISTING below for details.
+**-s** *detection_time* (default 1800)
+    Remember potential attackers for up to *detection_time* seconds before
+    resetting their score.
+
+[**-w** *address* | *whitelist_file*]
+    Whitelist a single address, hostname, or address block given as
+    *address*. This option can be given multiple times. Alternatively,
+    provide an absolute path to a *whitelist_file* containing addresses to
+    whitelist. See `WHITELISTING`_.
 
 **-h**
     Print usage information and exit.
@@ -95,7 +90,12 @@ OPTIONS
 ENVIRONMENT
 ===========
 SSHGUARD_DEBUG
-    Enable additional debugging information.
+    Set to enable verbose output from sshg-blocker.
+
+FILES
+=====
+%PREFIX%/etc/sshguard.conf
+    See sample configuration file.
 
 WHITELISTING
 ============
@@ -169,14 +169,4 @@ address blocks it can be used with any multiplicity, even with mixes of them.
 
 SEE ALSO
 ========
-Glossary: http://www.sshguard.net/docs/terminology/
-
-Website: http://www.sshguard.net/
-
-``sshguard.conf.sample``
-
-AUTHORS
-=======
-Michele Mazzucchi <mij@bitchx.it>,
-T.J. Jones <tjjones03@gmail.com>,
-Kevin Zheng <kevinz5000@gmail.com>
+http://www.sshguard.net/
