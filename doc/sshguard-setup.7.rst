@@ -1,52 +1,37 @@
-===================
-Setting Up SSHGuard
-===================
+==============
+sshguard-setup
+==============
 
-.. contents::
+----------------------------------
+setting up SSHGuard on your system
+----------------------------------
 
-Reading system logs
-===================
-SSHGuard can monitor log files, a custom log reader command, or read attacks
-from standard input.
+:Date: January 9, 2017
+:Manual group: SSHGuard Manual
+:Manual section: 7
+:Version: 2.0
 
-Log file monitoring
--------------------
-To monitor log files, pass one or more paths to log files as positional
-arguments to SSHGuard. For example::
+DESCRIPTION
+===========
+To set up SSHGuard, write *sshguard.conf* and set up the backend, if
+necessary. Configuration options are documented in the sample configuration
+file. A good starting point is to copy it and make the necessary changes:
 
-    # sshguard /var/log/auth.log /var/log/maillog
+1. Set **BACKEND**. You may also need to set it up to work with SSHGuard
+   (see `BACKENDS`_).
 
-Internally, SSHGuard runs ``sshg-logtail``, which in turn executes the
-system ``tail`` utility. Consult your system man pages for implementation
-details. This is the recommended way to run SSHGuard.
+2. Set **FILES** or **LOGREADER**. Alternatively, give **sshguard** a list
+   of files to monitor as positional arguments on the command-line. If none
+   of these are set, **sshguard** will read from standard input.
 
-Custom log reader command
--------------------------
-Instead of piping logs over standard input, a command can be configured that
-will piped tailed log entries to SSHGuard over standard output with the
-``LOGREADER`` option in ``sshguard.conf``.
+If you have log files to monitor, use **FILES**. If your logs are available
+as pipe output of running another program, use **LOGREADER**.
 
-systemd journal
----------------
-**journalctl** can be configured to pipe logs to SSHGuard using::
+Sample **LOGREADER** commands for **journalctl(1)** and macOS 10.12+ are
+available in the sample configuration.
 
-    # LANG=C /usr/bin/journalctl -afb -p info -n1 -o cat | /path/to/sshguard
-
-For performance, specific programs/sources logs can be specified with
-the ``-t`` flag, e.g. ``-t ssh -t sendmail``.
-
-syslog
-------
-**syslogd** can be configured to pipe logs to SSHGuard using *syslog.conf*::
-
-    auth.info;authpriv.info        |exec /path/to/sshguard
-
-After restarting **syslogd**, SSHGuard should start as soon as a log entry
-with level ``auth.info`` or ``authpriv.info`` arrives. If you are monitoring
-services other than **sshd**, add the appropriate log facilities to
-*syslog.conf*. See *syslog.conf(5)* for more details.
-
-.. note:: **syslogd** will terminate and restart SSHGuard when it receives *SIGHUP* from **newsyslog**, flushing any blocked addresses. This may occur several times a day, depending on how often logs are rotated on your system. Using **syslogd** is discouraged.
+OTHER LOGS
+==========
 
 syslog-ng
 ---------
@@ -97,8 +82,8 @@ After restarting **metalog**, log entries will appear in
 */var/log/sshguard*.  Use *log polling* to monitor the *current* log.
 
 
-Blocking attackers
-==================
+BACKENDS
+========
 SSHGuard can block attackers using one of several firewall backends that is
 selected at compile-time.
 
@@ -200,3 +185,13 @@ When rebooting, most systems reset the firewall configuration by default. To
 preserve your configuration, you usually use the iptables-save and
 iptables-restore utilities. However, each Linux variant has its own "right
 way".
+
+EXAMPLES
+========
+Ignore **FILES** and monitor these files instead::
+
+    # sshguard /var/log/auth.log /var/log/maillog
+
+SEE ALSO
+========
+sshguard(8)

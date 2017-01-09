@@ -20,10 +20,10 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: January 4, 2017
+:Date: January 9, 2017
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 2.0.0
+:Version: 2.0
 
 SYNOPSIS
 ========
@@ -42,14 +42,11 @@ DESCRIPTION
 services. It aggregates system logs and blocks repeat offenders using one of
 several firewall backends.
 
-**sshguard** can read log messages from standard input (suitable for piping
-from ``syslog`` or ``journalctl``) or monitor one or more log files. Log
-messages are parsed, line-by-line, for recognized patterns. If an attack,
-such as several login failures within a few seconds, is detected, the
-offending IP is blocked. Offenders are unblocked after a set interval, but
-can be semi-permanently banned using the blacklist option.
-
-See http://www.sshguard.net/docs/setup/ for setup instructions.
+**sshguard** can monitor log files or read log messages from standard input.
+Log messages are parsed line-by-line for recognized patterns. An attack is
+detected when several patterns are matched in a set time interval. Attackers
+are blocked temporarily but can also be semi-permanently banned using the
+blacklist option.
 
 OPTIONS
 =======
@@ -169,4 +166,4 @@ address blocks it can be used with any multiplicity, even with mixes of them.
 
 SEE ALSO
 ========
-http://www.sshguard.net/
+sshguard-setup(7)
