@@ -8,7 +8,7 @@ version="@sshguardversion@"
 config="@sysconfdir@/sshguard.conf"
 if [ ! -r $config ]; then
     echo "sshguard: Could not read '$config'" >&2
-    echo "Please configure SSHGuard or run 'sshguard-setup'" >&2
+    echo "Please configure SSHGuard." >&2
     exit 78
 fi
 
