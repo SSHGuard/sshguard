@@ -11,6 +11,7 @@ cleanup() {
         fw_flush
     fi
     fw_fin
+    exit
 }
 
 trap cleanup EXIT INT
