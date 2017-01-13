@@ -12,7 +12,7 @@ un-deprecated, contact the project mailing list.
 
 1.7.1
 =====
-October 2016
+2016-10-25
 
 **Changed**
 
@@ -32,7 +32,7 @@ October 2016
 
 1.7.0
 =====
-August 2016
+2016-08-08
 
 **Added**
 
@@ -60,7 +60,7 @@ August 2016
 
 1.6.4
 =====
-April 2016
+2016-04-28
 
 - Match Postfix pre-authentication disconnects
 - Fix bashisms in iptables backend
@@ -74,7 +74,7 @@ April 2016
 
 1.6.3
 =====
-January 2016
+2016-01-04
 
 - Add sample systemd(8) unit file
 - Disable blacklisting by default
@@ -92,7 +92,7 @@ January 2016
 
 1.6.2
 =====
-October 2015
+2015-10-12
 
 - Make '-w' option backwards-compatible for iptables (James Harris)
 - Remove support for ip6fw and 'ipfw-range' option
@@ -100,7 +100,7 @@ October 2015
 
 1.6.1
 =====
-July 2015
+2015-07-20
 
 - Accept "Received disconnect" with optional prefix
 - Add support for socklog entries
@@ -111,7 +111,7 @@ July 2015
 
 1.6.0
 =====
-May 2015
+2015-05-02
 
 - Add rules for Postfix SASL login attempts
 - Add support for ISO 8601 timestamps (David Caldwell)
@@ -133,7 +133,7 @@ May 2015
 
 1.5
 ===
-Feb 2011
+2011-02-10
 
 - logsucker: sshguard polls multiple log files at once
 - recognize syslog's "last message repeated N times" contextually and per-source
@@ -155,7 +155,7 @@ Feb 2011
 
 1.4
 ===
-Aug 2009
+2009-09-23
 
 - add touchiness: block repeated abusers for longer
 - add blacklisting: store frequent abusers for permanent blocking
@@ -181,7 +181,7 @@ Aug 2009
 
 1.3
 ===
-Oct 2008
+2008-10
 
 - fix autoconf problem
 - automatically detect when ipfw supports IPv6 (thanks David Horn)
@@ -190,7 +190,7 @@ Oct 2008
 
 1.2
 ===
-Sep 2008
+2008-09
 
 - support for Cyrus IMAP
 - support for SSH "possible break-in attempt" messages
@@ -201,7 +201,7 @@ Sep 2008
 
 1.1
 ===
-Jul 2008 (midway releases from Jul 2007 to Jun 2008)
+2008-07
 
 - support suspension
 - support debug mode at runtime (-d) for helping users in problem solving
@@ -222,7 +222,7 @@ Jul 2008 (midway releases from Jul 2007 to Jun 2008)
 
 1.0
 ===
-May 2007
+2007-05
 
 - address whitelisting for protecting friend addressess
 - support for IPv6
@@ -235,12 +235,12 @@ May 2007
 
 0.91
 ====
-Mar 2007
+2007-03
 
 - run away from scons and use autotools as building system
 
 0.9
 ===
-Feb 2007
+2007-02
 
 - first public release
