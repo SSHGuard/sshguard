@@ -96,73 +96,23 @@ FILES
 
 WHITELISTING
 ============
-**sshguard** supports IP address whitelisting. Whitelisted addresses are not
-blocked even if they appear to generate attacks. This is useful for protecting
-lame LAN users (or external friendly users) from being incidentally blocked.
+Whitelisted addresses are never blocked. Addresses can be specified on the
+command line or be stored in a file.
 
-Whitelist addresses are controlled through the -w command-line option. This
-option can add explicit addresses, host names and address blocks:
+On the command line, give the **-w** option one or more times with an IP
+address, CIDR address block, or hostname as an argument. Hostnames are
+resolved once at startup. If a hostname resolves to multiple addresses, all
+of them are whitelisted. For example::
 
-addresses
-  specify the numeric IPv4 or IPv6 address directly, like::
-
-        -w 192.168.1.10
-
-  or in multiple occurrences::
-
-        -w 192.168.1.10 -w 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-
-host names
-  specify the host name directly, like::
-
-        -w friendhost.enterprise.com
-
-  or in multiple occurrences::
-
-        -w friendhost.enterprise.com -w friend2.enterprise.com
-
-  All IPv4 and IPv6 addresses that the host resolves to are whitelisted. Hosts
-  are resolved to addresses once, when **sshguard** starts up.
-
-address blocks
-  specify the IPv4 or IPv6 address block in the usual CIDR notation::
-
+    sshguard -w 192.168.1.10 -w 192.168.0.0/24 -w friend.example.com
+        -w 2001:0db8:85a3:0000:0000:8a2e:0370:7334
         -w 2002:836b:4179::836b:0000/126
 
-  or in multiple occurrences::
+If the argument to **-w** begins with a forward slash ('/') or dot ('.'),
+the argument is treated as the path to a whitelist file.
 
-        -w 192.168.0.0/24 -w 1.2.3.128/26
-
-file
-  When longer lists are needed for whitelisting, they can be wrapped into a
-  plain text file, one address/hostname/block per line, with the same syntax
-  given above.
-
-  **sshguard** can take whitelists from files when the -w option argument begins
-  with a '.' (dot) or '/' (slash).
-
-  This is a sample whitelist file (say /etc/friends)::
-
-      # comment line (a '#' as very first character)
-      #   a single IPv4 and IPv6 address
-      1.2.3.4
-      2001:0db8:85a3:08d3:1319:8a2e:0370:7344
-      #   address blocks in CIDR notation
-      127.0.0.0/8
-      10.11.128.0/17
-      192.168.0.0/24
-      2002:836b:4179::836b:0000/126
-      #   hostnames
-      rome-fw.enterprise.com
-      hosts.friends.com
-
-  And this is how **sshguard** is told to make a whitelist up from the
-  /etc/friends file::
-
-        sshguard -w /etc/friends
-
-The -w option can be used only once for files. For addresses, host names and
-address blocks it can be used with any multiplicity, even with mixes of them.
+The whitelist file contains comments (lines beginning with '#'), addresses,
+address blocks, or hostnames, one per line.
 
 SEE ALSO
 ========
