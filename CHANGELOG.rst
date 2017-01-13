@@ -10,6 +10,36 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+Unreleased
+==========
+**Added**
+
+- Add **firewalld** backend
+- Add **ipset** backend
+- Match "no matching cipher" for SSH
+- Preliminary support for pledge()
+- Resurrect **ipfilter** backend
+- Support Capsicum sandboxing
+- Support reading logs from **journalctl** and macOS 10.12
+
+**Changed**
+
+- Add warning when reading from standard input
+- Annotate logs using **-a** flag to **sshg-parser**
+- Build and install all backends by default
+- Improve log messages
+- Lower log verbosity for whitelist hit
+- Select backend at runtime with configuration file
+
+**Removed**
+
+- Remove process validation (**-f** option)
+
+**Fixed**
+
+- Fix **ipfw** backend on FreeBSD 11
+- Update Dovecot pattern for macOS
+
 1.7.1
 =====
 2016-10-25
