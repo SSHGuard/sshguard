@@ -16,7 +16,7 @@ Building from source
 ====================
 
 Obtain the source from SSHGuard's code repository on BitBucket or an
-official release tarball avaialble from <http://www.sshguard.net/>. Use
+official release tarball available from <http://www.sshguard.net/>. Use
 `autoreconf` (usually provided by the autoconf package in your system)
 to install auxiliary files, and then proceed to build and install.
 
