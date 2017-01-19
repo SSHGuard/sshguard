@@ -25,6 +25,10 @@ AS_IF([test "$capsicum_found" == "candidate"],
 AS_IF([test "$capsicum_found" == "yes"],
       [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])])
 
+AC_CHECK_PROGS(RST2MAN_PROG, [rst2man, rst2man.py], no)
+AS_IF([test "$RST2MAN_PROG" == "no"],
+      [AC_MSG_ERROR([required program 'rst2man' not found.])])
+
 AS_BOX([Library Functions])
 AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
