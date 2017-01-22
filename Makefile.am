@@ -5,4 +5,4 @@ man_MANS = doc/sshguard.8 doc/sshguard-setup.7
 
 SUFFIXES=.rst
 .rst:
-	rst2man.py $< $@
+	$(RST2MAN_PROG) $< $@
