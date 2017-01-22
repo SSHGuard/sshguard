@@ -16,6 +16,7 @@ banned using the blacklist option.
 
 Authors
 -------
-Michele Mazzucchi <mij@bitchx.it>,
-T.J. Jones <tjjones03@gmail.com>,
-Kevin Zheng <kevinz5000@gmail.com>
+
+* Michele Mazzucchi <mij@bitchx.it>,
+* T.J. Jones <tjjones03@gmail.com>,
+* Kevin Zheng <kevinz5000@gmail.com>
