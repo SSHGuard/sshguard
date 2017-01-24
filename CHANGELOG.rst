@@ -20,16 +20,16 @@ Unreleased
 - Preliminary support for pledge()
 - Resurrect **ipfilter** backend
 - Support Capsicum sandboxing
-- Support reading logs from **journalctl** and macOS 10.12
+- Support reading from os_log on macOS 10.12 and systemd journal
 
 **Changed**
 
+- Runtime flags now configurable in the configuration file
 - Add warning when reading from standard input
 - Annotate logs using **-a** flag to **sshg-parser**
 - Build and install all backends by default
 - Improve log messages
 - Lower log verbosity for whitelist hit
-- Select backend at runtime with configuration file
 
 **Removed**
 
