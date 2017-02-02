@@ -89,16 +89,18 @@ static void my_pidfile_destroy() {
 
 static void init_log(int debug) {
     int flags = LOG_NDELAY | LOG_PID;
+    int dest = LOG_AUTH;
 
     if (debug) {
         flags |= LOG_PERROR;
+        dest = LOG_LOCAL6;
     } else {
-        setlogmask(LOG_UPTO(LOG_INFO));
+        setlogmask(LOG_UPTO(LOG_NOTICE));
     }
 
     // Set local time zone and open log before entering sandbox.
     tzset();
-    openlog("sshg-blocker", flags, LOG_AUTH);
+    openlog("sshguard", flags, dest);
 }
 
 int main(int argc, char *argv[]) {
@@ -151,7 +153,7 @@ int main(int argc, char *argv[]) {
 
     whitelist_conf_fin();
 
-    sshguard_log(LOG_INFO, "Monitoring attacks");
+    sshguard_log(LOG_INFO, "Now monitoring attacks.");
 
     char buf[1024];
     attack_t parsed_attack;
@@ -159,19 +161,19 @@ int main(int argc, char *argv[]) {
         if (sscanf(buf, "%d %46s %d %d\n", &parsed_attack.service,
                   parsed_attack.address.value, &parsed_attack.address.kind,
                   &parsed_attack.dangerousness) == 4) {
-            sshguard_log(LOG_DEBUG,
-                         "Attack from %s on service %d with danger %u",
+            sshguard_log(LOG_NOTICE,
+                         "Attack from \"%s\" on service %d with danger %u.",
                          parsed_attack.address.value, parsed_attack.service,
                          parsed_attack.dangerousness);
             report_address(parsed_attack);
         } else {
-            sshguard_log(LOG_ERR, "Could not parse attack data");
+            sshguard_log(LOG_ERR, "Could not parse attack data.");
             exit(65);
         }
     }
 
     if (feof(stdin)) {
-        sshguard_log(LOG_NOTICE, "Received EOF from stdin");
+        sshguard_log(LOG_DEBUG, "Received EOF from stdin.");
     }
 }
 
@@ -183,8 +185,8 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
             abort();
         }
     }
-    sshguard_log(LOG_INFO, "Blocking %s %s (%u attacks in %lld "
-                           "secs, after %d abuses over %lld secs)",
+    sshguard_log(LOG_WARNING, "Blocking \"%s\" %s (%u attacks in %lld "
+                              "secs, after %d abuses over %lld secs.)",
                  tmpent->attack.address.value, time_msg, tmpent->numhits,
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
                  offenderent->numhits,
@@ -211,13 +213,13 @@ static void report_address(attack_t attack) {
 
     /* address already blocked? (can happen for 100 reasons) */
     if (blocklist_contains(attack)) {
-        sshguard_log(LOG_WARNING, "%s has already been blocked",
+        sshguard_log(LOG_INFO, "%s has already been blocked.",
                 attack.address.value);
         return;
     }
 
     if (whitelist_match(attack.address.value, attack.address.kind)) {
-        sshguard_log(LOG_DEBUG, "%s: not blocking (on whitelist)",
+        sshguard_log(LOG_DEBUG, "%s: not blocking (on whitelist.)",
                 attack.address.value);
         return;
     }
@@ -250,7 +252,7 @@ static void report_address(attack_t attack) {
     offenderent = list_seek(& offenders, & attack.address);
     if (offenderent == NULL) {
         /* first time we block this guy */
-        sshguard_log(LOG_DEBUG, "%s: first block (adding as offender)",
+        sshguard_log(LOG_DEBUG, "%s: first block (adding as offender.)",
                 tmpent->attack.address.value);
         offenderent = (attacker_t *)malloc(sizeof(attacker_t));
         /* copy everything from tmpent */
@@ -294,7 +296,7 @@ static void report_address(attack_t attack) {
 }
 
 static void purge_limbo_stale(void) {
-    sshguard_log(LOG_DEBUG, "Purging old attackers");
+    sshguard_log(LOG_DEBUG, "Purging old attackers.");
     time_t now = time(NULL);
     for (unsigned int pos = 0; pos < list_size(&limbo); pos++) {
         attacker_t *tmpent = list_get_at(&limbo, pos);
@@ -307,7 +309,7 @@ static void purge_limbo_stale(void) {
 }
 
 static void finishup(void) {
-    sshguard_log(LOG_INFO, "Exiting on %s",
+    sshguard_log(LOG_INFO, "Exiting on %s.",
             exit_sig == SIGHUP ? "SIGHUP" : "signal");
     whitelist_fin();
     closelog();
