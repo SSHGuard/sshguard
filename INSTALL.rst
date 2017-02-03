@@ -28,12 +28,12 @@ Alternatively, if you are building from the source repository::
 Build dependencies
 ------------------
 - C compiler with support for the C99 standard
-- Docutils
 - lex and yacc (or compatible variant)
 
 If you are building from the source repository, you also need:
 
 - Autoconf/Automake
+- Docutils
 
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~

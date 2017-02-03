@@ -26,8 +26,9 @@ AS_IF([test "$capsicum_found" == "yes"],
       [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])])
 
 AC_CHECK_PROGS(RST2MAN_PROG, [rst2man rst2man.py], no)
+AM_CONDITIONAL([BUILD_MAN], [test "x$RST2MAN_PROG" != xno])
 AS_IF([test "$RST2MAN_PROG" == "no"],
-      [AC_MSG_ERROR([required program 'rst2man' not found.])])
+      [AC_MSG_WARN([rst2man not found; using pre-built man pages])])
 
 AS_BOX([Library Functions])
 AC_SEARCH_LIBS([gethostbyname], [nsl])
