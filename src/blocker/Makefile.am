@@ -1,7 +1,7 @@
 libexec_PROGRAMS = sshg-blocker
 
 sshg_blocker_SOURCES = \
-	../common//simclist.c \
+	../common/simclist.c \
 	attack.c \
 	blocker.c \
 	blocklist.c \
