@@ -34,5 +34,6 @@ src/fw/sshg-fw-pf
 src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
 src/parser/sshg-parser
+src/sshg-logtail
 src/sshguard
 ylwrap
