@@ -15,6 +15,3 @@ script_subst = sed \
 
 sshguard: Makefile sshguard.in
 	$(script_subst) $@.in > $@
-
-sshg-logtail: sshg-logtail.in
-	cat $@.in > $@
