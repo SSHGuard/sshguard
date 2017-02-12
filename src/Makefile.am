@@ -1,10 +1,10 @@
 SUBDIRS = blocker fw parser
 
-dist_libexec_SCRIPTS = sshg-logtail
-sbin_SCRIPTS = sshguard
-
 EXTRA_DIST = sshguard.in
 noinst_HEADERS = common/address.h common/attack.h common/sandbox.h common/simclist.h
+
+dist_libexec_SCRIPTS = sshg-logtail
+sbin_SCRIPTS = sshguard
 
 CLEANFILES = sshguard
 
