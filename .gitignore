@@ -36,5 +36,6 @@ src/parser/attack_parser.[ch]
 src/parser/attack_scanner.c
 src/parser/sshg-parser
 src/sshguard
+sshguard-*.tar.gz
 test-driver
 ylwrap
