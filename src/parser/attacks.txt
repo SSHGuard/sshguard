@@ -1,0 +1,26 @@
+Invalid user inexu from 6.6.6.0
+User mario from 6.6.6.0 not allowed because XYZ
+Failed XYZ for XYZ from 6.6.6.0 port 14423 ssh2
+error: PAM: authentication failure for mario from 6.6.6.0
+Did not receive identification string from 6.6.6.0
+Bad protocol version identification XYZ from 6.6.6.0
+authentication failure XYZ 6.6.6.0
+XYZ auth_plaintext authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
+Relaying denied. IP name lookup failed [6.6.6.0]
+imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=6.6.6.0, lip=127.0.0.1
+Login failed user=XYZ auth=XYZ host=XYZ [6.6.6.0]
+badlogin: XYZ [6.6.6.0] XYZ SASL XYZ checkpass failed
+FTP LOGIN FAILED FROM 6.6.6.0, XYZ
+foo.com (foo.com [6.6.6.0]) XYZ no such user XYZ
+(XYZ@6.6.6.0) [WARNING] Authentication failed for user XYZ
+XYZ FAIL LOGIN: Client "6.6.6.0"
+Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[199.19.110.207]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+Apr 10 02:43:29 quasar sshd[50112]: Connection closed by 66.240.236.119 [preauth]
+Apr 10 13:50:24 quasar sshd[53269]: error: Received disconnect from 95.9.156.208: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
+Apr 10 06:55:42 quasar sshd[50880]: Received disconnect from 130.207.203.56: 11: These aren't the droids we're looking for. [preauth]
+Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 103.237.33.58: 11: Bye Bye [preauth]
+2015-03-12 03:17:22 login authenticator failed for vps.o2c.net (User) [87.76.31.6]: 535 Incorrect authentication data (set_id=dog)
+1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=userx)
+2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 192.168.2.1
+May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 192.168.2.200: 14: No supported authentication methods available [preauth]
+Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[24.213.217.114]

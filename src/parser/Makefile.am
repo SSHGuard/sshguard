@@ -4,6 +4,8 @@ AM_YFLAGS = -d
 libexec_PROGRAMS = sshg-parser
 
 BUILT_SOURCES = attack_parser.h
+EXTRA_DIST = attacks.txt test-sshg-parser
+TESTS = test-sshg-parser
 
 sshg_parser_SOURCES = \
 	attack.c \
