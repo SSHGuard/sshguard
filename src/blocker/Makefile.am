@@ -1,3 +1,5 @@
+AM_CFLAGS=-I$(top_srcdir)/src/common -DSIMCLIST_NO_DUMPRESTORE
+
 libexec_PROGRAMS = sshg-blocker
 
 sshg_blocker_SOURCES = \

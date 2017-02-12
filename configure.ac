@@ -3,7 +3,7 @@ AC_PREREQ([2.60])
 AC_INIT([sshguard], [2.0.0], [sshguard-users@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/sshguard.in])
 AM_CONFIG_HEADER([src/common/config.h])
-AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_INIT_AUTOMAKE([foreign])
 AM_SILENT_RULES([yes])
 
 # Enable POSIX extensions on hosts that normally disable them.

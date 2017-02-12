@@ -1,3 +1,4 @@
+AM_CFLAGS=-I$(top_srcdir)/src/common -DSIMCLIST_NO_DUMPRESTORE
 AM_YFLAGS = -d
 BUILT_SOURCES = attack_parser.h
 

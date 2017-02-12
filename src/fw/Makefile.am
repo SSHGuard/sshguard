@@ -1,3 +1,5 @@
+AM_CFLAGS=-I$(top_srcdir)/src/common -DSIMCLIST_NO_DUMPRESTORE
+
 libexec_PROGRAMS = sshg-fw-hosts
 sshg_fw_hosts_SOURCES = fw.h hosts.c ../common/simclist.c
 
@@ -19,8 +21,8 @@ Sshg-fw-pf:        sshg-fw.in sshg-fw-pf.sh
 
 CLEANFILES=$(libexec_SCRIPTS)
 
-EXTRA_DIST = sshg-fw.in *.sh
+EXTRA_DIST = sshg-fw.in sshg-fw-firewalld.sh sshg-fw-ipfilter.sh sshg-fw-ipfw.sh sshg-fw-ipset.sh sshg-fw-iptables.sh sshg-fw-null.sh sshg-fw-pf.sh
 
 SUFFIXES=.sh
 .sh:
-	cat $< sshg-fw.in > $@
+	cat $< $(srcdir)/sshg-fw.in > $@
