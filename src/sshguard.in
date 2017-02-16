@@ -85,5 +85,4 @@ elif [ -z "$tailcmd" ]; then
 fi
 
 eval $tailcmd | $libexec/sshg-parser | \
-    ($libexec/sshg-blocker $flags || kill -PIPE $$) | \
-    ($BACKEND || kill -PIPE $$)
+    $libexec/sshg-blocker $flags | ($BACKEND; kill -PIPE $$)
