@@ -7,12 +7,16 @@ version="@sshguardversion@"
 # Source configuration file
 config="@sysconfdir@/sshguard.conf"
 if [ ! -r $config ]; then
-    echo "sshguard: Could not read '$config'" >&2
-    echo "Please configure SSHGuard." >&2
+    err "Could not read '$config'"
+    err "Please configure SSHGuard."
     exit 78
 fi
 
 . $config
+
+err() {
+    echo "sshguard: $1" >&2
+}
 
 usage() {
     cat << EOF
@@ -64,10 +68,10 @@ fi
 
 # Check backend
 if [ -z "$BACKEND" ]; then
-    echo "sshguard: BACKEND must be set in '$config'" >&2
+    err "BACKEND must be set in '$config'"
     exit 78
 elif [ ! -x "$BACKEND" ]; then
-    echo "sshguard: '$BACKEND' is not executable" >&2
+    err "'$BACKEND' is not executable"
     exit 78
 fi
 
@@ -80,7 +84,7 @@ elif [ ! -z "$LOGREADER" ]; then
 elif [ ! -z "$FILES" ]; then
     tailcmd="$libexec/sshg-logtail $FILES"
 elif [ -z "$tailcmd" ]; then
-    echo "sshguard: Reading from stdin. You probably shouldn't be doing this." >&2
+    err "Reading from stdin. You probably shouldn't be doing this."
     tailcmd="cat"
 fi
 
