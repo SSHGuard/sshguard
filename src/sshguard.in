@@ -4,6 +4,10 @@
 libexec="@libexecdir@"
 version="@sshguardversion@"
 
+err() {
+    echo "sshguard: $1" >&2
+}
+
 # Source configuration file
 config="@sysconfdir@/sshguard.conf"
 if [ ! -r $config ]; then
@@ -13,10 +17,6 @@ if [ ! -r $config ]; then
 fi
 
 . $config
-
-err() {
-    echo "sshguard: $1" >&2
-}
 
 usage() {
     cat << EOF
