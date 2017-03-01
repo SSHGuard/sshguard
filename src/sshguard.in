@@ -42,6 +42,15 @@ while getopts "b:l:p:s:a:w:i:hv" opt; do
     esac
 done
 
+# Check backend
+if [ -z "$BACKEND" ]; then
+    err "BACKEND must be set in '$config'"
+    exit 78
+elif [ ! -x "$BACKEND" ]; then
+    err "'$BACKEND' is not executable"
+    exit 78
+fi
+
 # Read config in to flags
 if [ ! -z "$THRESHOLD" ]; then
     flags="$flags -a $THRESHOLD"
@@ -64,15 +73,6 @@ if [ ! -z "$WHITELIST_ARG" ]; then
     done
 elif [ ! -z "$WHITELIST_FILE" ]; then
     flags="$flags -w $WHITELIST_FILE"
-fi
-
-# Check backend
-if [ -z "$BACKEND" ]; then
-    err "BACKEND must be set in '$config'"
-    exit 78
-elif [ ! -x "$BACKEND" ]; then
-    err "'$BACKEND' is not executable"
-    exit 78
 fi
 
 # Log source selection order: runtime args, logreader, files, or stdin
