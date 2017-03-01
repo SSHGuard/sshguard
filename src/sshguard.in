@@ -8,15 +8,11 @@ err() {
     echo "sshguard: $1" >&2
 }
 
-# Source configuration file
-config="@sysconfdir@/sshguard.conf"
-if [ ! -r $config ]; then
-    err "Could not read '$config'"
-    err "Please configure SSHGuard."
-    exit 78
-fi
-
-. $config
+setflag() {
+    if [ ! -z "$2" ]; then
+        flags="$flags -$1 $2"
+    fi
+}
 
 usage() {
     cat << EOF
@@ -27,7 +23,17 @@ Usage: sshguard [-v] [-h]
 EOF
 }
 
-# Override configuration options with runtime arguments
+# Source configuration file
+config="@sysconfdir@/sshguard.conf"
+if [ ! -r $config ]; then
+    err "Could not read '$config'"
+    err "Please configure SSHGuard."
+    exit 78
+fi
+
+. $config
+
+# Runtime arguments override configuration options
 while getopts "b:l:p:s:a:w:i:hv" opt; do
     case $opt in
         a) THRESHOLD=$OPTARG;;
@@ -52,21 +58,11 @@ elif [ ! -x "$BACKEND" ]; then
 fi
 
 # Read config in to flags
-if [ ! -z "$THRESHOLD" ]; then
-    flags="$flags -a $THRESHOLD"
-fi
-if [ ! -z "$BLACKLIST_FILE" ]; then
-    flags="$flags -b $BLACKLIST_FILE"
-fi
-if [ ! -z "$PID_FILE" ]; then
-    flags="$flags -i $PID_FILE"
-fi
-if [ ! -z "$BLOCK_TIME" ]; then
-    flags="$flags -p $BLOCK_TIME"
-fi
-if [ ! -z "$DETECTION_TIME" ]; then
-    flags="$flags -s $DETECTION_TIME"
-fi
+setflag 'a' $THRESHOLD
+setflag 'b' $BLACKLIST_FILE
+setflag 'i' $PID_FILE
+setflag 'p' $BLOCK_TIME
+setflag 's' $DETECTION_TIME
 if [ ! -z "$WHITELIST_ARG" ]; then
     for arg in $WHITELIST_ARG; do
       flags="$flags -w $arg"
