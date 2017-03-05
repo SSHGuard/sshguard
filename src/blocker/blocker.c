@@ -282,7 +282,7 @@ static void report_address(attack_t attack) {
         }
     } else {
         /* compute blocking time wrt the "offensiveness" */
-        for (unsigned int i = 0; i < offenderent->numhits; i++) {
+        for (unsigned int i = 0; i < offenderent->numhits - 1; i++) {
             tmpent->pardontime *= 2;
         }
     }
