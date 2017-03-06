@@ -10,26 +10,25 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
-Unreleased
-==========
+2.0.0
+=====
 **Added**
 
 - Add **firewalld** backend
 - Add **ipset** backend
+- Annotate logs using **-a** flag to **sshg-parser**
 - Match "no matching cipher" for SSH
-- Preliminary support for pledge()
+- Preliminary support for Capsicum and pledge()
 - Resurrect **ipfilter** backend
-- Support Capsicum sandboxing
 - Support reading from os_log on macOS 10.12 and systemd journal
 
 **Changed**
 
-- Runtime flags now configurable in the configuration file
 - Add warning when reading from standard input
-- Annotate logs using **-a** flag to **sshg-parser**
 - Build and install all backends by default
-- Improve log messages
-- Lower log verbosity for whitelist hit
+- Improve log messages and tweak logging priorities
+- Runtime flags now configurable in the configuration file
+- SSHGuard *requires* a configuration file to start
 
 **Removed**
 
@@ -38,7 +37,9 @@ Unreleased
 **Fixed**
 
 - Fix **ipfw** backend on FreeBSD 11
+- Fix initial block time
 - Update Dovecot pattern for macOS
+- Use standard score for Sendmail auth attack
 
 1.7.1
 =====
