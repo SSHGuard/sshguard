@@ -12,6 +12,8 @@ un-deprecated, contact the project mailing list.
 
 2.0.0
 =====
+2017-03-06
+
 **Added**
 
 - Add **firewalld** backend
