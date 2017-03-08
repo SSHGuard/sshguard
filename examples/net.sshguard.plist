@@ -8,8 +8,6 @@
 	<true/>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/bin/sh</string>
-		<string>-c</string>
 		<string>/usr/local/sbin/sshguard</string>
 	</array>
 	<key>RunAtLoad</key>
