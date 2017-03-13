@@ -10,6 +10,12 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+Unreleased
+==========
+**Added**
+
+- Match "maximum authentication attempts" for SSH
+
 2.0.0
 =====
 2017-03-06

@@ -24,3 +24,4 @@ Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 103.237.33.58: 11: 
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 192.168.2.1
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 192.168.2.200: 14: No supported authentication methods available [preauth]
 Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[24.213.217.114]
+error: maximum authentication attempts exceeded for root from 117.81.26.226 port 4919 ssh2 [preauth]

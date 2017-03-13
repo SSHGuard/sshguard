@@ -37,7 +37,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 
  /* Start Conditions */
  /* for Login services */
-%s ssh_notallowed ssh_loginerr ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex
+%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex
  /* for Mail services */
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
@@ -121,14 +121,17 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 "User ".+" from "                                               { BEGIN(ssh_notallowed); return SSH_NOTALLOWEDPREF; }
 <ssh_notallowed>" not allowed because ".+                       { BEGIN(INITIAL); return SSH_NOTALLOWEDSUFF; }
 
+"error: "?"maximum authentication attempts exceeded for".*"from" { return SSH_MAXAUTH; }
+
+"port "{NUMBER}" ssh"?." [preauth]"?                            { return SSH_ADDR_SUFF; }
+
  /* Solaris-own */
 "Failed none for <invalid username> from "                      { BEGIN(ssh_notallowed); return SSH_NOTALLOWEDPREF; }
 <ssh_notallowed>" port ".+                                      { BEGIN(INITIAL); return SSH_NOTALLOWEDSUFF; }
 
  /* get this instead: match invalid login @ Linux Ubuntu */
  /* "Failed password for validuser from 1.2.3.4 port 54609 ssh2" */
-"Failed "[^ ]+" for "[^ ]+" from "                              { BEGIN(ssh_loginerr); return SSH_LOGINERR_PREF; }
-<ssh_loginerr>"port "{NUMBER}" ssh".?                           { BEGIN(INITIAL); return SSH_LOGINERR_SUFF; }
+"Failed "[^ ]+" for "[^ ]+" from "                              { return SSH_LOGINERR_PREF; }
 
  /* wrong password for valid user @ FreeBSD, Debian */
 "error: PAM: "[aA]"uthentication "(error|failure)" for "("illegal user ")?.+" from "            { return SSH_LOGINERR_PAM; }
