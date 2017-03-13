@@ -3,8 +3,8 @@
 # This file is part of SSHGuard.
 
 fw_init() {
-    ipset -quiet create -exist sshguard4 hash:ip family=inet
-    ipset -quiet create -exist sshguard6 hash:ip family=inet6
+    ipset -quiet create -exist sshguard4 hash:ip family inet
+    ipset -quiet create -exist sshguard6 hash:ip family inet6
 }
 
 fw_block() {
