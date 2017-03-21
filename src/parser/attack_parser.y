@@ -179,6 +179,7 @@ sshmsg:
 ssh_illegaluser:
     /* nonexistent user */
     SSH_INVALUSERPREF addr
+    | SSH_INVALUSERPREF addr SSH_ADDR_SUFF
     /* existent, unallowed user */
     | SSH_NOTALLOWEDPREF addr SSH_NOTALLOWEDSUFF
     ;
