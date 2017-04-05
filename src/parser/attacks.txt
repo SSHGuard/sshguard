@@ -54,3 +54,5 @@ error: maximum authentication attempts exceeded for root from 117.81.26.226 port
 error: maximum authentication attempts exceeded for root from 2001:db8::a11:beef:7ac0 port 4919 ssh2 [preauth]
 Invalid user support from 190.50.238.98 port 32836
 Invalid user support from 2001:db8::a11:beef:7ac0 port 32836
+pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15 user=jeff
+pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac0 user=root

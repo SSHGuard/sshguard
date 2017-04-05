@@ -15,6 +15,9 @@ Unreleased
 **Added**
 
 - Match "maximum authentication attempts" for SSH
+- add monitoring support for new services:
+
+  - cockpit server dashboard
 
 2.0.0
 =====

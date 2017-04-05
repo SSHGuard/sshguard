@@ -83,6 +83,8 @@ static void yyerror(attack_t *, const char *);
 %token PUREFTPD_LOGINERR_PREF PUREFTPD_LOGINERR_SUFF
 /* vsftpd */
 %token VSFTPD_LOGINERR_PREF VSFTPD_LOGINERR_SUFF
+/* cockpit */
+%token COCKPIT_AUTHFAIL_PREF COCKPIT_AUTHFAIL_SUFF
 
 %%
 
@@ -144,6 +146,7 @@ msg_single:
     | proftpdmsg        {   attack->service = SERVICES_PROFTPD; }
     | pureftpdmsg       {   attack->service = SERVICES_PUREFTPD; }
     | vsftpdmsg         {   attack->service = SERVICES_VSFTPD; }
+    | cockpitmsg        {   attack->service = SERVICES_COCKPIT; }
     ;
 
 /* an address */
@@ -255,6 +258,11 @@ pureftpdmsg:
 /* attack rules for vsftpd */
 vsftpdmsg:
     VSFTPD_LOGINERR_PREF addr VSFTPD_LOGINERR_SUFF
+    ;
+
+/* attack rules for cockpit */
+cockpitmsg:
+    COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF
     ;
 
 %%

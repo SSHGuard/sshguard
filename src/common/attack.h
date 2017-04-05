@@ -38,6 +38,7 @@ enum service {
     SERVICES_PROFTPD        = 310,  //< ProFTPd
     SERVICES_PUREFTPD       = 320,  //< Pure-FTPd
     SERVICES_VSFTPD         = 330,  //< vsftpd
+    SERVICES_COCKPIT        = 340,  //< cockpit management dashboard
 };
 
 /* an attack (source address & target service info) */

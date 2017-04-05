@@ -37,7 +37,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 
  /* Start Conditions */
  /* for Login services */
-%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex
+%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex cockpit_authfail
  /* for Mail services */
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
@@ -198,6 +198,10 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* vsftpd */
 .+"FAIL LOGIN: Client \""                                       { BEGIN(vsftpd_loginerr); return VSFTPD_LOGINERR_PREF; }
 <vsftpd_loginerr>"\""                                           { BEGIN(INITIAL); return VSFTPD_LOGINERR_SUFF; }
+
+ /* cockpit */
+"pam_unix(cockpit:auth): "?"authentication failure; logname= uid=0 euid=0 tty= ruser= rhost="  { BEGIN(cockpit_authfail); return COCKPIT_AUTHFAIL_PREF; }
+<cockpit_authfail>" user=".+                                    { BEGIN(INITIAL); return COCKPIT_AUTHFAIL_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
