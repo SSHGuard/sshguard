@@ -42,6 +42,8 @@ static int getsyslogpid(char *syslogbanner, int length);
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
+ /* for HTTP services */
+%s nginx_auth nginx_botsearch
 
 MONTH       (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
 MONTHNO     0[0-9]|1[0-2]
@@ -51,6 +53,7 @@ MINPS       [0-5][0-9]
 SECONDFRAC  [0-5][0-9]([.,][0-9]+)?
 WORD        [a-zA-Z0-9][-_a-zA-Z0-9]+
 NUMBER      [1-9][0-9]*
+FILENAME    [a-zA-Z0-9\/.-]+
 YEAR        (1|2)[0-9]{3}
 TIMEZONE    Z|[-+]{HOUR}(:?{MINPS})?
 
@@ -58,6 +61,7 @@ TIMESTAMP_SYSLOG    {MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}
 TIMESTAMP_TAI64     [0-9A-Fa-f]{24}
 SOLARIS_MSGID_TAG   "[ID "[0-9]+" "{WORD}"."{WORD}"]"
 TIMESTAMP_ISO8601   {YEAR}-{MONTHNO}-{DAYNO}(T|" "){HOUR}:?{MINPS}:?{SECONDFRAC}{TIMEZONE}?
+TIMESTAMP_LOCAL     {DAYNO}"/"{MONTH}"/"{YEAR}":"{HOUR}":"{MINPS}":"{MINPS}" "{TIMEZONE}
 
  /* all words but "sshguard" provided that posix regex don't support negation nor intersection:
   * 1) all words of 2 to 7 characters or 8-* chars
@@ -72,8 +76,33 @@ IPV6        (::|:(:[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:([0-9a-fA-F]{1,4}:(:[
  /* an IPv4 packed in IPv6 as IPv4-mapped IPv6 address */
 IPV4MAPPED6 ((:(:0{1,4}){0,4}|0{1,4}:(:0{1,4}){1,3}|(0{1,4}:){2}(0{1,4}:0{0,4}:0{1,4}|(:0{1,4}){1,2})|(0{1,4}:){1,4}):[fF]{4}:(((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5])\.){3}((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5]))
 
+HOSTNAME    ([-a-zA-Z0-9]+\.)*[-a-zA-Z0-9]+
 HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
+
+HTTP_REQUEST   (GET|HEAD|PUT|POST|DELETE)
+HTTP_VERSION   HTTP"/"[0-9]"."[0-9]
+HTTP_REDIRECT  3[0-9]{2}
+HTTP_AUTHFAIL  401
+HTTP_CLIERROR  4[0-9]{2}
+
+ /* Common Log Format. */
+CLF_MISSING        -
+CLF_USER_ID        {WORD}
+CLF_USER_NAME      {WORD}
+CLF_OPT_USER_ID    {CLF_MISSING}|{WORD}
+CLF_OPT_USER_NAME  {CLF_MISSING}|{WORD}
+CLF_TIMESTAMP      "["({TIMESTAMP_LOCAL}|{TIMESTAMP_ISO8601})"]"
+CLF_REQUEST        "\""{HTTP_REQUEST}" "{FILENAME}" "{HTTP_VERSION}"\""
+
+ /* Common configuration for http botsearch
+  * Adapted from fail2ban botsearch filters & tweaked by alip☮exherbo.org,
+  * Original author: Frantisek Sumsal
+  */
+HTTP_BOTSEARCH_WEBMAIL     roundcube|(ext)?mail|horde|(v-?)?webmail
+HTTP_BOTSEARCH_PHPMYADMIN  (typo3"/"|xampp"/"|admin"/")?(pma|(php)?[Mm]y[Aa]dmin)
+HTTP_BOTSEARCH_WORDPRESS   wp-(login|signup|admin)"."php
+HTTP_BOTSEARCH             "/"?({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|cgi-bin|mysqladmin)[^,]*
 
 %%
 
@@ -202,6 +231,21 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
  /* cockpit */
 "pam_unix(cockpit:auth): "?"authentication failure; logname= uid=0 euid=0 tty= ruser= rhost="  { BEGIN(cockpit_authfail); return COCKPIT_AUTHFAIL_PREF; }
 <cockpit_authfail>" user=".+                                    { BEGIN(INITIAL); return COCKPIT_AUTHFAIL_SUFF; }
+
+ /* nginx, HTTP Basic AUTH
+  * Note:
+  *  1. We use CLF_USER_NAME rather than CLF_OPT_USER_NAME here to skip the initial safe 401 with user == '-'.
+  *  2. User ID and hostname fields are optional to make the pattern flexible.
+  */
+({CLF_OPT_USER_ID}" ")?{CLF_USER_NAME}" "{CLF_TIMESTAMP}" "("\""{HOSTNAME}"\" ")?"\""{HTTP_REQUEST} { BEGIN(nginx_auth); return NGINX_AUTHFAIL_PREF; }
+<nginx_auth>" "{FILENAME}" "{HTTP_VERSION}"\" "({HTTP_REDIRECT}" ")?{HTTP_AUTHFAIL}" ".+ { BEGIN(INITIAL); return NGINX_AUTHFAIL_SUFF; }
+ /* nginx HTTP common bot fingerprints.
+  * Note:
+  *  1. We only treat HTTP Error as attack so we do not end up blocking e.g: successful requests to wordpress.
+  *  2. User ID, user name and hostname fields are optional to make the pattern flexible.
+  */
+({CLF_OPT_USER_ID}" ")?({CLF_USER_NAME}" ")?{CLF_TIMESTAMP}" "("\""{HOSTNAME}"\" ")?"\""{HTTP_REQUEST} { BEGIN(nginx_botsearch); return NGINX_BOTSEARCH_PREF; }
+<nginx_botsearch>" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "({HTTP_REDIRECT}" ")?{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return NGINX_BOTSEARCH_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */

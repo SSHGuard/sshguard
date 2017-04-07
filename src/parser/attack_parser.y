@@ -51,6 +51,8 @@ static void yyerror(attack_t *, const char *);
 
 /* flat tokens */
 %token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 METALOG_BANNER SOCKLOG_BANNER
+%token HTTP_REQUEST HTTP_VERSION HTTP_REDIRECT HTTP_AUTHFAIL HTTP_CLIERROR
+%token HTTP_BOTSEARCH_WEBMAIL HTTP_BOTSEARCH_PHPMYADMIN HTTP_BOTSEARCH_WORDPRESS HTTP_BOTSEARCH
 /* ssh */
 %token SSH_INVALUSERPREF SSH_NOTALLOWEDPREF SSH_NOTALLOWEDSUFF
 %token SSH_LOGINERR_PREF SSH_LOGINERR_PAM
@@ -85,6 +87,8 @@ static void yyerror(attack_t *, const char *);
 %token VSFTPD_LOGINERR_PREF VSFTPD_LOGINERR_SUFF
 /* cockpit */
 %token COCKPIT_AUTHFAIL_PREF COCKPIT_AUTHFAIL_SUFF
+/* nginx */
+%token NGINX_AUTHFAIL_PREF NGINX_AUTHFAIL_SUFF NGINX_BOTSEARCH_PREF NGINX_BOTSEARCH_SUFF
 
 %%
 
@@ -147,6 +151,7 @@ msg_single:
     | pureftpdmsg       {   attack->service = SERVICES_PUREFTPD; }
     | vsftpdmsg         {   attack->service = SERVICES_VSFTPD; }
     | cockpitmsg        {   attack->service = SERVICES_COCKPIT; }
+    | nginxmsg          {   attack->service = SERVICES_NGINX; }
     ;
 
 /* an address */
@@ -263,6 +268,12 @@ vsftpdmsg:
 /* attack rules for cockpit */
 cockpitmsg:
     COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF
+    ;
+
+/* attack rules for nginx */
+nginxmsg:
+    addr NGINX_AUTHFAIL_PREF NGINX_AUTHFAIL_SUFF |
+    addr NGINX_BOTSEARCH_PREF NGINX_BOTSEARCH_SUFF
     ;
 
 %%
