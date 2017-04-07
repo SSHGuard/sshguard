@@ -14,10 +14,10 @@ Unreleased
 ==========
 **Added**
 
+- Add **nftables** backend
+- Add monitoring support for new service: Cockpit server dashboard
 - Match "maximum authentication attempts" for SSH
-- add monitoring support for new services:
-
-  - cockpit server dashboard
+- Match Debian-style "Failed password for invalid user" for SSH
 
 2.0.0
 =====

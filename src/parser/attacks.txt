@@ -56,3 +56,5 @@ Invalid user support from 190.50.238.98 port 32836
 Invalid user support from 2001:db8::a11:beef:7ac0 port 32836
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15 user=jeff
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac0 user=root
+Failed password for invalid user admin from 172.22.10.15 port 39065 ssh2
+Failed password for invalid user admin from 2001:db8::a11:beef:7ac1 port 39065 ssh2
