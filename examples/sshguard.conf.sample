@@ -6,7 +6,7 @@
 
 #### REQUIRED CONFIGURATION ####
 # Full path to backend executable (required, no default)
-#BACKEND="/usr/local/libexec/sshg-fw-hosts"
+#BACKEND="/usr/local/libexec/sshg-fw-iptables"
 
 # Space-separated list of log files to monitor. Ignored if LOGREADER is set.
 # (optional, no default)
