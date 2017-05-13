@@ -19,6 +19,10 @@ Unreleased
 - Match "maximum authentication attempts" for SSH
 - Match Debian-style "Failed password for invalid user" for SSH
 
+**Fixed**
+
+- Match port number in "invalid user" attack
+
 2.0.0
 =====
 2017-03-06
