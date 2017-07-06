@@ -19,6 +19,7 @@ Unreleased
 - Match "maximum authentication attempts" for SSH
 - Match Debian-style "Failed password for invalid user" for SSH
 - Add monitoring support for new service: Nginx HTTP server
+- Match 'Disconnecting invalid user' for SSH
 
 **Fixed**
 
