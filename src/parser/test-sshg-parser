@@ -3,10 +3,10 @@ file="attacks.txt"
 in_count=`wc -l $file | awk '{ print $1 }'`
 out_count=`./sshg-parser < $file | wc -l |  awk '{ print $1 }'`
 if [ $in_count -ne $out_count ]; then
-    return 1
+    exit 1
 fi
 
 not_out_count=`./sshg-parser < not-attacks.txt | wc -l |  awk '{ print $1 }'`
 if [ 0 -ne $not_out_count ]; then
-    return 1
+    exit 1
 fi
