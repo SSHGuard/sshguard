@@ -246,7 +246,7 @@ HTTP_BOTSEARCH             "/"?({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYAD
   *  1. We only treat HTTP Error as attack so we do not end up blocking e.g: successful requests to wordpress.
   *  2. User ID, user name and hostname fields are optional to make the pattern flexible.
   */
-({CLF_OPT_USER_ID}" ")?({CLF_USER_NAME}" ")?{CLF_TIMESTAMP}" "("\""{HOSTNAME}"\" ")?"\""{HTTP_REQUEST} { BEGIN(nginx_botsearch); return NGINX_BOTSEARCH_PREF; }
+({CLF_OPT_USER_ID}" ")?({CLF_OPT_USER_NAME}" ")?{CLF_TIMESTAMP}" "("\""{HOSTNAME}"\" ")?"\""{HTTP_REQUEST} { BEGIN(nginx_botsearch); return NGINX_BOTSEARCH_PREF; }
 <nginx_botsearch>" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "({HTTP_REDIRECT}" ")?{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return NGINX_BOTSEARCH_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
