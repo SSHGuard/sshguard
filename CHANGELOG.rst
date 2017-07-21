@@ -21,6 +21,10 @@ Unreleased
 - Add monitoring support for new service: Nginx HTTP server
 - Match 'Disconnecting invalid user' for SSH
 
+**Changed**
+
+- Log whitelist matches with higher priority
+
 **Fixed**
 
 - Match port number in "invalid user" attack
