@@ -15,11 +15,12 @@ Unreleased
 **Added**
 
 - Add **nftables** backend
-- Add monitoring support for new service: Cockpit server dashboard
+- Add monitoring support for new service: Cockpit, Linux server dashboard
 - Match "maximum authentication attempts" for SSH
 - Match Debian-style "Failed password for invalid user" for SSH
-- Add monitoring support for new service: Common probes in Common Log Format (for HTTP servers)
+- Add monitoring support for new service: Common webserver probes, in Common Log Format
 - Match 'Disconnecting invalid user' for SSH
+- Add monitoring support for new service: WordPress, in Common Log Format
 
 **Changed**
 

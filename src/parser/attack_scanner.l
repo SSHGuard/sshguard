@@ -83,14 +83,15 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
 HTTP_VERSION    HTTP"/"[0-9]("."[0-9])?
 HTTP_STATUSCODE [0-9]{3}
+HTTP_SUCCESS    200
 HTTP_REDIRECT   3[0-9]{2}
 HTTP_AUTHFAIL   401
 HTTP_CLIERROR   4[0-9]{2}
 
  /* Common Log Format. */
-CLF_MISSING        ("\"")?"-"("\"")?
-CLF_USER_ID        {WORD}
-CLF_USER_NAME      {WORD}
+CLF_MISSING        "-"|"\"-\""
+CLF_USER_ID        {WORD}|"\""{WORD}"\""
+CLF_USER_NAME      {WORD}|"\""{WORD}"\""
 CLF_OPT_USER_ID    {CLF_MISSING}|{WORD}
 CLF_OPT_USER_NAME  {CLF_MISSING}|{WORD}
 CLF_TIMESTAMP      "["({TIMESTAMP_LOCAL}|{TIMESTAMP_ISO8601})"]"
@@ -105,6 +106,7 @@ HTTP_BOTSEARCH_PHPMYADMIN  (typo3"/"|xampp"/"|admin"/")?(pma|(php)?[Mm]y[Aa]dmin
 HTTP_BOTSEARCH_WORDPRESS   wp-(admin|config|login|signup)"."php
 HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|cgi-bin|mysqladmin)[^,]*
 
+WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 %%
 
 
@@ -244,6 +246,11 @@ HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMI
 
  /* HTTP probes for common web services. */
 <clf_request>" \""{HTTP_REQUEST}" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
+
+ /* WordPress.
+    HTTP 200 OK responses to /wp-login.php via POST are failed requests, but GET or 302 aren’t. */
+<clf_request>" \"POST "{WORDPRESS_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_WORDPRESS_SUFF; }
+
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */

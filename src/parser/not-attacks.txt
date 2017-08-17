@@ -7,7 +7,7 @@ reverse mapping checking getaddrinfo for XYZ [6.6.6.0] XYZ POSSIBLE BREAK-IN ATT
 10.42.42.46 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 200 "-" "Mozilla/5.0"
 10.42.42.47 - - [19/Apr/1943:03:14:15 +0000] "POST /wp-login.php HTTP/1.1" 302 200 "-" "Mozilla/5.0"
 10.42.42.48 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 301 201 "-" "Mozilla/5.0"
-2001:db8::a11:beef:7ac1 - - [19/Apr/1943:03:14:15 +0000] "POST /wp-login.php HTTP/1.1" 200 201 "-" "Mozilla/5.0"
+2001:db8::a11:beef:7ac1 - - [19/Apr/1943:03:14:15 +0000] "POST /wp-login.php HTTP/1.1" 302 201 "-" "Mozilla/5.0"
 10.42.42.49 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 302 200 "-" "Mozilla/5.0"
 10.42.42.50 - - [19/Apr/1943:03:14:15 +0000] "GET roundcube HTTP/1.1" 200 "-" "Mozilla/4.0"
 10.42.42.51 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube HTTP/1.1" 200 "-" "Mozilla/4.0"

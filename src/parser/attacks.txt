@@ -58,12 +58,19 @@ pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac0 user=root
 Failed password for invalid user admin from 172.22.10.15 port 39065 ssh2
 Failed password for invalid user admin from 2001:db8::a11:beef:7ac1 port 39065 ssh2
+10.42.42.39 - "jeff" [19/Apr/1943:03:14:13 +0000] "GET /secret-base HTTP/1.1" 401 356 "EvilAgent/2.0"
 10.42.42.40 - - [19/Apr/1943:03:14:10 +0000] "GET /wp-login.php HTTP/1.1" 404 1 "-" "Mozilla/5.0"
 10.42.42.41 - - [19/Apr/1943:03:14:11 +0000] "GET /wp-admin.php HTTP/1" 401 - "-" "Mozilla/5.0"
 10.42.42.42 - - [19/Apr/1943:03:14:12 +0000] "GET /wordress/wp-login.php HTTP/2.0" 404 2571 "-" "Mozilla/5.0" "extra-field" "more-data"
 10.42.42.43 - - [19/Apr/1943:03:14:13 +0000] "GET /roundcube HTTP/1.1" 410 3
 2001:db8::a11:beef:7aa0 - - [19/Apr/1943:03:14:14 +0000] "GET /roundcube HTTP/2.0" 403 0 "-" "Mozilla/4.0"
 10.42.42.44 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 404 56 "-"
-2001:db8::a11:beef:7aa0 - - [19/Apr/1943:03:14:14 +0000] "GET /roundcube HTTP/2.0" 404 -
+2001:db8::a11:beef:7aa1 - - [19/Apr/1943:03:14:14 +0000] "GET /roundcube HTTP/2.0" 404 -
 10.42.42.45 - - [19/Apr/1943:03:14:17 +0000] "GET /roundcube/ HTTP/2.0" 410 - "-" "Mozilla/4.0"
 Jul  4 13:55:09 karpov sshd[64301]: Disconnecting invalid user user 10.42.42.42 port 38987: Change of username or service not allowed: (user,ssh-connection) -> (manager,ssh-connection) [preauth]
+2001:db8::a11:b2ef:78f2 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
+10.42.57.1 - - [19/Apr/1943:03:14:10 +0000] "POST /wp-login.php HTTP/1.1" 200 1056
+2001:db8::a11:beef:7aa2 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
+192.68.11.1 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
+192.68.11.1 - - [19/Apr/1943:03:14:12 +0000] "POST /wp/wp-login.php HTTP/1.1" 200 - "-" "Mozilla/5.0"
+2001:db8::a11:beef:7aa3 - "admin" [19/Apr/1943:03:14:13 +0000] "GET /admin/system HTTP/1.1" 401 -

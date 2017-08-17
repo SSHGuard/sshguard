@@ -93,6 +93,8 @@ static void yyerror(attack_t *, const char *);
 %token CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
 /* CLF, common webapp probes */
 %token CLFWEBPROBES_BOTSEARCH_SUFF
+/* CLF, WordPress brute-force attacks */
+%token CLF_WORDPRESS_SUFF
 
 %%
 
@@ -157,6 +159,7 @@ msg_single:
     | cockpitmsg        {   attack->service = SERVICES_COCKPIT; }
     | clfunauhtdmsg     {   attack->service = SERVICES_CLF_UNAUTH; }
     | clfwebprobesmsg   {   attack->service = SERVICES_CLF_PROBES; }
+    | clfwordpressmsg   {   attack->service = SERVICES_CLF_WORDPRESS; }
     ;
 
 /* an address */
@@ -283,6 +286,11 @@ clfunauhtdmsg:
 /* attack rules for probes for common web services */
 clfwebprobesmsg:
     addr CLF_REQUEST_PREF CLFWEBPROBES_BOTSEARCH_SUFF
+    ;
+
+/* attack rules against WordPress */
+clfwordpressmsg:
+    addr CLF_REQUEST_PREF CLF_WORDPRESS_SUFF
     ;
 
 %%

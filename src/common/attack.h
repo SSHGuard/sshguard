@@ -41,6 +41,7 @@ enum service {
     SERVICES_COCKPIT        = 340,  //< cockpit management dashboard
     SERVICES_CLF_UNAUTH     = 350,  //< HTTP 401 in common log format
     SERVICES_CLF_PROBES     = 360,  //< probes for common web services
+    SERVICES_CLF_WORDPRESS  = 370,  //< WordPress logins in common log format
 };
 
 /* an attack (source address & target service info) */
