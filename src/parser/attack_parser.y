@@ -87,8 +87,12 @@ static void yyerror(attack_t *, const char *);
 %token VSFTPD_LOGINERR_PREF VSFTPD_LOGINERR_SUFF
 /* cockpit */
 %token COCKPIT_AUTHFAIL_PREF COCKPIT_AUTHFAIL_SUFF
-/* nginx */
-%token NGINX_AUTHFAIL_PREF NGINX_AUTHFAIL_SUFF NGINX_BOTSEARCH_PREF NGINX_BOTSEARCH_SUFF
+/* CLF request */
+%token CLF_REQUEST_PREF
+/* CLF, unauhtorized */
+%token CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
+/* CLF, common webapp probes */
+%token CLFWEBPROBES_BOTSEARCH_SUFF
 
 %%
 
@@ -151,7 +155,8 @@ msg_single:
     | pureftpdmsg       {   attack->service = SERVICES_PUREFTPD; }
     | vsftpdmsg         {   attack->service = SERVICES_VSFTPD; }
     | cockpitmsg        {   attack->service = SERVICES_COCKPIT; }
-    | nginxmsg          {   attack->service = SERVICES_NGINX; }
+    | clfunauhtdmsg     {   attack->service = SERVICES_CLF_UNAUTH; }
+    | clfwebprobesmsg   {   attack->service = SERVICES_CLF_PROBES; }
     ;
 
 /* an address */
@@ -270,10 +275,14 @@ cockpitmsg:
     COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF
     ;
 
-/* attack rules for nginx */
-nginxmsg:
-    addr NGINX_AUTHFAIL_PREF NGINX_AUTHFAIL_SUFF |
-    addr NGINX_BOTSEARCH_PREF NGINX_BOTSEARCH_SUFF
+/* attack rules for HTTP 401 Unauhtorized in common log format */
+clfunauhtdmsg:
+    addr CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
+    ;
+
+/* attack rules for probes for common web services */
+clfwebprobesmsg:
+    addr CLF_REQUEST_PREF CLFWEBPROBES_BOTSEARCH_SUFF
     ;
 
 %%
@@ -282,6 +291,8 @@ static void yyerror(__attribute__((unused)) attack_t *a,
     __attribute__((unused)) const char *s) { /* do nothing */ }
 
 int parse_line(char *str, attack_t *attack) {
+
+    /* TODO: reduce danger for SERVICES_CLF_PROBES */
     attack->dangerousness = DEFAULT_ATTACKS_DANGEROUSNESS;
 
     scanner_init(str);

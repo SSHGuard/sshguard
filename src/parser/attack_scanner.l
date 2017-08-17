@@ -43,7 +43,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for HTTP services */
-%s nginx_auth nginx_botsearch
+%s clf_request clf_request_withuser clf_unauhtorized clfwebprobes_botsearch
 
 MONTH       (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
 MONTHNO     0[0-9]|1[0-2]
@@ -80,14 +80,15 @@ HOSTNAME    ([-a-zA-Z0-9]+\.)*[-a-zA-Z0-9]+
 HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
 FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 
-HTTP_REQUEST   (GET|HEAD|PUT|POST|DELETE)
-HTTP_VERSION   HTTP"/"[0-9]"."[0-9]
-HTTP_REDIRECT  3[0-9]{2}
-HTTP_AUTHFAIL  401
-HTTP_CLIERROR  4[0-9]{2}
+HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
+HTTP_VERSION    HTTP"/"[0-9]("."[0-9])?
+HTTP_STATUSCODE [0-9]{3}
+HTTP_REDIRECT   3[0-9]{2}
+HTTP_AUTHFAIL   401
+HTTP_CLIERROR   4[0-9]{2}
 
  /* Common Log Format. */
-CLF_MISSING        -
+CLF_MISSING        ("\"")?"-"("\"")?
 CLF_USER_ID        {WORD}
 CLF_USER_NAME      {WORD}
 CLF_OPT_USER_ID    {CLF_MISSING}|{WORD}
@@ -101,8 +102,8 @@ CLF_REQUEST        "\""{HTTP_REQUEST}" "{FILENAME}" "{HTTP_VERSION}"\""
   */
 HTTP_BOTSEARCH_WEBMAIL     roundcube|(ext)?mail|horde|(v-?)?webmail
 HTTP_BOTSEARCH_PHPMYADMIN  (typo3"/"|xampp"/"|admin"/")?(pma|(php)?[Mm]y[Aa]dmin)
-HTTP_BOTSEARCH_WORDPRESS   wp-(login|signup|admin)"."php
-HTTP_BOTSEARCH             "/"?({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|cgi-bin|mysqladmin)[^,]*
+HTTP_BOTSEARCH_WORDPRESS   wp-(admin|config|login|signup)"."php
+HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|cgi-bin|mysqladmin)[^,]*
 
 %%
 
@@ -234,20 +235,15 @@ HTTP_BOTSEARCH             "/"?({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYAD
 "pam_unix(cockpit:auth): "?"authentication failure; logname= uid=0 euid=0 tty= ruser= rhost="  { BEGIN(cockpit_authfail); return COCKPIT_AUTHFAIL_PREF; }
 <cockpit_authfail>" user=".+                                    { BEGIN(INITIAL); return COCKPIT_AUTHFAIL_SUFF; }
 
- /* nginx, HTTP Basic AUTH
-  * Note:
-  *  1. We use CLF_USER_NAME rather than CLF_OPT_USER_NAME here to skip the initial safe 401 with user == '-'.
-  *  2. User ID and hostname fields are optional to make the pattern flexible.
-  */
-({CLF_OPT_USER_ID}" ")?{CLF_USER_NAME}" "{CLF_TIMESTAMP}" "("\""{HOSTNAME}"\" ")?"\""{HTTP_REQUEST} { BEGIN(nginx_auth); return NGINX_AUTHFAIL_PREF; }
-<nginx_auth>" "{FILENAME}" "{HTTP_VERSION}"\" "({HTTP_REDIRECT}" ")?{HTTP_AUTHFAIL}" ".+ { BEGIN(INITIAL); return NGINX_AUTHFAIL_SUFF; }
- /* nginx HTTP common bot fingerprints.
-  * Note:
-  *  1. We only treat HTTP Error as attack so we do not end up blocking e.g: successful requests to wordpress.
-  *  2. User ID, user name and hostname fields are optional to make the pattern flexible.
-  */
-({CLF_OPT_USER_ID}" ")?({CLF_OPT_USER_NAME}" ")?{CLF_TIMESTAMP}" "("\""{HOSTNAME}"\" ")?"\""{HTTP_REQUEST} { BEGIN(nginx_botsearch); return NGINX_BOTSEARCH_PREF; }
-<nginx_botsearch>" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "({HTTP_REDIRECT}" ")?{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return NGINX_BOTSEARCH_SUFF; }
+ /* HTTP Basic AUTH – unauthorized. */
+{CLF_OPT_USER_ID}" "{CLF_USER_NAME}" "{CLF_TIMESTAMP} { BEGIN(clf_request_withuser); return CLF_UNAUTHOIRIZED_PREF; }
+<clf_request_withuser>" "{CLF_REQUEST}" "{HTTP_AUTHFAIL}.+ { BEGIN(INITIAL); return CLF_UNAUTHOIRIZED_SUFF; }
+
+ /* Common Log Format */
+{CLF_OPT_USER_ID}" "{CLF_OPT_USER_NAME}" "{CLF_TIMESTAMP} { BEGIN(clf_request); return CLF_REQUEST_PREF; }
+
+ /* HTTP probes for common web services. */
+<clf_request>" \""{HTTP_REQUEST}" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */

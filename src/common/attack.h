@@ -39,7 +39,8 @@ enum service {
     SERVICES_PUREFTPD       = 320,  //< Pure-FTPd
     SERVICES_VSFTPD         = 330,  //< vsftpd
     SERVICES_COCKPIT        = 340,  //< cockpit management dashboard
-    SERVICES_NGINX          = 350,  //< nginx
+    SERVICES_CLF_UNAUTH     = 350,  //< HTTP 401 in common log format
+    SERVICES_CLF_PROBES     = 360,  //< probes for common web services
 };
 
 /* an attack (source address & target service info) */
