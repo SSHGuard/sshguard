@@ -38,6 +38,8 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* Start Conditions */
  /* for Login services */
 %s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex cockpit_authfail
+ /* for SSHGuard */
+%s sshguard_attack sshguard_block
  /* for Mail services */
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
  /* for FTP services */
@@ -181,6 +183,14 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 <ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
 
 .*"Unable to negotiate with "                                   { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
+
+ /* SSHGuard */
+"Attack from \""                                                { BEGIN(sshguard_attack); return SSHGUARD_ATTACK_PREF; }
+<sshguard_attack>"\" on service "{NUMBER}" with danger "{NUMBER}"."    { BEGIN(INITIAL); return SSHGUARD_ATTACK_SUFF; }
+"Blocking \""                                                   { BEGIN(sshguard_block); return SSHGUARD_BLOCK_PREF; }
+<sshguard_block>"\" for "{NUMBER}" secs ("{NUMBER}" attacks in "{NUMBER}" secs,".+   { BEGIN(INITIAL); return SSHGUARD_BLOCK_SUFF; }
+
+
 <ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
 
  /* Cucipop */

@@ -74,3 +74,7 @@ Jul  4 13:55:09 karpov sshd[64301]: Disconnecting invalid user user 10.42.42.42 
 192.68.11.1 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
 192.68.11.1 - - [19/Apr/1943:03:14:12 +0000] "POST /wp/wp-login.php HTTP/1.1" 200 - "-" "Mozilla/5.0"
 2001:db8::a11:beef:7aa3 - "admin" [19/Apr/1943:03:14:13 +0000] "GET /admin/system HTTP/1.1" 401 -
+Attack from "2001:db8::a11:beef:456e" on service 100 with danger 10.
+Attack from "192.68.18.1" on service 100 with danger 10.
+Blocking "192.68.18.2" for 300 secs (3 attacks in 5 secs, after 1 abuses over 5 secs.)
+Blocking "2001:db8::a11:beef:456f" for 300 secs (3 attacks in 5 secs, after 1 abuses over 5 secs.)

@@ -27,6 +27,7 @@
 enum service {
     SERVICES_ALL            = 0,    //< anything
     SERVICES_SSH            = 100,  //< ssh
+    SERVICES_SSHGUARD       = 110,  //< SSHGuard
     SERVICES_UWIMAP         = 200,  //< UWimap for imap and pop daemon
     SERVICES_DOVECOT        = 210,  //< dovecot
     SERVICES_CYRUSIMAP      = 220,  //< cyrus-imap

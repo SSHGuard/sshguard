@@ -21,6 +21,7 @@ Unreleased
 - Add monitoring support for new service: Common webserver probes, in Common Log Format
 - Match 'Disconnecting invalid user' for SSH
 - Add monitoring support for new service: WordPress, in Common Log Format
+- Add monitoring support for new service: SSHGuard
 
 **Changed**
 
