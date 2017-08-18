@@ -187,6 +187,22 @@ preserve your configuration, you usually use the iptables-save and
 iptables-restore utilities. However, each Linux variant has its own "right
 way".
 
+nftables
+--------
+SSHGuard creates tables with a high priority and adds attackers to a set
+automatically.
+
+You can inspect the contents of the sets using::
+
+    # nft list set ip sshguard attackers
+    # nft list set ip6 sshguard attackers
+
+Moreover, you can display sshguard's tables with::
+
+    # nft list table ip sshguard
+    # nft list table ip6 sshguard
+
+
 EXAMPLES
 ========
 Ignore **FILES** and monitor these files instead::
