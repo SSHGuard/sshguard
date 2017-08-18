@@ -188,7 +188,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "Attack from \""                                                { BEGIN(sshguard_attack); return SSHGUARD_ATTACK_PREF; }
 <sshguard_attack>"\" on service "{NUMBER}" with danger "{NUMBER}"."    { BEGIN(INITIAL); return SSHGUARD_ATTACK_SUFF; }
 "Blocking \""                                                   { BEGIN(sshguard_block); return SSHGUARD_BLOCK_PREF; }
-<sshguard_block>"\" for "{NUMBER}" secs ("{NUMBER}" attacks in "{NUMBER}" secs,".+   { BEGIN(INITIAL); return SSHGUARD_BLOCK_SUFF; }
+<sshguard_block>"/"{NUMBER}"\" for "{NUMBER}" secs ("{NUMBER}" attacks in "{NUMBER}" secs,".+  { BEGIN(INITIAL); return SSHGUARD_BLOCK_SUFF; }
 
 
 <ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }

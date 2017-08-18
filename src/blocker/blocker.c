@@ -180,14 +180,16 @@ int main(int argc, char *argv[]) {
 void log_block(attacker_t *tmpent, attacker_t *offenderent) {
     char time_msg[128] = "forever";
     const time_t time = tmpent->pardontime;
+
+    unsigned int subnet_size = fw_block_subnet_size(tmpent->attack.address.kind);
     if (time > 0) {
         if (snprintf(time_msg, sizeof(time_msg), "for %lld secs", (long long)time) < 0) {
             abort();
         }
     }
-    sshguard_log(LOG_WARNING, "Blocking \"%s\" %s (%u attacks in %lld "
+    sshguard_log(LOG_WARNING, "Blocking \"%s/%u\" %s (%u attacks in %lld "
                               "secs, after %d abuses over %lld secs.)",
-                 tmpent->attack.address.value, time_msg, tmpent->numhits,
+                 tmpent->attack.address.value, subnet_size, time_msg, tmpent->numhits,
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
                  offenderent->numhits,
                  (long long)(offenderent->whenlast - offenderent->whenfirst));

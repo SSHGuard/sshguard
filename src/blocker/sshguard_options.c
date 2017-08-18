@@ -48,6 +48,8 @@ static void options_init(sshg_opts *opt) {
     opt->blacklist_threshold = 0;
     opt->my_pidfile = NULL;
     opt->blacklist_filename = NULL;
+    opt->subnet_ipv6 = 128;
+    opt->subnet_ipv4 = 32;
 }
 
 int get_options_cmdline(int argc, char *argv[]) {
@@ -55,7 +57,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
     options_init(&opts);
 
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:N:n:")) != -1) {
         switch (optch) {
             case 'b':
                 opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
@@ -104,6 +106,14 @@ int get_options_cmdline(int argc, char *argv[]) {
                         return -1;
                     }
                 }
+                break;
+
+            case 'N':   /* IPv6 subnet size */
+                opts.subnet_ipv6 = strtol(optarg, (char **)NULL, 10);
+                break;
+
+            case 'n':   /* IPv4 subnet size */
+                opts.subnet_ipv4 = strtol(optarg, (char **)NULL, 10);
                 break;
 
             case 'i':   /* specify pidfile for my PID */

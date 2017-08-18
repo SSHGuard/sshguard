@@ -22,6 +22,8 @@ Unreleased
 - Match 'Disconnecting invalid user' for SSH
 - Add monitoring support for new service: WordPress, in Common Log Format
 - Add monitoring support for new service: SSHGuard
+- Firewall backends now support blocking subnets.
+- Add new IPV6_SUBNET and IPV4_SUBNET configuration options. Defaults to traditional single-address blocking.
 
 **Changed**
 
@@ -30,6 +32,7 @@ Unreleased
 **Fixed**
 
 - Match port number in "invalid user" attack
+- FirewallD backend reloads firewall configuration less often.
 
 2.0.0
 =====

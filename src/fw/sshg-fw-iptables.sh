@@ -21,11 +21,11 @@ fw_init() {
 }
 
 fw_block() {
-    run_iptables "-I sshguard -s $1 -j DROP" $2
+    run_iptables "-I sshguard -s $1/$3 -j DROP" $2
 }
 
 fw_release() {
-    run_iptables "-D sshguard -s $1 -j DROP" $2
+    run_iptables "-D sshguard -s $1/$3 -j DROP" $2
 }
 
 fw_flush() {

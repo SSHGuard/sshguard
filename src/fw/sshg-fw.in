@@ -16,12 +16,12 @@ cleanup() {
 
 trap cleanup EXIT INT
 
-while read cmd address addrtype; do
+while read cmd address addrtype cidr; do
     case $cmd in
         block)
-            fw_block $address $addrtype;;
+            fw_block $address $addrtype $cidr;;
         release)
-            fw_release $address $addrtype;;
+            fw_release $address $addrtype $cidr;;
         flush)
             fw_flush;;
         flushonexit)

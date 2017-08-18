@@ -8,11 +8,11 @@ fw_init() {
 }
 
 fw_block() {
-    ipset -quiet add -exist sshguard$2 $1
+    ipset -quiet add -exist sshguard$2 $1/$3
 }
 
 fw_release() {
-    ipset -quiet del -exist sshguard$2 $1
+    ipset -quiet del -exist sshguard$2 $1/$3
 }
 
 fw_flush() {

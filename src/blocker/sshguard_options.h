@@ -28,6 +28,8 @@ typedef struct {
     unsigned int blacklist_threshold;   /* number of abuses after which blacklisting the attacker */
     char *my_pidfile;                   /* NULL if disabled, or string with filename where user wants my PID tracked */
     char *blacklist_filename;           /* NULL to disable blacklist, or path of the blacklist file */
+    unsigned int subnet_ipv6;           /* size of subnets to block, CIDR notation */
+    unsigned int subnet_ipv4;           /* size of subnets to block, CIDR notation */
 } sshg_opts;
 
 extern sshg_opts opts;

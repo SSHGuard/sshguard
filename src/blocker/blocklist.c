@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,13 +16,27 @@ static list_t hell;
 /* mutex against races between insertions and pruning of lists */
 static pthread_mutex_t list_mutex;
 
+unsigned int fw_block_subnet_size(int inet_family) {
+    if (inet_family == 6) {
+      return opts.subnet_ipv6;
+    } else if (inet_family == 4) {
+      return opts.subnet_ipv4;
+    }
+
+    assert(0);
+}
+
 static void fw_block(const attack_t *attack) {
-    printf("block %s %d\n", attack->address.value, attack->address.kind);
+    unsigned int subnet_size = fw_block_subnet_size(attack->address.kind);
+
+    printf("block %s %d %u\n", attack->address.value, attack->address.kind, subnet_size);
     fflush(stdout);
 }
 
 static void fw_release(const attack_t *attack) {
-    printf("release %s %d\n", attack->address.value, attack->address.kind);
+    unsigned int subnet_size = fw_block_subnet_size(attack->address.kind);
+
+    printf("release %s %d %u\n", attack->address.value, attack->address.kind, subnet_size);
     fflush(stdout);
 }
 

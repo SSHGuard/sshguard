@@ -14,7 +14,7 @@ fw_block() {
     if [ -n "$2" ]; then
         FAM="-$2"
     fi
-    echo "block in quick proto tcp from $1 to any" | \
+    echo "block in quick proto tcp from $1/$3 to any" | \
         ${IPFILTER_CMD} ${FAM} -A -f -
 }
 
@@ -23,7 +23,7 @@ fw_release() {
     if [ -n "$2" ]; then
         FAM="-$2"
     fi
-    echo "block in quick proto tcp from $1 to any" | \
+    echo "block in quick proto tcp from $1/$3 to any" | \
         ${IPFILTER_CMD} ${FAM} -A -r -f -
 }
 

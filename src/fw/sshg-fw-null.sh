@@ -7,11 +7,11 @@ fw_init() {
 }
 
 fw_block() {
-    echo "===>>> Blocking $1 (null)"
+    echo "===>>> Blocking $1/$3 (null)"
 }
 
 fw_release() {
-    echo "===>>> Releasing $1 (null)"
+    echo "===>>> Releasing $1/$3 (null)"
 }
 
 fw_flush() {

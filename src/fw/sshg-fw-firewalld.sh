@@ -2,30 +2,28 @@
 # sshg-fw-firewalld
 # This file is part of SSHGuard.
 
+FIREW_CMD="firewall-cmd --quiet"
+IPSET_CMD="ipset -quiet"
+
 fw_init() {
-    firewall-cmd --quiet --permanent --new-ipset="sshguard4" --type=hash:ip --option="family=inet"
-    firewall-cmd --quiet --permanent --add-rich-rule="rule source ipset=sshguard4 drop"
-    firewall-cmd --quiet --permanent --new-ipset="sshguard6" --type=hash:ip --option="family=inet6"
-    firewall-cmd --quiet --permanent --add-rich-rule="rule source ipset=sshguard6 drop"
-    firewall-cmd --quiet --reload
+    ${FIREW_CMD} --permanent --new-ipset="sshguard6" --type="hash:ip" --option="family=inet6"
+    ${FIREW_CMD} --permanent --add-rich-rule="rule family=ipv6 source ipset=sshguard6 drop"
+    ${FIREW_CMD} --permanent --new-ipset="sshguard4" --type="hash:ip" --option="family=inet"
+    ${FIREW_CMD} --permanent --add-rich-rule="rule family=ipv4 source ipset=sshguard4 drop"
+    ${FIREW_CMD} --reload
 }
 
 fw_block() {
-    firewall-cmd --quiet --permanent --ipset="sshguard$2" --add-entry="$1"
-    firewall-cmd --quiet --reload
+    ${FIREW_CMD} --ipset="sshguard$2" --add-entry="$1/$3"
 }
 
 fw_release() {
-    firewall-cmd --quiet --permanent --ipset="sshguard$2" --remove-entry="$1"
-    firewall-cmd --quiet --reload
+    ${FIREW_CMD} --ipset="sshguard$2" --remove-entry="$1/$3"
 }
 
 fw_flush() {
-    firewall-cmd --quiet --permanent --delete-ipset="sshguard4"
-    firewall-cmd --quiet --permanent --new-ipset="sshguard4" --type=hash:ip --option="family=inet"
-    firewall-cmd --quiet --permanent --delete-ipset="sshguard6"
-    firewall-cmd --quiet --permanent --new-ipset="sshguard6" --type=hash:ip --option="family=inet6"
-    firewall-cmd --quiet --reload
+    ${IPSET_CMD} flush sshguard6
+    ${IPSET_CMD} flush sshguard4
 }
 
 fw_fin() {
