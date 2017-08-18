@@ -6,7 +6,7 @@ sshguard-setup
 setting up SSHGuard on your system
 ----------------------------------
 
-:Date: January 9, 2017
+:Date: August 19, 2017
 :Manual group: SSHGuard Manual
 :Manual section: 7
 :Version: 2.0
@@ -20,12 +20,13 @@ file. A good starting point is to copy it and make the necessary changes:
 1. Set **BACKEND**. You may also need to set it up to work with SSHGuard
    (see `BACKENDS`_).
 
-2. Set **FILES** or **LOGREADER**. Alternatively, give **sshguard** a list
-   of files to monitor as positional arguments on the command-line. If none
-   of these are set, **sshguard** will read from standard input.
+2. Set **FILES**, **LOGREADER**, or both. Alternatively, give **sshguard** a
+   list of files to monitor as positional arguments on the command-line. If
+   none of these are set, **sshguard** will read from standard input.
 
-If you have log files to monitor, use **FILES**. If your logs are available
-as pipe output of running another program, use **LOGREADER**.
+Use **FILES** to specify a space-separated list of log files to monitor.
+Use **LOGREADER** to specify a shell command to run to obtain logs. Both
+settings are ignored if files are given on the command-line.
 
 Sample **LOGREADER** commands for **journalctl(1)** and macOS 10.12+ are
 available in the sample configuration.

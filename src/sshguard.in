@@ -1,6 +1,10 @@
 #!/bin/sh
 # sshguard -- protect hosts from brute-force attacks
 
+# Unregister recursive SIGTERM, and make sure to kill
+# entire process group (subshell) on exit/interrupts.
+trap "trap - SIGTERM && kill 0" SIGINT SIGTERM EXIT
+
 libexec="@libexecdir@"
 version="@sshguardversion@"
 
@@ -73,10 +77,15 @@ elif [ ! -z "$WHITELIST_FILE" ]; then
     flags="$flags -w $WHITELIST_FILE"
 fi
 
-# Log source selection order: runtime args, logreader, files, or stdin
+# Log source selection order:
+#     runtime args, logreader and files, logreader, files, or stdin
 shift $((OPTIND-1))
 if [ ! -z "$@" ]; then
     tailcmd="$libexec/sshg-logtail $@"
+elif [ \( ! -z "$LOGREADER" \) -a \( ! -z "$FILES" \) ]; then
+    LOGREADER="$LOGREADER | grep --line-buffered '^'"
+    FILESREAD="$libexec/sshg-logtail $FILES | grep --line-buffered '^'"
+    tailcmd="( $LOGREADER & $FILESREAD )"
 elif [ ! -z "$LOGREADER" ]; then
     tailcmd="$LOGREADER"
 elif [ ! -z "$FILES" ]; then
