@@ -26,7 +26,6 @@ Unreleased
 **Changed**
 
 - Log whitelist matches with higher priority
-- Linux now sticks to file paths given in FILES rather than follow the file descriptor (when logs rotate or are deleted).
 
 **Fixed**
 
