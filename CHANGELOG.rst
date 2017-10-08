@@ -10,8 +10,8 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
-Unreleased
-==========
+2.1.0
+=====
 **Added**
 
 - Add **nftables** backend
