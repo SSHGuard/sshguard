@@ -60,7 +60,7 @@ Before release, make sure that:
 Then:
 
 1. Tag release: ``git tag -s -m "Tag <version> release" v<version>``
-#. Build source tarball: ``make dist``
+#. Build source tarball: ``autoreconf -i && ./configure && make dist``
 #. Sign source tarball ``./distsign <tarball>``
 #. Push tags: ``git push --tags``
 #. Upload release files to SourceForge.
