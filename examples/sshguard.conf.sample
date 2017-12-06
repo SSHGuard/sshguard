@@ -31,10 +31,10 @@ BLOCK_TIME=120
 DETECTION_TIME=1800
 
 # Size of IPv6 'subnet to block. Defaults to a single address, CIDR notation. (optional, default to 128)
-#IPV6_SUBNET=128
+IPV6_SUBNET=128
 
 # Size of IPv4 subnet to block. Defaults to a single address, CIDR notation. (optional, default to 32)
-#IPV4_SUBNET=32
+IPV4_SUBNET=32
 
 #### EXTRAS ####
 # !! Warning: These features may not work correctly with sandboxing. !!
