@@ -3,7 +3,7 @@
 
 # Unregister recursive SIGTERM, and make sure to kill
 # entire process group (subshell) on exit/interrupts.
-trap "trap - SIGTERM && kill 0" SIGINT SIGTERM EXIT
+trap "trap - TERM && kill 0" INT TERM EXIT
 
 libexec="@libexecdir@"
 version="@sshguardversion@"
