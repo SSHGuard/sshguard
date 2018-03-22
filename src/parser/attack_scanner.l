@@ -75,6 +75,7 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
 IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)){3})
  /* IPv6 addresses including compressed variants (RFC 2373) */
 IPV6        (::|:(:[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:([0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,5}|(:[0-9a-fA-F]{1,4}){1,6})|([0-9a-fA-F]{1,4}:){3}([0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,3}|(:[0-9a-fA-F]{1,4}){1,4})|([0-9a-fA-F]{1,4}:){5}([0-9a-fA-F]{1,4}:[0-9a-fA-F]{0,4}:[0-9a-fA-F]{1,4}|(:[0-9a-fA-F]{1,4}){1,2})|([0-9a-fA-F]{1,4}:){1,7}:)
+IFNAME      %[^% \n]{1,15}
  /* an IPv4 packed in IPv6 as IPv4-mapped IPv6 address */
 IPV4MAPPED6 ((:(:0{1,4}){0,4}|0{1,4}:(:0{1,4}){1,3}|(0{1,4}:){2}(0{1,4}:0{0,4}:0{1,4}|(:0{1,4}){1,2})|(0{1,4}:){1,4}):[fF]{4}:(((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5])\.){3}((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5]))
 
@@ -277,6 +278,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* an IPv6 address */
  /* standard | clouds implied | embedded IPv4 */
 {IPV6}                                                          { yylval.str = yytext; return IPv6; }
+{IPV6}{IFNAME}                                                  { yylval.str = yytext; return IPv6_WITH_SUFFIX; }
 
  /* an host address (PTR) */
 {HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }

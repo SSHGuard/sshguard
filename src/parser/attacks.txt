@@ -1,13 +1,18 @@
 Invalid user inexu from 6.6.6.0
 Invalid user inexu from 2001:db8::a11:beef:7ac0
+Invalid user inexu from 2001:db8::a11:beef:7ac0%abcdefgh1234567
 User mario from 6.6.6.0 not allowed because XYZ
 User mario from 2001:db8::a11:beef:7ac0 not allowed because XYZ
+User mario from 2001:db8::a11:beef:7ac0%lo not allowed because XYZ
 Failed XYZ for XYZ from 6.6.6.0 port 14423 ssh2
 Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0 port 14423 ssh2
+Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0%enp3s0 port 14423 ssh2
 error: PAM: authentication failure for mario from 6.6.6.0
 error: PAM: authentication failure for mario from 2001:db8::a11:beef:7ac0
+error: PAM: authentication failure for mario from 2001:db8::a11:beef:7ac0%vbr1
 Did not receive identification string from 6.6.6.0
 Did not receive identification string from 2001:db8::a11:beef:7ac0
+Did not receive identification string from 2001:db8::a11:beef:7ac0%eth0
 Bad protocol version identification XYZ from 6.6.6.0
 Bad protocol version identification XYZ from 2001:db8::a11:beef:7ac0
 authentication failure XYZ 6.6.6.0

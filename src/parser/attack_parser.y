@@ -46,7 +46,7 @@ static void yyerror(attack_t *, const char *);
 }
 
 /* semantic values for tokens */
-%token <str> IPv4 IPv6 HOSTADDR WORD
+%token <str> IPv4 IPv6 IPv6_WITH_SUFFIX HOSTADDR WORD
 %token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID
 
 /* flat tokens */
@@ -178,6 +178,12 @@ addr:
     | IPv6          {
                         attack->address.kind = ADDRKIND_IPv6;
                         strcpy(attack->address.value, $1);
+                    }
+    | IPv6_WITH_SUFFIX
+                    {
+                        attack->address.kind = ADDRKIND_IPv6;
+                        char* percent = strchr($1, '%');
+                        strncpy(attack->address.value, $1, percent - $1);
                     }
     | HOSTADDR      {
                         if (!attack_from_hostname(attack, $1)) {
