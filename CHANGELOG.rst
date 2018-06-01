@@ -24,6 +24,7 @@ un-deprecated, contact the project mailing list.
 - Add monitoring support for new service: SSHGuard
 - Firewall backends now support blocking subnets.
 - Add new IPV6_SUBNET and IPV4_SUBNET configuration options. Defaults to traditional single-address blocking.
+- Add monitoring support for new service: OpenSMTPD
 
 **Changed**
 

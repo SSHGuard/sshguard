@@ -41,7 +41,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for SSHGuard */
 %s sshguard_attack sshguard_block
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr opensmtpd_failedcmd
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for HTTP services */
@@ -260,6 +260,13 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* WordPress.
     HTTP 200 OK responses to /wp-login.php via POST are failed requests, but GET or 302 aren’t. */
 <clf_request>" \"POST "{WORDPRESS_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_WORDPRESS_SUFF; }
+
+ /* OpenSMTPD. */
+ /* Unsupported command when attempting to log in. */
+[a-z0-9]+" smtp event=failed-command address="                  { BEGIN(opensmtpd_failedcmd); return OPENSMTPD_FAILED_CMD_PREF; }
+<opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"".+"\" result=\"503 5.5.1 Invalid command: Command not supported\"" { BEGIN(INITIAL); return OPENSMTPD_UNSUPPORTED_CMD_SUFF; }
+ /* Bad credentials */
+<opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"AUTH ".+"\" result=\"535 Authentication failed\"" { BEGIN(INITIAL); return OPENSMTPD_AUTHFAIL_SUFF; }
 
 
  /**         COMMON-USE TOKENS       do not touch these          **/

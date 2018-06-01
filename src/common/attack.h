@@ -35,6 +35,7 @@ enum service {
     SERVICES_EXIM           = 240,  //< exim
     SERVICES_SENDMAIL       = 250,  //< sendmail
     SERVICES_POSTFIX        = 260,  //< postfix
+    SERVICES_OPENSMTPD      = 270,  //< OpenSMTPD
     SERVICES_FREEBSDFTPD    = 300,  //< ftpd shipped with FreeBSD
     SERVICES_PROFTPD        = 310,  //< ProFTPd
     SERVICES_PUREFTPD       = 320,  //< Pure-FTPd
