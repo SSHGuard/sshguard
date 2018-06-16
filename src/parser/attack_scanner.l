@@ -41,7 +41,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for SSHGuard */
 %s sshguard_attack sshguard_block
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr sendmail_relaydenied sendmail_authfailure postfix_loginerr opensmtpd_failedcmd
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr opensmtpd_failedcmd
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for HTTP services */
@@ -199,6 +199,9 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* Exim */
 .*"authenticator failed for ".+" ["                             { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
 <exim_esmtp_autherr>"]"(:{NUMBER})?(" I=".+)?(" U=".+)?": 535 Incorrect authentication data"(" (set_id=".+")")?    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
+
+.*"SMTP protocol error in \"AUTH LOGIN\" H=(".*") ["           { BEGIN(exim_esmtp_loginerr); return EXIM_ESMTP_LOGINFAIL_PREF; }
+<exim_esmtp_loginerr>"] AUTH command used when not advertised"  { BEGIN(INITIAL); return EXIM_ESMTP_LOGINFAIL_SUFF; }
 
  /* Sendmail */
 "Relaying denied. IP name lookup failed ["                      { BEGIN(sendmail_relaydenied); return SENDMAIL_RELAYDENIED_PREF; }

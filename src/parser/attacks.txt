@@ -19,6 +19,8 @@ authentication failure XYZ 6.6.6.0
 authentication failure XYZ 2001:db8::a11:beef:7ac0
 XYZ auth_plaintext authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
 XYZ auth_plaintext authenticator failed for XYZ [2001:db8::a11:beef:7ac0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
+SMTP protocol error in "AUTH LOGIN" H=(XYZ) [6.6.6.0] AUTH command used when not advertised
+SMTP protocol error in "AUTH LOGIN" H=(XYZ) [2001:db8::a11:beef:7ac0] AUTH command used when not advertised
 Relaying denied. IP name lookup failed [6.6.6.0]
 Relaying denied. IP name lookup failed [2001:db8::a11:beef:7ac0]
 imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=6.6.6.0, lip=127.0.0.1
