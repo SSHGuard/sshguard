@@ -47,7 +47,7 @@ static void yyerror(attack_t *, const char *);
 
 /* semantic values for tokens */
 %token <str> IPv4 IPv6 HOSTADDR WORD
-%token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID
+%token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID BUSYBOX_SYSLOG_BANNER_PID
 
 /* flat tokens */
 %token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 METALOG_BANNER SOCKLOG_BANNER
@@ -110,6 +110,7 @@ text:
     | multilogent
     | metalogent
     | socklogent
+    | busyboxent
     | logmsg
     ;
 
@@ -142,6 +143,11 @@ metalogent:
 socklogent:
     SOCKLOG_BANNER_PID logmsg
     | SOCKLOG_BANNER logmsg
+    ;
+
+/* a busybox syslog log entry */
+busyboxent:
+    BUSYBOX_SYSLOG_BANNER_PID logmsg
     ;
 
 /* the "payload" of a log entry: the oridinal message generated from a process */

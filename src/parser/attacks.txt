@@ -55,6 +55,8 @@ Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 2001:db8::a11:beef:
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [2001:db8::a11:beef:7ac0] U=CALLER: 535 Incorrect authentication data (set_id=userx)
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 192.168.2.1
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 2001:db8::a11:beef:7ac0
+Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 192.168.2.2
+Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 2001:db8::a11:beef:7ac0
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 192.168.2.200: 14: No supported authentication methods available [preauth]
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 2001:db8::a11:beef:7ac0: 14: No supported authentication methods available [preauth]
 Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[24.213.217.114]
