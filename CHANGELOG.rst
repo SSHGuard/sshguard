@@ -10,8 +10,21 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+Unreleased
+==========
+**Added**
+
+- OpenSMTPD monitoring support
+- Recognize IPv6 addresses with interface name
+
+**Fixed**
+
+- Use correct signal names in driver shell script
+
 2.1.0
 =====
+2017-10-08
+
 **Added**
 
 - Add **nftables** backend
