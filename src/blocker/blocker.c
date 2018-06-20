@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
     char buf[1024];
     attack_t parsed_attack;
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
-        if (sscanf(buf, "%d %46s %d %d\n", &parsed_attack.service,
+        if (sscanf(buf, "%d %46s %d %d\n", (int*)&parsed_attack.service,
                   parsed_attack.address.value, &parsed_attack.address.kind,
                   &parsed_attack.dangerousness) == 4) {
             sshguard_log(LOG_NOTICE,
