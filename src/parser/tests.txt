@@ -52,6 +52,15 @@ M
 Bad protocol version identification XYZ from 2001:db8::a11:beef:7ac0
 100 2001:db8::a11:beef:7ac0 6 10
 M
+Dec  1 06:25:27 server sshd[19956]: Accepted publickey for User from 1.2.3.4 port 21563 ssh2: RSA SHA256:...
+*
+M
+Dec  1 06:25:27 server sshd[19471]: Received disconnect from 1.2.3.4 port 60058:11: disconnected by user
+*
+M
+Dec  1 06:25:27 server sshd[19471]: Disconnected from 1.2.3.4 port 60058
+*
+M
 authentication failure XYZ 6.6.6.0
 230 6.6.6.0 4 10
 M
