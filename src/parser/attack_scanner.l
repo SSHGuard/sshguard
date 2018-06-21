@@ -190,7 +190,8 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "Bad protocol version identification".*" from "                 { BEGIN(ssh_badproto); return SSH_BADPROTOCOLIDENTIF; }
 <ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
 
-.*"Unable to negotiate with "                                   { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
+"Unable to negotiate with "                                     { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
+<ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
 
  /* SSHGuard */
 "Attack from \""                                                { BEGIN(sshguard_attack); return SSHGUARD_ATTACK_PREF; }
@@ -198,17 +199,14 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "Blocking \""                                                   { BEGIN(sshguard_block); return SSHGUARD_BLOCK_PREF; }
 <sshguard_block>"/"{NUMBER}"\" for "{NUMBER}" secs ("{NUMBER}" attacks in "{NUMBER}" secs,".+  { BEGIN(INITIAL); return SSHGUARD_BLOCK_SUFF; }
 
-
-<ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
-
  /* Cucipop */
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
 
  /* Exim */
-.*"authenticator failed for ".+" ["                             { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
+"authenticator failed for ".+" ["                               { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
 <exim_esmtp_autherr>"]"(:{NUMBER})?(" I=".+)?(" U=".+)?": 535 Incorrect authentication data"(" (set_id=".+")")?    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
 
-.*"SMTP protocol error in \"AUTH LOGIN\" H=(".*") ["           { BEGIN(exim_esmtp_loginerr); return EXIM_ESMTP_LOGINFAIL_PREF; }
+"SMTP protocol error in \"AUTH LOGIN\" H=(".*") ["              { BEGIN(exim_esmtp_loginerr); return EXIM_ESMTP_LOGINFAIL_PREF; }
 <exim_esmtp_loginerr>"] "("AUTH command used when not advertised"|"LOGIN authentication mechanism not supported")  { BEGIN(INITIAL); return EXIM_ESMTP_LOGINFAIL_SUFF; }
 
  /* Sendmail */

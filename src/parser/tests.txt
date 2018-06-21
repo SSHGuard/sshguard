@@ -25,6 +25,9 @@ M
 Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0%enp3s0 port 14423 ssh2
 100 2001:db8::a11:beef:7ac0 6 10
 M
+fatal: Unable to negotiate with 6.6.6.6 port 2222: no matching key exchange method found. Their offer: diffie-hellman-group14-sha1
+100 6.6.6.6 4 10
+M
 error: PAM: authentication failure for mario from 6.6.6.0
 100 6.6.6.0 4 10
 M
@@ -55,10 +58,10 @@ M
 authentication failure XYZ 2001:db8::a11:beef:7ac0
 230 2001:db8::a11:beef:7ac0 6 10
 M
-XYZ auth_plaintext authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
+authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
 240 6.6.6.0 4 10
 M
-XYZ auth_plaintext authenticator failed for XYZ [2001:db8::a11:beef:7ac0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
+authenticator failed for XYZ [2001:db8::a11:beef:7ac0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
 240 2001:db8::a11:beef:7ac0 6 10
 M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [6.6.6.0] AUTH command used when not advertised
@@ -279,7 +282,7 @@ M
 M
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
-M
+X
 reverse mapping checking getaddrinfo for XYZ [6.6.6.0] XYZ POSSIBLE BREAK-IN ATTEMPT!
 *
 M
