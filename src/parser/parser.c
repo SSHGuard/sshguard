@@ -14,7 +14,7 @@
 
 #define MAX_LEN 1000
 
-int test_result = 0;
+unsigned int test_counter = 0;
 
 static void print_attack(const attack_t *attack) {
     printf("%d %s %d %d\n", attack->service, attack->address.value,
@@ -39,7 +39,6 @@ static void print_usage() {
 
 static void test_next_line(char buf[static MAX_LEN]) {
     static unsigned char state = 0;
-    static unsigned int test_counter = 0;
     static char expected[MAX_LEN], result[MAX_LEN];
     static bool match;
 
@@ -69,7 +68,6 @@ static void test_next_line(char buf[static MAX_LEN]) {
             switch (buf[0]) {
                 case 'M': // expected match
                     putchar('\n');
-                    if (!match) test_result = 1;
                     break;
                 case 'X': // expected fail
                     printf(" # TODO\n");
@@ -139,6 +137,6 @@ int main(int argc, char *argv[]) {
     }
 
     if (test_mode) {
-        return test_result;
+        printf("1..%d\n", test_counter);
     }
 }
