@@ -51,6 +51,7 @@ static void yyerror(attack_t *, const char *);
 
 /* flat tokens */
 %token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 METALOG_BANNER SOCKLOG_BANNER
+%token REPETITIONS
 %token HTTP_REQUEST HTTP_VERSION HTTP_REDIRECT HTTP_AUTHFAIL HTTP_CLIERROR
 %token HTTP_BOTSEARCH_WEBMAIL HTTP_BOTSEARCH_PHPMYADMIN HTTP_BOTSEARCH_WORDPRESS HTTP_BOTSEARCH
 /* ssh */
@@ -152,7 +153,11 @@ busyboxent:
 
 /* the "payload" of a log entry: the oridinal message generated from a process */
 logmsg:
-    msg_single
+    msg_single repetition_suffix
+    ;
+
+repetition_suffix:
+    | REPETITIONS
     ;
 
 msg_single:

@@ -303,6 +303,8 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* iso8601 timestamp */
 {TIMESTAMP_ISO8601}                                             { return TIMESTAMP_ISO8601; }
 
+": "[0-9]+" Time(s)"                                              return REPETITIONS;
+
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }
 [ \n\t]+            /* eat blanks */

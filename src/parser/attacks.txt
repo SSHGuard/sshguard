@@ -91,3 +91,4 @@ Blocking "192.68.18.2/32" for 300 secs (3 attacks in 5 secs, after 1 abuses over
 Blocking "2001:db8::a11:beef:456f/64" for 300 secs (3 attacks in 5 secs, after 1 abuses over 5 secs.)
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
 45addba89269aeaa smtp event=failed-command address=128.237.183.69 host=zeta.wv.cc.cmu.edu command="AUTH PLAIN (...)" result="535 Authentication failed"
+2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
