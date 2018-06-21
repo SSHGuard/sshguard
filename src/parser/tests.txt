@@ -1,94 +1,339 @@
 Invalid user inexu from 6.6.6.0
+100 6.6.6.0 4 10
+M
 Invalid user inexu from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Invalid user inexu from 2001:db8::a11:beef:7ac0%abcdefgh1234567
+100 2001:db8::a11:beef:7ac0 6 10
+M
 User mario from 6.6.6.0 not allowed because XYZ
+100 6.6.6.0 4 10
+M
 User mario from 2001:db8::a11:beef:7ac0 not allowed because XYZ
+100 2001:db8::a11:beef:7ac0 6 10
+M
 User mario from 2001:db8::a11:beef:7ac0%lo not allowed because XYZ
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Failed XYZ for XYZ from 6.6.6.0 port 14423 ssh2
+100 6.6.6.0 4 10
+M
 Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0 port 14423 ssh2
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0%enp3s0 port 14423 ssh2
+100 2001:db8::a11:beef:7ac0 6 10
+M
 error: PAM: authentication failure for mario from 6.6.6.0
+100 6.6.6.0 4 10
+M
 error: PAM: authentication failure for mario from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 error: PAM: authentication failure for mario from 2001:db8::a11:beef:7ac0%vbr1
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Did not receive identification string from 6.6.6.0
+100 6.6.6.0 4 10
+M
 Did not receive identification string from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Did not receive identification string from 2001:db8::a11:beef:7ac0%eth0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Bad protocol version identification XYZ from 6.6.6.0
+100 6.6.6.0 4 10
+M
 Bad protocol version identification XYZ from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 authentication failure XYZ 6.6.6.0
+230 6.6.6.0 4 10
+M
 authentication failure XYZ 2001:db8::a11:beef:7ac0
+230 2001:db8::a11:beef:7ac0 6 10
+M
 XYZ auth_plaintext authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
+240 6.6.6.0 4 10
+M
 XYZ auth_plaintext authenticator failed for XYZ [2001:db8::a11:beef:7ac0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
+240 2001:db8::a11:beef:7ac0 6 10
+M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [6.6.6.0] AUTH command used when not advertised
+240 6.6.6.0 4 10
+M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [2001:db8::a11:beef:7ac0] AUTH command used when not advertised
+240 2001:db8::a11:beef:7ac0 6 10
+M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [6.6.6.0] LOGIN authentication mechanism not supported
+240 6.6.6.0 4 10
+M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [2001:db8::a11:beef:7ac0] LOGIN authentication mechanism not supported
+240 2001:db8::a11:beef:7ac0 6 10
+M
 Relaying denied. IP name lookup failed [6.6.6.0]
+250 6.6.6.0 4 10
+M
 Relaying denied. IP name lookup failed [2001:db8::a11:beef:7ac0]
+250 2001:db8::a11:beef:7ac0 6 10
+M
 imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=6.6.6.0, lip=127.0.0.1
+210 6.6.6.0 4 10
+M
 imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=2001:db8::a11:beef:7ac0, lip=127.0.0.1
+210 2001:db8::a11:beef:7ac0 6 10
+M
 Login failed user=XYZ auth=XYZ host=XYZ [6.6.6.0]
+200 6.6.6.0 4 10
+M
 Login failed user=XYZ auth=XYZ host=XYZ [2001:db8::a11:beef:7ac0]
+200 2001:db8::a11:beef:7ac0 6 10
+M
 badlogin: XYZ [6.6.6.0] XYZ SASL XYZ checkpass failed
+220 6.6.6.0 4 10
+M
 badlogin: XYZ [2001:db8::a11:beef:7ac0] XYZ SASL XYZ checkpass failed
+220 2001:db8::a11:beef:7ac0 6 10
+M
 FTP LOGIN FAILED FROM 6.6.6.0, XYZ
+300 6.6.6.0 4 10
+M
 FTP LOGIN FAILED FROM 2001:db8::a11:beef:7ac0, XYZ
+300 2001:db8::a11:beef:7ac0 6 10
+M
 foo.com (foo.com [6.6.6.0]) XYZ no such user XYZ
+310 6.6.6.0 4 10
+M
 foo.com (foo.com [2001:db8::a11:beef:7ac0]) XYZ no such user XYZ
+310 2001:db8::a11:beef:7ac0 6 10
+M
 (XYZ@6.6.6.0) [WARNING] Authentication failed for user XYZ
+320 6.6.6.0 4 10
+M
 (XYZ@2001:db8::a11:beef:7ac0) [WARNING] Authentication failed for user XYZ
+320 2001:db8::a11:beef:7ac0 6 10
+M
 XYZ FAIL LOGIN: Client "6.6.6.0"
+330 6.6.6.0 4 10
+M
 XYZ FAIL LOGIN: Client "2001:db8::a11:beef:7ac0"
+330 2001:db8::a11:beef:7ac0 6 10
+M
 Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[199.19.110.207]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+260 199.19.110.207 4 10
+M
 Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[2001:db8::a11:beef:7ac0]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+260 2001:db8::a11:beef:7ac0 6 10
+M
 Apr 10 02:43:29 quasar sshd[50112]: Connection closed by 66.240.236.119 [preauth]
+100 66.240.236.119 4 10
+M
 Apr 10 02:43:29 quasar sshd[50112]: Connection closed by 2001:db8::a11:beef:7ac0 [preauth]
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Apr 10 13:50:24 quasar sshd[53269]: error: Received disconnect from 95.9.156.208: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
+100 95.9.156.208 4 10
+M
 Apr 10 13:50:24 quasar sshd[53269]: error: Received disconnect from 2001:db8::a11:beef:7ac0: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Apr 10 06:55:42 quasar sshd[50880]: Received disconnect from 130.207.203.56: 11: These aren't the droids we're looking for. [preauth]
+100 130.207.203.56 4 10
+M
 Apr 10 06:55:42 quasar sshd[50880]: Received disconnect from 2001:db8::a11:beef:7ac0: 11: These aren't the droids we're looking for. [preauth]
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 103.237.33.58: 11: Bye Bye [preauth]
+100 103.237.33.58 4 10
+M
 Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 2001:db8::a11:beef:7ac0: 11: Bye Bye [preauth]
+100 2001:db8::a11:beef:7ac0 6 10
+M
 2015-03-12 03:17:22 login authenticator failed for vps.o2c.net (User) [87.76.31.6]: 535 Incorrect authentication data (set_id=dog)
+240 87.76.31.6 4 10
+M
 2015-03-12 03:17:22 login authenticator failed for vps.o2c.net (User) [2001:db8::a11:beef:7ac0]: 535 Incorrect authentication data (set_id=dog)
+240 2001:db8::a11:beef:7ac0 6 10
+M
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=userx)
+240 10.0.0.1 4 10
+M
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [2001:db8::a11:beef:7ac0] U=CALLER: 535 Incorrect authentication data (set_id=userx)
+240 2001:db8::a11:beef:7ac0 6 10
+M
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 192.168.2.1
+100 192.168.2.1 4 10
+M
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 192.168.2.2
+100 192.168.2.2 4 10
+M
 Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 192.168.2.200: 14: No supported authentication methods available [preauth]
+100 192.168.2.200 4 10
+M
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 2001:db8::a11:beef:7ac0: 14: No supported authentication methods available [preauth]
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[24.213.217.114]
+260 24.213.217.114 4 10
+M
 Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[2001:db8::a11:beef:7ac0]
+260 2001:db8::a11:beef:7ac0 6 10
+M
 error: maximum authentication attempts exceeded for root from 117.81.26.226 port 4919 ssh2 [preauth]
+100 117.81.26.226 4 10
+M
 error: maximum authentication attempts exceeded for root from 2001:db8::a11:beef:7ac0 port 4919 ssh2 [preauth]
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Invalid user support from 190.50.238.98 port 32836
+100 190.50.238.98 4 10
+M
 Invalid user support from 2001:db8::a11:beef:7ac0 port 32836
+100 2001:db8::a11:beef:7ac0 6 10
+M
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15 user=jeff
+340 172.22.10.15 4 10
+M
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac0 user=root
+340 2001:db8::a11:beef:7ac0 6 10
+M
 Failed password for invalid user admin from 172.22.10.15 port 39065 ssh2
+100 172.22.10.15 4 10
+M
 Failed password for invalid user admin from 2001:db8::a11:beef:7ac1 port 39065 ssh2
+100 2001:db8::a11:beef:7ac1 6 10
+M
 10.42.42.39 - "jeff" [19/Apr/1943:03:14:13 +0000] "GET /secret-base HTTP/1.1" 401 356 "EvilAgent/2.0"
+350 10.42.42.39 4 10
+M
 10.42.42.40 - - [19/Apr/1943:03:14:10 +0000] "GET /wp-login.php HTTP/1.1" 404 1 "-" "Mozilla/5.0"
+360 10.42.42.40 4 10
+M
 10.42.42.41 - - [19/Apr/1943:03:14:11 +0000] "GET /wp-admin.php HTTP/1" 401 - "-" "Mozilla/5.0"
+360 10.42.42.41 4 10
+M
 10.42.42.42 - - [19/Apr/1943:03:14:12 +0000] "GET /wordress/wp-login.php HTTP/2.0" 404 2571 "-" "Mozilla/5.0" "extra-field" "more-data"
+360 10.42.42.42 4 10
+M
 10.42.42.43 - - [19/Apr/1943:03:14:13 +0000] "GET /roundcube HTTP/1.1" 410 3
+360 10.42.42.43 4 10
+M
 2001:db8::a11:beef:7aa0 - - [19/Apr/1943:03:14:14 +0000] "GET /roundcube HTTP/2.0" 403 0 "-" "Mozilla/4.0"
+360 2001:db8::a11:beef:7aa0 6 10
+M
 10.42.42.44 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 404 56 "-"
+360 10.42.42.44 4 10
+M
 2001:db8::a11:beef:7aa1 - - [19/Apr/1943:03:14:14 +0000] "GET /roundcube HTTP/2.0" 404 -
+360 2001:db8::a11:beef:7aa1 6 10
+M
 10.42.42.45 - - [19/Apr/1943:03:14:17 +0000] "GET /roundcube/ HTTP/2.0" 410 - "-" "Mozilla/4.0"
+360 10.42.42.45 4 10
+M
 Jul  4 13:55:09 karpov sshd[64301]: Disconnecting invalid user user 10.42.42.42 port 38987: Change of username or service not allowed: (user,ssh-connection) -> (manager,ssh-connection) [preauth]
+100 10.42.42.42 4 10
+M
 2001:db8::a11:b2ef:78f2 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
+370 2001:db8::a11:b2ef:78f2 6 10
+M
 10.42.57.1 - - [19/Apr/1943:03:14:10 +0000] "POST /wp-login.php HTTP/1.1" 200 1056
+370 10.42.57.1 4 10
+M
 2001:db8::a11:beef:7aa2 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
+370 2001:db8::a11:beef:7aa2 6 10
+M
 192.68.11.1 - - [19/Apr/1943:03:14:11 +0000] "POST /wordpress/wp-login.php HTTP/1.1" 200 781 "-" "Googlebot"
+370 192.68.11.1 4 10
+M
 192.68.11.1 - - [19/Apr/1943:03:14:12 +0000] "POST /wp/wp-login.php HTTP/1.1" 200 - "-" "Mozilla/5.0"
+370 192.68.11.1 4 10
+M
 2001:db8::a11:beef:7aa3 - "admin" [19/Apr/1943:03:14:13 +0000] "GET /admin/system HTTP/1.1" 401 -
+350 2001:db8::a11:beef:7aa3 6 10
+M
 Attack from "2001:db8::a11:beef:456e" on service 100 with danger 10.
+110 2001:db8::a11:beef:456e 6 10
+M
 Attack from "192.68.18.1" on service 100 with danger 10.
+110 192.68.18.1 4 10
+M
 Blocking "192.68.18.2/32" for 300 secs (3 attacks in 5 secs, after 1 abuses over 5 secs.)
+110 192.68.18.2 4 10
+M
 Blocking "2001:db8::a11:beef:456f/64" for 300 secs (3 attacks in 5 secs, after 1 abuses over 5 secs.)
+110 2001:db8::a11:beef:456f 6 10
+M
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
+270 185.236.202.133 4 10
+M
 45addba89269aeaa smtp event=failed-command address=128.237.183.69 host=zeta.wv.cc.cmu.edu command="AUTH PLAIN (...)" result="535 Authentication failed"
+270 128.237.183.69 4 10
+M
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
+240 123.24.161.123 4 10
+M
+reverse mapping checking getaddrinfo for XYZ [6.6.6.0] XYZ POSSIBLE BREAK-IN ATTEMPT!
+*
+M
+10.42.42.40 - - [19/Apr/1943:03:14:15 +0000] "GET / HTTP/1.1" 401 314 "-" "Mozilla/5.0"
+*
+M
+2001:db8::a11:beef:7ac0 - - [19/Apr/1943:03:14:15 +0000] "GET / HTTP/2.0" 301 401 "-" "Mozilla/5.0"
+*
+M
+10.42.42.42 - - [19/Apr/1943:03:14:15 +0000] "GET / HTTP/2.0" 301 401 314 "-" "Mozilla/5.0"
+*
+M
+10.42.42.44 - [19/Apr/1943:03:14:15 +0000] "GET / HTTP/2.0" 301 401 314 "-" "Mozilla/5.0"
+*
+M
+10.42.42.45 - - [19/Apr/1943:03:14:15 +0000] "GET wp-login.php HTTP/1.1" 200 "-" "Mozilla/5.0"
+*
+M
+10.42.42.46 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 200 "-" "Mozilla/5.0"
+*
+M
+10.42.42.47 - - [19/Apr/1943:03:14:15 +0000] "POST /wp-login.php HTTP/1.1" 302 200 "-" "Mozilla/5.0"
+*
+M
+10.42.42.48 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 301 201 "-" "Mozilla/5.0"
+*
+M
+2001:db8::a11:beef:7ac1 - - [19/Apr/1943:03:14:15 +0000] "POST /wp-login.php HTTP/1.1" 302 201 "-" "Mozilla/5.0"
+*
+M
+10.42.42.49 - - [19/Apr/1943:03:14:15 +0000] "GET /wp-login.php HTTP/1.1" 302 200 "-" "Mozilla/5.0"
+*
+M
+10.42.42.50 - - [19/Apr/1943:03:14:15 +0000] "GET roundcube HTTP/1.1" 200 "-" "Mozilla/4.0"
+*
+M
+10.42.42.51 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube HTTP/1.1" 200 "-" "Mozilla/4.0"
+*
+M
+10.42.42.52 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube HTTP/1.1" 301 200 "-" "Mozilla/4.0"
+*
+M
+10.42.42.53 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube HTTP/1.1" 301 201 "-" "Mozilla/4.0" "extra-field" "more-data"
+*
+M
+2001:db8::a11:beef:7ac2 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube/ HTTP/1.1" 200 "-" "Mozilla/4.0"
+*
+M
+10.42.42.54 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube/ HTTP/1.1" 301 200 "-" "Mozilla/4.0"
+*
+M
+10.42.42.55 - - [19/Apr/1943:03:14:15 +0000] "GET /roundcube/ HTTP/1.1" 301 201 "-" "Mozilla/4.0"
+*
+M
+10.42.42.56 - - [19/Apr/1943:03:14:15 +0000] "GET /somewhere HTTP/1.1" 200 "https://example.com/wp-admin.php" "Mozilla/5.0"
+*
+M

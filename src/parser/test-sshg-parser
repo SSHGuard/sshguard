@@ -1,5 +1,2 @@
 #!/bin/sh
-
-cat attacks.txt | ./sshg-parser | diff -u expected.txt - || exit 1
-
-cat not-attacks.txt | ./sshg-parser | diff -u /dev/null - || exit 1
+exec ./sshg-parser -t < tests.txt
