@@ -161,10 +161,6 @@ int main(int argc, char *argv[]) {
         if (sscanf(buf, "%d %46s %d %d\n", (int*)&parsed_attack.service,
                   parsed_attack.address.value, &parsed_attack.address.kind,
                   &parsed_attack.dangerousness) == 4) {
-            sshguard_log(LOG_NOTICE,
-                         "Attack from \"%s\" on service %d with danger %u.",
-                         parsed_attack.address.value, parsed_attack.service,
-                         parsed_attack.dangerousness);
             report_address(parsed_attack);
         } else {
             sshguard_log(LOG_ERR, "Could not parse attack data.");
@@ -225,7 +221,12 @@ static void report_address(attack_t attack) {
                 attack.address.value);
         return;
     }
-    
+
+    sshguard_log(LOG_NOTICE,
+                 "Attack from \"%s\" on service %d with danger %u.",
+                 attack.address.value, attack.service,
+                 attack.dangerousness);
+
     /* search entry in list */
     tmpent = list_seek(& limbo, & attack.address);
     if (tmpent == NULL) { /* entry not already in list, add it */
