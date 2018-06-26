@@ -305,7 +305,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }
-[ \n\t]+            /* eat blanks */
+[ \n\r\t]+            /* eat blanks */
  /* literals */
  /*\n                                                              { return NEWLINE; } */
 .                                                               { return yytext[0]; }
