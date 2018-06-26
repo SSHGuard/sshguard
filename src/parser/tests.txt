@@ -192,6 +192,12 @@ M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [2001:db8::a11:beef:7ac0] LOGIN authentication mechanism not supported
 240 2001:db8::a11:beef:7ac0 6 10
 M
+2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
+240 123.24.161.123 4 10
+X
+2018-06-03 13:35:07 SMTP protocol error in "AUTH LOGIN" H=dynamic-186-31-81-98.dynamic.etb.net.co (mail.example.com) [186.31.81.98] AUTH command used when not advertised: 1 Time(s)
+240 186.31.81.98 4 10
+X
 Relaying denied. IP name lookup failed [6.6.6.0]
 250 6.6.6.0 4 10
 M
@@ -443,3 +449,8 @@ M
 10.42.42.56 - - [19/Apr/1943:03:14:15 +0000] "GET /somewhere HTTP/1.1" 200 "https://example.com/wp-admin.php" "Mozilla/5.0"
 *
 M
+
+# Greedy SYSLOG_BANNER token (#93)
+2018-06-26 13:22:02.108781500 Failed password for woold from 10.10.10.76 port 34718 ssh2
+100 10.10.10.76 4 10
+X
