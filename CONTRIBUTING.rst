@@ -4,11 +4,47 @@ How to Contribute
 
 .. contents::
 
-Issue Tracker
-=============
+For Users
+=========
+Your feedback on how you use SSHGuard, what you like, and what annoys you,
+helps us improve SSHGuard.
 
-Workflow
---------
+- Subscribe to the `users mailing list
+  <https://sourceforge.net/projects/sshguard/lists/sshguard-users>`_ and
+  contribute to discussions on issues you care about.
+
+- Vote for issues on the `issue tracker`_.
+
+- Report log messages that should or should not be identified as attacks on
+  the `issue tracker`_.
+
+- Consider maintaining a package for SSHGuard on your operating system.
+
+If there's any part of the code you'd like to dive into, post on the list and
+we'll show you where to get started.
+
+.. _issue tracker: https://bitbucket.org/sshguard/sshguard/issues?status=new&status=open
+
+For Committers
+==============
+
+Commit Guidelines
+-----------------
+- **Merge via fast-forward and rebase**. Where possible, merge pull requests
+  and branches by rebasing on top of master and fast-forwarding, without
+  creating a separate merge commit. Linear history makes it possible for us to
+  bisect regressions.
+
+- **50 character subject line**, followed by a blank and more details in the
+  body if needed, in the commit message.
+
+- **Work in topic branches as needed**. For changes big or small, feel free to
+  use public topic branches in the SSHGuard repository.  After review, they go
+  in by rebasing master. Topic branches are usually deleted after merging.
+  Force pushes are welcome in topic branches but not allowed in master.
+
+Issue Tracker Workflow
+----------------------
 An explanation of workflow states that aren't self-explanatory:
 
 Open
@@ -28,26 +64,6 @@ Wontfix
 
 Closed
     No action taken, issue resolved (e.g. already fixed in ``master``)
-
-
-For Committers
-==============
-
-Commit Guidelines
------------------
-This project has a strong preference for fast-forward commits. Where
-possible, merge pull requests and branches by rebasing on top of master and
-fast-forwarding (without a separate merge commit). It's a holdover from when
-the Subversion repository was being updated from Git and may need to be
-revisited in the future, but has its benefits of linear history and
-consistency with what we've done.
-
-We like descriptive commit messages.
-
-For big changes, feel free to use topic branches in the SSHGuard repository.
-After review, they go in by rebasing master. Topic branches are usually
-deleted after merging. Force pushes are welcome in topic branches but not
-allowed in master.
 
 Release Checklist
 -----------------
