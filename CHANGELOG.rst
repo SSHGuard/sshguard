@@ -10,12 +10,21 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
-Unreleased
-==========
+2.2.0
+=====
 **Added**
 
+- Add '--disable-maintainer-mode' in configure for package maintainers
+- BusyBox log banner detection
+- Match Exim "auth mechanism not supported"
+- Match Exim "auth when not advertised"
 - OpenSMTPD monitoring support
 - Recognize IPv6 addresses with interface name
+
+**Changed**
+
+- Ignore CR in addition to LF
+- Only log attacks if not already blocked or whitelisted
 
 **Fixed**
 
