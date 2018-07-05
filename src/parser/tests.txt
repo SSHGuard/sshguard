@@ -213,6 +213,9 @@ M
 Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[2001:db8::a11:beef:7ac0]
 260 2001:db8::a11:beef:7ac0 6 10
 M
+Jun 20 16:46:17 ares postgrey[919]: action=greylist, reason=early-retry (295s missing), client_name=r244.mail.kbc.be, client_address=172.82.231.244, sender=bounce@mail.kbc.be, recipient=lilydehoux@zeelandned.nl
+260 172.82.231.244 4 10
+M
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
 270 185.236.202.133 4 10
 M

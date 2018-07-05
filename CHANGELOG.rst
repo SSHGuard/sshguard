@@ -18,6 +18,7 @@ un-deprecated, contact the project mailing list.
 - BusyBox log banner detection
 - Match Exim "auth mechanism not supported"
 - Match Exim "auth when not advertised"
+- Match Postfix greylist early retry
 - OpenSMTPD monitoring support
 - Recognize IPv6 addresses with interface name
 
