@@ -3,7 +3,8 @@
 
 # Unregister recursive SIGTERM, and make sure to kill
 # entire process group (subshell) on exit/interrupts.
-trap "trap - TERM && kill 0" INT TERM EXIT
+trap "exit" INT TERM
+trap "kill 0" EXIT
 
 libexec="@libexecdir@"
 version="@sshguardversion@"
@@ -96,4 +97,5 @@ elif [ -z "$tailcmd" ]; then
 fi
 
 eval $tailcmd | $libexec/sshg-parser | \
-    $libexec/sshg-blocker $flags | ($BACKEND; kill -PIPE $$)
+    $libexec/sshg-blocker $flags | $BACKEND &
+wait
