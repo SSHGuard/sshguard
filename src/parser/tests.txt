@@ -38,6 +38,9 @@ M
 error: PAM: authentication failure for mario from 2001:db8::a11:beef:7ac0%vbr1
 100 2001:db8::a11:beef:7ac0 6 10
 M
+error: PAM: unknown user for illegal user mario from 6.6.6.6
+100 6.6.6.6 4 10
+M
 Did not receive identification string from 6.6.6.0
 100 6.6.6.0 4 10
 M

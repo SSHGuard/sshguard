@@ -178,7 +178,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "Failed "[^ ]+" for "[^ ]+" from "                              { return SSH_LOGINERR_PREF; }
 
  /* wrong password for valid user @ FreeBSD, Debian */
-"error: PAM: "[aA]"uthentication "(error|failure)" for "("illegal user ")?.+" from "            { return SSH_LOGINERR_PAM; }
+"error: PAM: "(([aA]"uthentication "(error|failure))|"unknown user")" for "("illegal user ")?.+" from "            { return SSH_LOGINERR_PAM; }
 "via ".*                                                        { return SSH_VIA; }
 
  /* SSH: connections open and closed without auth attempts */
