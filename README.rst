@@ -26,7 +26,15 @@ Then, build it like a normal source distribution::
 Usage
 =====
 Copy the sample configuration file `<examples/sshguard.conf.sample>`_ and
-follow the setup instructions in `sshguard-setup(7) <doc/sshguard.8.rst>`_.
+follow the setup instructions in `sshguard-setup(7)
+<doc/sshguard-setup.7.rst>`_. See `sshguard(8) <doc/sshguard.8.rst>`_ for
+additional options.
+
+
+Contributing
+============
+See `<CONTRIBUTING.rst>`_ for both people who want to write code, and those
+who do not.
 
 
 License
