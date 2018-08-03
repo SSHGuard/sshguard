@@ -5,35 +5,35 @@ SSHGuard
 services. It aggregates system logs and blocks repeat offenders using one of
 several firewall backends.
 
-- http://www.sshguard.net/
-- http://bitbucket.org/sshguard/sshguard/
-
-
-Documentation
-=============
-See the man pages in *doc/* and the examples in *examples/*. This
-documentation can also be found online at http://www.sshguard.net/docs/.
+- Website: https://www.sshguard.net/
+- Bitbucket: https://bitbucket.org/sshguard/sshguard/
 
 
 Installation
 ============
-See *INSTALL.rst*. Briefly, if you are building from Git::
+See `<INSTALL.rst>`_ for dependencies and detailed instructions. Briefly:
+
+If you are building from **Git**, run this first::
 
     autoreconf -i
-    ./configure
-    make && make install
 
-Otherwise::
+Then, build it like a normal source distribution::
 
     ./configure
     make && make install
+
+
+Usage
+=====
+Copy the sample configuration file `<examples/sshguard.conf.sample>`_ and
+follow the setup instructions in `sshguard-setup(7) <doc/sshguard.8.rst>`_.
 
 
 License
 =======
 **sshguard** is available under the terms of the `OpenBSD license
 <http://cvsweb.openbsd.org/cgi-bin/cvsweb/src/share/misc/license.template?rev=HEAD>`_,
-which is based on the ISC License. See *COPYING* for details.
+which is based on the ISC License. See `<COPYING>`_ for details.
 
 
 Authors
