@@ -7,11 +7,11 @@ IPSET_CMD="ipset -quiet"
 
 fw_init() {
     ${FIREW_CMD} --query-rich-rule="rule family=ipv6 source ipset=sshguard6 drop" || {
-      ${FIREW_CMD} --permanent --new-ipset="sshguard6" --type="hash:ip" --option="family=inet6"
+      ${FIREW_CMD} --permanent --new-ipset="sshguard6" --type="hash:net" --option="family=inet6"
       ${FIREW_CMD} --permanent --add-rich-rule="rule family=ipv6 source ipset=sshguard6 drop"
     }
     ${FIREW_CMD} --query-rich-rule="rule family=ipv4 source ipset=sshguard4 drop" || {
-      ${FIREW_CMD} --permanent --new-ipset="sshguard4" --type="hash:ip" --option="family=inet"
+      ${FIREW_CMD} --permanent --new-ipset="sshguard4" --type="hash:net" --option="family=inet"
       ${FIREW_CMD} --permanent --add-rich-rule="rule family=ipv4 source ipset=sshguard4 drop"
     }
     ${FIREW_CMD} --reload
