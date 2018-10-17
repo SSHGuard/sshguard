@@ -11,11 +11,11 @@ fw_init() {
 }
 
 fw_block() {
-    ipfw table ${IPFW_TABLE} add $1/$3
+    ipfw -q table ${IPFW_TABLE} add $1/$3
 }
 
 fw_release() {
-    ipfw table ${IPFW_TABLE} delete $1/$3
+    ipfw -q table ${IPFW_TABLE} delete $1/$3
 }
 
 fw_flush() {
