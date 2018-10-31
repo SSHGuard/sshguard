@@ -280,6 +280,12 @@ M
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac0 user=root
 340 2001:db8::a11:beef:7ac0 6 10
 M
+pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15
+340 172.22.10.15 4 10
+M
+pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15  user=jeff
+340 172.22.10.15 4 10
+M
 
 #### Web
 10.42.42.39 - "jeff" [19/Apr/1943:03:14:13 +0000] "GET /secret-base HTTP/1.1" 401 356 "EvilAgent/2.0"
