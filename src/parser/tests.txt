@@ -29,6 +29,18 @@ M
 Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0 port 14423 ssh2
 100 2001:db8::a11:beef:7ac0 6 10
 M
+Failed XYZ for XYZ from 2001:db8::a11:beef:7ac1 port 14423 ssh2: ED25519 SHA256:0123456789ABCDEF+/0123456789ABCDEF+/0123456
+100 2001:db8::a11:beef:7ac1 6 10
+M
+Failed XYZ for XYZ from 1.2.3.4 port 14423 ssh2: ECDSA sha256:0123456789abcdef+/0123456789abcdef+/0123456
+100 1.2.3.4 4 10
+M
+Failed XYZ for XYZ from 2001:db8::a11:beef:7ac1 port 14423 ssh2: rsa MD5:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF
+100 2001:db8::a11:beef:7ac1 6 10
+M
+Failed XYZ for XYZ from 1.2.3.4 port 14423 ssh2: dsa md5:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef
+100 1.2.3.4 4 10
+M
 Failed XYZ for XYZ from 2001:db8::a11:beef:7ac0%enp3s0 port 14423 ssh2
 100 2001:db8::a11:beef:7ac0 6 10
 M
