@@ -264,7 +264,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 
  /* cockpit */
 "pam_unix(cockpit:auth): "?"authentication failure; logname= uid=0 euid=0 tty= ruser= rhost="  { BEGIN(cockpit_authfail); return COCKPIT_AUTHFAIL_PREF; }
-<cockpit_authfail>" user=".+                                    { BEGIN(INITIAL); return COCKPIT_AUTHFAIL_SUFF; }
+<cockpit_authfail>" "+"user=".+                                    { BEGIN(INITIAL); return COCKPIT_AUTHFAIL_SUFF; }
 
  /* HTTP Basic AUTH – unauthorized. */
 {CLF_OPT_USER_ID}" "{CLF_USER_NAME}" "{CLF_TIMESTAMP} { BEGIN(clf_request_withuser); return CLF_UNAUTHOIRIZED_PREF; }
