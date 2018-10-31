@@ -312,7 +312,8 @@ vsftpdmsg:
 
 /* attack rules for cockpit */
 cockpitmsg:
-    COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF
+    COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF |
+    COCKPIT_AUTHFAIL_PREF addr
     ;
 
 /* attack rules for HTTP 401 Unauhtorized in common log format */
