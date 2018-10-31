@@ -163,6 +163,9 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* "User tinydns from 1.2.3.4 not allowed because not listed in AllowUsers" */
 "User ".+" from "                                               { BEGIN(ssh_notallowed); return SSH_NOTALLOWEDPREF; }
 <ssh_notallowed>" not allowed because ".+                       { BEGIN(INITIAL); return SSH_NOTALLOWEDSUFF; }
+ /* match disallowed user root (with PermitRootLogin = no) */
+ /* "ROOT LOGIN REFUSED FROM 1.2.3.4" */
+"ROOT LOGIN REFUSED FROM "                                      { BEGIN(ssh_notallowed); return SSH_NOTALLOWEDPREF; }
 
 "error: "?"maximum authentication attempts exceeded for".*"from" { return SSH_MAXAUTH; }
 

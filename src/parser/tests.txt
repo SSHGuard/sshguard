@@ -11,6 +11,12 @@ M
 User mario from 6.6.6.0 not allowed because XYZ
 100 6.6.6.0 4 10
 M
+ROOT LOGIN REFUSED FROM 6.6.6.0 port 14423
+100 6.6.6.0 4 10
+M
+ROOT LOGIN REFUSED FROM 6.6.6.0 port 14423 [preauth]
+100 6.6.6.0 4 10
+M
 User mario from 2001:db8::a11:beef:7ac0 not allowed because XYZ
 100 2001:db8::a11:beef:7ac0 6 10
 M
