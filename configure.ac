@@ -4,7 +4,7 @@ AC_INIT([sshguard], [2.2.0], [sshguard-users@lists.sourceforge.net])
 AM_MAINTAINER_MODE([enable])
 AC_CONFIG_SRCDIR([src/sshguard.in])
 AM_CONFIG_HEADER([src/common/config.h])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_SILENT_RULES([yes])
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
