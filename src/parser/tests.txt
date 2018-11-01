@@ -14,8 +14,8 @@ M
 ROOT LOGIN REFUSED FROM 6.6.6.0 port 14423
 100 6.6.6.0 4 10
 M
-ROOT LOGIN REFUSED FROM 6.6.6.0 port 14423 [preauth]
-100 6.6.6.0 4 10
+ROOT LOGIN REFUSED FROM 2001:db8::a11:beef:7ac1 port 14423 [preauth]
+100 2001:db8::a11:beef:7ac1 6 10
 M
 User mario from 2001:db8::a11:beef:7ac0 not allowed because XYZ
 100 2001:db8::a11:beef:7ac0 6 10
@@ -283,8 +283,8 @@ M
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15
 340 172.22.10.15 4 10
 M
-pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15  user=jeff
-340 172.22.10.15 4 10
+pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac1  user=jeff
+340 2001:db8::a11:beef:7ac1 6 10
 M
 
 #### Web
