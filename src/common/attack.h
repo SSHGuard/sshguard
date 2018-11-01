@@ -36,6 +36,7 @@ enum service {
     SERVICES_SENDMAIL       = 250,  //< sendmail
     SERVICES_POSTFIX        = 260,  //< postfix
     SERVICES_OPENSMTPD      = 270,  //< OpenSMTPD
+    SERVICES_COURIER        = 280,  //< Courier IMAP/POP
     SERVICES_FREEBSDFTPD    = 300,  //< ftpd shipped with FreeBSD
     SERVICES_PROFTPD        = 310,  //< ProFTPd
     SERVICES_PUREFTPD       = 320,  //< Pure-FTPd
@@ -44,6 +45,7 @@ enum service {
     SERVICES_CLF_UNAUTH     = 350,  //< HTTP 401 in common log format
     SERVICES_CLF_PROBES     = 360,  //< probes for common web services
     SERVICES_CLF_WORDPRESS  = 370,  //< WordPress logins in common log format
+    SERVICES_OPENVPN        = 400,  //< OpenVPN
 };
 
 /* an attack (source address & target service info) */

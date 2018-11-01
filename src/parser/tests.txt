@@ -264,6 +264,24 @@ M
 STARTTLS negotiation failed: [2001:470:df49:2:9df9:4e98:31e1:1720]
 220 2001:470:df49:2:9df9:4e98:31e1:1720 6 10
 M
+Jun 24 15:34:21 mail imapd: LOGIN FAILED, user=fakeemail@example.com, ip=[1.2.3.4]
+280 1.2.3.4 4 10
+M
+Jun 24 15:34:21 mail imapd: LOGIN FAILED, user=fakeemail@example.com, ip=[2001:470:df49:2:9df9:4e98:31e1:1720]
+280 2001:470:df49:2:9df9:4e98:31e1:1720 6 10
+M
+Jun 24 15:34:21 mail imapd: LOGIN FAILED, user=fakeemail@example.com, ip=[::ffff:121.226.61.81]
+280 121.226.61.81 4 10
+M
+Jun 24 11:53:25 mail pop3d: LOGIN FAILED, user=britton, ip=[1.2.3.4]
+280 1.2.3.4 4 10
+M
+Jun 24 11:53:25 mail pop3d: LOGIN FAILED, user=britton, ip=[2001:470:df49:2:9df9:4e98:31e1:1720]
+280 2001:470:df49:2:9df9:4e98:31e1:1720 6 10
+M
+Jun 24 11:53:25 mail pop3d: LOGIN FAILED, user=britton, ip=[::ffff:121.226.61.81]
+280 121.226.61.81 4 10
+M
 
 #### FTP
 FTP LOGIN FAILED FROM 6.6.6.0, XYZ
@@ -309,6 +327,14 @@ pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser
 M
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac1  user=jeff
 340 2001:db8::a11:beef:7ac1 6 10
+M
+
+#### OpenVPN
+Sep 04 00:00:06 hostname openvpn[23718]: 54.183.149.10:34791 TLS Error: TLS handshake failed
+400 54.183.149.10 4 10
+M
+Sep 04 00:00:06 hostname openvpn[23718]: [2001:db8::a11:beef:7ac0]:34791 TLS Error: TLS handshake failed
+400 2001:db8::a11:beef:7ac0 6 10
 M
 
 #### Web

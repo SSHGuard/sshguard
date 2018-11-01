@@ -104,6 +104,10 @@ static void yyerror(attack_t *, const char *);
 %token CLF_WORDPRESS_SUFF
 /* OpenSMTPD */
 %token OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_AUTHFAIL_SUFF OPENSMTPD_UNSUPPORTED_CMD_SUFF
+/* courier */
+%token COURIER_AUTHFAIL_PREF
+/* OpenVPN */
+%token OPENVPN_TLS_ERR_SUFF
 
 %%
 
@@ -180,7 +184,9 @@ msg_single:
     | clfunauhtdmsg     {   attack->service = SERVICES_CLF_UNAUTH; }
     | clfwebprobesmsg   {   attack->service = SERVICES_CLF_PROBES; }
     | clfwordpressmsg   {   attack->service = SERVICES_CLF_WORDPRESS; }
-    | opensmtpdmsg	{   attack->service = SERVICES_OPENSMTPD; }
+    | opensmtpdmsg      {   attack->service = SERVICES_OPENSMTPD; }
+    | couriermsg        {   attack->service = SERVICES_COURIER; }
+    | openvpnmsg        {   attack->service = SERVICES_OPENVPN; }
     ;
 
 /* an address */
@@ -337,6 +343,17 @@ clfwordpressmsg:
 opensmtpdmsg:
     OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_AUTHFAIL_SUFF
     | OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_UNSUPPORTED_CMD_SUFF
+    ;
+
+/* attack rules for courier imap/pop */
+couriermsg:
+    COURIER_AUTHFAIL_PREF '[' addr ']'
+    ;
+
+/* attack rules for openvpn */
+openvpnmsg:
+    addr OPENVPN_TLS_ERR_SUFF
+    | '[' addr ']' OPENVPN_TLS_ERR_SUFF
     ;
 
 %%

@@ -290,6 +290,12 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* Bad credentials */
 <opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"AUTH ".+"\" result=\"535 Authentication failed\"" { BEGIN(INITIAL); return OPENSMTPD_AUTHFAIL_SUFF; }
 
+ /* Courier IMAP/POP */
+"LOGIN FAILED, user="[^ ,]+", ip="                              { return COURIER_AUTHFAIL_PREF; }
+
+ /* OpenVPN */
+":"{NUMBER}" TLS Error: TLS handshake failed"                   { return OPENVPN_TLS_ERR_SUFF; }
+
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
