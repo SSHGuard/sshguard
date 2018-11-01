@@ -72,6 +72,7 @@ static void yyerror(attack_t *, const char *);
 %token UWIMAP_LOGINERR
 /* cyrus-imap */
 %token CYRUSIMAP_SASL_LOGINERR_PREF CYRUSIMAP_SASL_LOGINERR_SUFF
+%token CYRUSIMAP_TLS_ERR_PREF
 /* cucipop */
 %token CUCIPOP_AUTHFAIL
 /* exim */
@@ -266,6 +267,7 @@ uwimapmsg:
 
 cyrusimapmsg:
     CYRUSIMAP_SASL_LOGINERR_PREF addr CYRUSIMAP_SASL_LOGINERR_SUFF
+    | CYRUSIMAP_TLS_ERR_PREF '[' addr ']'
     ;
 
 /* cucipop reports @addr@ tried to log in with wrong password */

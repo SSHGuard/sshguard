@@ -252,6 +252,18 @@ M
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
 X
+imaps TLS negotiation failed: [196.52.43.55]
+220 196.52.43.55 4 10
+M
+imaps TLS negotiation failed: [2001:470:df49:2:9df9:4e98:31e1:1720]
+220 2001:470:df49:2:9df9:4e98:31e1:1720 6 10
+M
+STARTTLS negotiation failed: [196.52.43.55]
+220 196.52.43.55 4 10
+M
+STARTTLS negotiation failed: [2001:470:df49:2:9df9:4e98:31e1:1720]
+220 2001:470:df49:2:9df9:4e98:31e1:1720 6 10
+M
 
 #### FTP
 FTP LOGIN FAILED FROM 6.6.6.0, XYZ

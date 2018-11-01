@@ -235,6 +235,9 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "badlogin: "[^\[]*"["                                           { BEGIN(cyrusimap_loginerr); return CYRUSIMAP_SASL_LOGINERR_PREF; }
 <cyrusimap_loginerr>"] ".*"SASL".*"failed".?$                   { BEGIN(INITIAL); return CYRUSIMAP_SASL_LOGINERR_SUFF; }
 
+[iI]"maps TLS negotiation failed: "                             { return CYRUSIMAP_TLS_ERR_PREF; }
+"STARTTLS negotiation failed: "                                 { return CYRUSIMAP_TLS_ERR_PREF; }
+
  /* postfix */
 "warning: "({WORD}|{HOSTADDR})"["                               { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
 <postfix_loginerr>"]: SASL "[-A-Z0-9]+" authentication failed".*    { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
