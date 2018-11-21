@@ -1,0 +1,10 @@
+image: gcc:8
+
+pipelines:
+  default:
+    - step:
+        script:
+          - apt update && apt install -y flex bison python-docutils
+          - autoreconf -i
+          - ./configure
+          - make distcheck
