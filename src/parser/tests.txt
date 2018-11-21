@@ -282,6 +282,9 @@ M
 Jun 24 11:53:25 mail pop3d: LOGIN FAILED, user=britton, ip=[::ffff:121.226.61.81]
 280 121.226.61.81 4 10
 M
+Nov 20 04:12:45 mail imapd-ssl[20815]: LOGIN FAILED, method=PLAIN, ip=[::ffff:177.19.165.26]
+280 177.19.165.26 4 10
+M
 
 #### FTP
 FTP LOGIN FAILED FROM 6.6.6.0, XYZ
