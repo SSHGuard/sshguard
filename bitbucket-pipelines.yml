@@ -1,0 +1,9 @@
+image: gcc:6.1
+
+pipelines:
+  default:
+    - step:
+        script:
+          - ./configure
+          - make
+          - make check
