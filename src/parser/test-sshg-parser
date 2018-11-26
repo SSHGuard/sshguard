@@ -1,2 +1,2 @@
 #!/bin/sh
-exec ./sshg-parser -t < tests.txt
+./sshg-parser -t < $srcdir/tests.txt
