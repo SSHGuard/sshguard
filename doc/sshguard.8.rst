@@ -23,7 +23,7 @@ block brute-force attacks by aggregating system logs
 :Date: January 9, 2017
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 2.2
+:Version: 2.3
 
 SYNOPSIS
 ========

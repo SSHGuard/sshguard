@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.60])
-AC_INIT([sshguard], [2.2.0], [sshguard-users@lists.sourceforge.net])
+AC_INIT([sshguard], [2.3.0], [sshguard-users@lists.sourceforge.net])
 AM_MAINTAINER_MODE([enable])
 AC_CONFIG_SRCDIR([src/sshguard.in])
 AM_CONFIG_HEADER([src/common/config.h])

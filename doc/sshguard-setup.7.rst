@@ -9,7 +9,7 @@ setting up SSHGuard on your system
 :Date: August 19, 2017
 :Manual group: SSHGuard Manual
 :Manual section: 7
-:Version: 2.2
+:Version: 2.3
 
 DESCRIPTION
 ===========
