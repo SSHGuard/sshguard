@@ -135,6 +135,8 @@ syslogent:
 
     /*| TIMESTAMP_SYSLOG hostname procname ':' logmsg*/
     | SYSLOG_BANNER logmsg
+    | TIMESTAMP_ISO8601 logmsg /* some have different timestamps */
+    | TIMESTAMP_ISO8601 WORD logmsg /* handle different timestamp with proc name */
     ;
 
 /* a multilog-generated log entry */

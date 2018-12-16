@@ -194,7 +194,7 @@ SMTP protocol error in "AUTH LOGIN" H=(XYZ) [2001:db8::a11:beef:7ac0] LOGIN auth
 M
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
-X
+M
 2018-06-03 13:35:07 SMTP protocol error in "AUTH LOGIN" H=dynamic-186-31-81-98.dynamic.etb.net.co (mail.example.com) [186.31.81.98] AUTH command used when not advertised: 1 Time(s)
 240 186.31.81.98 4 10
 X
@@ -257,7 +257,7 @@ M
 M
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
-X
+M
 imaps TLS negotiation failed: [196.52.43.55]
 220 196.52.43.55 4 10
 M
@@ -453,4 +453,4 @@ M
 # Greedy SYSLOG_BANNER token (#93)
 2018-06-26 13:22:02.108781500 Failed password for woold from 10.10.10.76 port 34718 ssh2
 100 10.10.10.76 4 10
-X
+M
