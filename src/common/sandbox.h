@@ -2,12 +2,10 @@
 
 #include "config.h"
 
-#ifdef CAPSICUM
-#   ifdef HAVE_SYS_CAPSICUM_H
+#if defined(CAPSICUM)
+#   if defined(HAVE_SYS_CAPSICUM_H)
 #   include <sys/capsicum.h>
-#   endif
-
-#   ifdef HAVE_SYS_CAPABILITY_H
+#   elif defined(HAVE_SYS_CAPABILITY_H)
 #   include <sys/capability.h>
 #   endif
 #endif
