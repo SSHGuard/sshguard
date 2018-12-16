@@ -213,7 +213,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "authenticator failed for ".+" ["                               { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
 <exim_esmtp_autherr>"]"(:{NUMBER})?(" I=".+)?(" U=".+)?": 535 Incorrect authentication data"(" (set_id=".+")")?    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
 
-"SMTP protocol error in \"AUTH LOGIN\" H=(".*") ["              { BEGIN(exim_esmtp_loginerr); return EXIM_ESMTP_LOGINFAIL_PREF; }
+"SMTP protocol error in \"AUTH LOGIN\" H="({HOSTNAME}" ")?"(".*") ["              { BEGIN(exim_esmtp_loginerr); return EXIM_ESMTP_LOGINFAIL_PREF; }
 <exim_esmtp_loginerr>"] "("AUTH command used when not advertised"|"LOGIN authentication mechanism not supported")  { BEGIN(INITIAL); return EXIM_ESMTP_LOGINFAIL_SUFF; }
 
  /* Sendmail */

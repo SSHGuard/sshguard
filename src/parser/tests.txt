@@ -197,7 +197,7 @@ M
 M
 2018-06-03 13:35:07 SMTP protocol error in "AUTH LOGIN" H=dynamic-186-31-81-98.dynamic.etb.net.co (mail.example.com) [186.31.81.98] AUTH command used when not advertised: 1 Time(s)
 240 186.31.81.98 4 10
-X
+M
 Relaying denied. IP name lookup failed [6.6.6.0]
 250 6.6.6.0 4 10
 M
