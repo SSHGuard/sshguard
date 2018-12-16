@@ -10,6 +10,26 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.3.0
+=====
+**Added**
+
+- Add signatures for Courier IMAP/POP and OpenVPN
+- Add signatures for TLS failures against Cyrus IMAP
+- Match more attacks against SSHD, Cockpit, and Dovecot
+- Update SSH invalid user signature for macOS
+
+**Changed**
+
+- Add to and remove from ipfw table quietly
+- Reduce "Connection closed... [preauth]" score to 2
+- Switch ipsets to hash:net
+
+**Fixed**
+
+- Don't recreate existing ipsets
+- Match more log banners (Fix greedy SYSLOG_BANNER)
+
 2.2.0
 =====
 **Added**
