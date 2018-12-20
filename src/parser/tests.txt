@@ -458,4 +458,4 @@ M
 # macOS log format (#106)
 2018-12-20 10:09:05.180218+0000 localhost sshd[67566]: Invalid user git from 185.52.1.9 port 35968
 100 185.52.1.9 4 10
-X
+M
