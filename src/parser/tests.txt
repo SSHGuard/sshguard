@@ -459,3 +459,8 @@ M
 2018-12-20 10:09:05.180218+0000 localhost sshd[67566]: Invalid user git from 185.52.1.9 port 35968
 100 185.52.1.9 4 10
 M
+
+# OpenSSH 7 (#81)
+Dec 29 16:48:56 xxx sshd[24924]: Did not receive identification string from 5.20.95.202 port 56452
+100 5.20.95.202 4 10
+M

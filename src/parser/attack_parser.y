@@ -245,6 +245,7 @@ ssh_authfail:
 
 ssh_noidentifstring:
     SSH_NOIDENTIFSTR addr
+    | SSH_NOIDENTIFSTR addr SSH_ADDR_SUFF
     | SSH_DISCONNECT_PREF addr SSH_PREAUTH_SUFF
     | SSH_CONNECTION_CLOSED addr SSH_PREAUTH_SUFF { attack->dangerousness = 2; }
     ;
