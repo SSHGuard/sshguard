@@ -10,6 +10,13 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.3.1
+=====
+**Fixed**
+
+- Fix OpenSSH "Did not receive identification string"
+- Fix syslog banner detection on macOS
+
 2.3.0
 =====
 **Added**
