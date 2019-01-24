@@ -10,7 +10,7 @@ After=firewalld.service
 
 [Service]
 ExecStartPre=-/usr/sbin/iptables -N sshguard
-ExecStart=/usr/sbin/sshguard
+ExecStart=/usr/local/sbin/sshguard
 Restart=always
 
 [Install]
