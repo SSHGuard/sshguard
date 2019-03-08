@@ -46,6 +46,7 @@ enum service {
     SERVICES_CLF_PROBES     = 360,  //< probes for common web services
     SERVICES_CLF_WORDPRESS  = 370,  //< WordPress logins in common log format
     SERVICES_OPENVPN        = 400,  //< OpenVPN
+    SERVICES_GITEA          = 500,  //< Gitea
 };
 
 /* an attack (source address & target service info) */

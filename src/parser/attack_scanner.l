@@ -46,6 +46,8 @@ static int getsyslogpid(char *syslogbanner, int length);
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for HTTP services */
 %s clf_request clf_request_withuser clf_unauhtorized clfwebprobes_botsearch
+ /* for git services */
+%s gitea_autherr
 
 MONTH       (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
 MONTHNO     0[0-9]|1[0-2]
@@ -64,6 +66,7 @@ TIMESTAMP_TAI64     [0-9A-Fa-f]{24}
 SOLARIS_MSGID_TAG   "[ID "[0-9]+" "{WORD}"."{WORD}"]"
 TIMESTAMP_ISO8601   {YEAR}-{MONTHNO}-{DAYNO}(T|" "){HOUR}:?{MINPS}:?{SECONDFRAC}{TIMEZONE}?
 TIMESTAMP_LOCAL     {DAYNO}"/"{MONTH}"/"{YEAR}":"{HOUR}":"{MINPS}":"{MINPS}" "{TIMEZONE}
+TIMESTAMP_YMD_HMS   {YEAR}"/"{MONTHNO}"/"{DAYNO}" "{HOUR}":"{MINPS}":"{MINPS}
 
  /* all words but "sshguard" provided that posix regex don't support negation nor intersection:
   * 1) all words of 2 to 7 characters or 8-* chars
@@ -295,6 +298,10 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 
  /* OpenVPN */
 ":"{NUMBER}" TLS Error: TLS handshake failed"                   { return OPENVPN_TLS_ERR_SUFF; }
+
+ /* Gitea - also with color codes */
+({TIMESTAMP_YMD_HMS}" ")?(\x1b"["[0-9m;]+)?("["[A-Z]"] ")?"Failed authentication attempt for ".*" from " { BEGIN(gitea_autherr); return GITEA_ERR_PREF; }
+<gitea_autherr>(."["[0-9m;]+)?                                  { BEGIN(INITIAL); return GITEA_ERR_SUFF; }
 
 
  /**         COMMON-USE TOKENS       do not touch these          **/
