@@ -67,7 +67,11 @@ static void test_next_line(char buf[static MAX_LEN]) {
             }
             switch (buf[0]) {
                 case 'M': // expected match
-                    putchar('\n');
+                    if (match) {
+                        putchar('\n');
+                    } else {
+                        printf(" # actual: %s", result);
+                    }
                     break;
                 case 'X': // expected fail
                     printf(" # TODO\n");
