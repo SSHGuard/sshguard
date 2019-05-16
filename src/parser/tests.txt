@@ -270,12 +270,16 @@ M
 Jun 20 16:46:17 ares postgrey[919]: action=greylist, reason=early-retry (295s missing), client_name=r244.mail.kbc.be, client_address=172.82.231.244, sender=bounce@mail.kbc.be, recipient=lilydehoux@zeelandned.nl
 260 172.82.231.244 4 10
 M
+
+#### OpenSMTPD
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
 270 185.236.202.133 4 10
 M
 45addba89269aeaa smtp event=failed-command address=128.237.183.69 host=zeta.wv.cc.cmu.edu command="AUTH PLAIN (...)" result="535 Authentication failed"
 270 128.237.183.69 4 10
 M
+
+#### SMTP
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
 M
