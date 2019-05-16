@@ -15,6 +15,7 @@ un-deprecated, contact the project mailing list.
 **Added**
 
 - Recognize RFC 5424 syslog banners
+- Recognize busybox syslog -S banners
 - Updated signatures for OpenSSH
 
 **Changed**

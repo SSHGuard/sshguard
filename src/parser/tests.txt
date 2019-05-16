@@ -498,4 +498,7 @@ Failed authentication attempt for blabla from 213.60.123.190
 500 213.60.123.190 4 10
 M
 
-
+# Busybox 'syslog -S' hides host names (#115)
+May 9 11:11:17 sshd[30876]: Invalid user www from 139.59.34.17 port 51066
+100 139.59.34.17 4 10
+M

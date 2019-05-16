@@ -136,6 +136,9 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 
 ({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+{FACLEVEL}?[ ]*([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+({PROCESSNAME}("/"{PROCESSNAME}){0,2})?":"   { return SYSLOG_BANNER; }
 
+ /* busybox syslog -S */
+({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+({PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]")?":"   { return SYSLOG_BANNER; }
+
  /* RFC 5424 banner */
 {RFC5234_HEADER}" "{TIMESTAMP_ISO8601}" "{HOSTNAME}" "{PROCESSNAME}" "{NUMBER}" - - " { return RFC_5234_BANNER; }
 
