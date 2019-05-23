@@ -10,6 +10,20 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.4.0
+=====
+**Added**
+
+- Match "Failed authentication attempt" for Gitea
+
+**Fixed**
+
+- Correctly terminate child processes when ``sshguard`` is killed
+
+**Removed**
+
+- No longer accept logs given via standard input
+
 2.3.1
 =====
 **Fixed**
