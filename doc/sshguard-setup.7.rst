@@ -6,10 +6,10 @@ sshguard-setup
 setting up SSHGuard on your system
 ----------------------------------
 
-:Date: August 19, 2017
+:Date: May 23, 2019
 :Manual group: SSHGuard Manual
 :Manual section: 7
-:Version: 2.3
+:Version: 2.4
 
 DESCRIPTION
 ===========
@@ -21,8 +21,7 @@ file. A good starting point is to copy it and make the necessary changes:
    (see `BACKENDS`_).
 
 2. Set **FILES**, **LOGREADER**, or both. Alternatively, give **sshguard** a
-   list of files to monitor as positional arguments on the command-line. If
-   none of these are set, **sshguard** will read from standard input.
+   list of files to monitor as positional arguments on the command-line.
 
 Use **FILES** to specify a space-separated list of log files to monitor.
 Use **LOGREADER** to specify a shell command to run to obtain logs. Both

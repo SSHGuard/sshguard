@@ -1,11 +1,6 @@
 #!/bin/sh
 # sshguard -- protect hosts from brute-force attacks
 
-# Unregister recursive SIGTERM, and make sure to kill
-# entire process group (subshell) on exit/interrupts.
-trap "exit" INT TERM
-trap "kill 0" EXIT
-
 libexec="@libexecdir@"
 version="@sshguardversion@"
 
@@ -92,9 +87,13 @@ elif [ ! -z "$LOGREADER" ]; then
 elif [ ! -z "$FILES" ]; then
     tailcmd="$libexec/sshg-logtail $FILES"
 elif [ -z "$tailcmd" ]; then
-    err "Reading from stdin. You probably shouldn't be doing this."
-    tailcmd="cat"
+    err "$config is missing FILES and LOGREADER; please specify one"
+    exit 1
 fi
+
+# Make sure to kill entire process group (subshell) on exit/interrupts.
+trap "exit" INT TERM
+trap "kill 0" EXIT
 
 eval $tailcmd | $libexec/sshg-parser | \
     $libexec/sshg-blocker $flags | $BACKEND &

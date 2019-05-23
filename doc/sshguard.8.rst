@@ -20,10 +20,10 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: January 9, 2017
+:Date: May 23, 2019
 :Manual group: SSHGuard Manual
 :Manual section: 8
-:Version: 2.3
+:Version: 2.4
 
 SYNOPSIS
 ========
@@ -42,7 +42,7 @@ DESCRIPTION
 services. It aggregates system logs and blocks repeat offenders using one of
 several firewall backends.
 
-**sshguard** can monitor log files or read log messages from standard input.
+**sshguard** can monitor log files.
 Log messages are parsed line-by-line for recognized patterns. An attack is
 detected when several patterns are matched in a set time interval. Attackers
 are blocked temporarily but can also be semi-permanently banned using the
