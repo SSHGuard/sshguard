@@ -46,7 +46,6 @@ static void options_init(sshg_opts *opt) {
     opt->stale_threshold = 30 * 60;
     opt->abuse_threshold = 30;
     opt->blacklist_threshold = 0;
-    opt->my_pidfile = NULL;
     opt->blacklist_filename = NULL;
     opt->subnet_ipv6 = 128;
     opt->subnet_ipv4 = 32;
@@ -114,10 +113,6 @@ int get_options_cmdline(int argc, char *argv[]) {
 
             case 'n':   /* IPv4 subnet size */
                 opts.subnet_ipv4 = strtol(optarg, (char **)NULL, 10);
-                break;
-
-            case 'i':   /* specify pidfile for my PID */
-                opts.my_pidfile = optarg;
                 break;
 
             default:    /* or anything else: print help */
