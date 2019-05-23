@@ -14,7 +14,7 @@ cleanup() {
     exit
 }
 
-trap cleanup EXIT INT
+trap cleanup EXIT INT TERM
 
 while read cmd address addrtype cidr; do
     case $cmd in
