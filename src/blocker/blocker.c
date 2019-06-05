@@ -201,8 +201,8 @@ static void report_address(attack_t attack) {
     }
 
     sshguard_log(LOG_NOTICE,
-                 "Attack from \"%s\" on service %d with danger %u.",
-                 attack.address.value, attack.service,
+                 "Attack from \"%s\" on service %s with danger %u.",
+                 attack.address.value, service_to_name(attack.service),
                  attack.dangerousness);
 
     /* search entry in list */

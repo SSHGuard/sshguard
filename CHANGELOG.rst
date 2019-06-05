@@ -16,6 +16,10 @@ un-deprecated, contact the project mailing list.
 
 - Match "Failed authentication attempt" for Gitea
 
+**Changed**
+
+- Log human-readable service names instead of service code
+
 **Fixed**
 
 - Correctly terminate child processes when ``sshguard`` is killed
