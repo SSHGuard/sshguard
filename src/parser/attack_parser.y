@@ -115,8 +115,8 @@ static void yyerror(attack_t *, const char *);
 
 /* log source */
 text:
-    log_prefix logmsg
-  | logmsg
+    log_prefix msg_single repetition_suffix
+  | msg_single
   ;
 
 log_prefix:
@@ -155,14 +155,10 @@ busyboxent:
     BUSYBOX_SYSLOG_BANNER_PID
   ;
 
-/* the "payload" of a log entry: the oridinal message generated from a process */
-logmsg:
-    msg_single repetition_suffix
-    ;
-
 repetition_suffix:
-    | REPETITIONS
-    ;
+    /* epsilon */
+  | REPETITIONS
+  ;
 
 msg_single:
     sshmsg              {   attack->service = SERVICES_SSH; }
