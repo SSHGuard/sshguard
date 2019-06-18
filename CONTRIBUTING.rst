@@ -69,14 +69,15 @@ Release Checklist
 -----------------
 Before release, make sure that:
 
-- Building and installing work from source tarball: ``make distcheck``
-- Change log and documentation are up-to-date
-- Version number is consistent in *configure.ac* and man pages
+#. Change log and documentation are up-to-date
+#. Version number is consistent in *configure.ac* and man pages
+#. Regenerate autotools: ``autoreconf -i``
+#. Building and installing work from source tarball: ``make distcheck``
 
 Then:
 
 1. Tag release: ``git tag -s -m "Tag <version> release" v<version>``
-#. Build source tarball: ``autoreconf -i && ./configure && make dist``
+#. Source tarball should have been generated from ``make distcheck`` already
 #. Sign source tarball ``./distsign <tarball>``
 #. Push tags: ``git push --tags``
 #. Upload release files to SourceForge.
