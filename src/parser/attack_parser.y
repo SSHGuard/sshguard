@@ -161,28 +161,28 @@ repetition_suffix:
   ;
 
 msg_single:
-    sshmsg              {   attack->service = SERVICES_SSH; }
-    | sshguardmsg       {   attack->service = SERVICES_SSHGUARD; }
-    | dovecotmsg        {   attack->service = SERVICES_DOVECOT; }
-    | uwimapmsg         {   attack->service = SERVICES_UWIMAP; }
-    | cyrusimapmsg      {   attack->service = SERVICES_CYRUSIMAP; }
-    | cucipopmsg        {   attack->service = SERVICES_CUCIPOP; }
-    | eximmsg           {   attack->service = SERVICES_EXIM; }
-    | sendmailmsg       {   attack->service = SERVICES_SENDMAIL; }
-    | postfixmsg        {   attack->service = SERVICES_POSTFIX; }
-    | freebsdftpdmsg    {   attack->service = SERVICES_FREEBSDFTPD; }
-    | proftpdmsg        {   attack->service = SERVICES_PROFTPD; }
-    | pureftpdmsg       {   attack->service = SERVICES_PUREFTPD; }
-    | vsftpdmsg         {   attack->service = SERVICES_VSFTPD; }
-    | cockpitmsg        {   attack->service = SERVICES_COCKPIT; }
-    | clfunauhtdmsg     {   attack->service = SERVICES_CLF_UNAUTH; }
-    | clfwebprobesmsg   {   attack->service = SERVICES_CLF_PROBES; }
-    | clfwordpressmsg   {   attack->service = SERVICES_CLF_WORDPRESS; }
-    | opensmtpdmsg      {   attack->service = SERVICES_OPENSMTPD; }
-    | couriermsg        {   attack->service = SERVICES_COURIER; }
-    | openvpnmsg        {   attack->service = SERVICES_OPENVPN; }
-    | giteamsg          {   attack->service = SERVICES_GITEA; }
-    ;
+    sshmsg            { attack->service = SERVICES_SSH; }
+  | sshguardmsg       { attack->service = SERVICES_SSHGUARD; }
+  | dovecotmsg        { attack->service = SERVICES_DOVECOT; }
+  | uwimapmsg         { attack->service = SERVICES_UWIMAP; }
+  | cyrusimapmsg      { attack->service = SERVICES_CYRUSIMAP; }
+  | cucipopmsg        { attack->service = SERVICES_CUCIPOP; }
+  | eximmsg           { attack->service = SERVICES_EXIM; }
+  | sendmailmsg       { attack->service = SERVICES_SENDMAIL; }
+  | postfixmsg        { attack->service = SERVICES_POSTFIX; }
+  | freebsdftpdmsg    { attack->service = SERVICES_FREEBSDFTPD; }
+  | proftpdmsg        { attack->service = SERVICES_PROFTPD; }
+  | pureftpdmsg       { attack->service = SERVICES_PUREFTPD; }
+  | vsftpdmsg         { attack->service = SERVICES_VSFTPD; }
+  | cockpitmsg        { attack->service = SERVICES_COCKPIT; }
+  | clfunauhtdmsg     { attack->service = SERVICES_CLF_UNAUTH; }
+  | clfwebprobesmsg   { attack->service = SERVICES_CLF_PROBES; }
+  | clfwordpressmsg   { attack->service = SERVICES_CLF_WORDPRESS; }
+  | opensmtpdmsg      { attack->service = SERVICES_OPENSMTPD; }
+  | couriermsg        { attack->service = SERVICES_COURIER; }
+  | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
+  | giteamsg          { attack->service = SERVICES_GITEA; }
+  ;
 
 /* an address */
 addr:
@@ -190,175 +190,172 @@ addr:
                         attack->address.kind = ADDRKIND_IPv4;
                         strcpy(attack->address.value, $1);
                     }
-    | IPv6          {
+  | IPv6            {
                         attack->address.kind = ADDRKIND_IPv6;
                         strcpy(attack->address.value, $1);
                         free($1);
                     }
-    | IPv6 '%' WORD /* IPv6 address with interface name */
-                    {
+  | IPv6 '%' WORD   {   /* IPv6 address with interface name */
                         attack->address.kind = ADDRKIND_IPv6;
                         strcpy(attack->address.value, $1);
                         free($1);
                     }
-    | HOSTADDR      {
+  | HOSTADDR        {
                         if (!attack_from_hostname(attack, $1)) {
                             YYABORT;
                         }
                     }
-    ;
-
-/**         END OF "LIBRARY" RULES          **/
+  ;
 
 /* attack rules for SSHd */
 sshmsg:
     /* login attempt from non-existent user, or from existent but non-allowed user */
     ssh_illegaluser
     /* incorrect login attempt from valid and allowed user */
-    | ssh_authfail
-    | ssh_noidentifstring
-    | ssh_badprotocol
-    | ssh_badkex
-    ;
+  | ssh_authfail
+  | ssh_noidentifstring
+  | ssh_badprotocol
+  | ssh_badkex
+  ;
 
 ssh_illegaluser:
     /* nonexistent user */
     SSH_INVALUSERPREF addr
-    | SSH_INVALUSERPREF addr SSH_ADDR_SUFF
+  | SSH_INVALUSERPREF addr SSH_ADDR_SUFF
     /* existent, unallowed user */
-    | SSH_NOTALLOWEDPREF addr SSH_NOTALLOWEDSUFF
-    ;
+  | SSH_NOTALLOWEDPREF addr SSH_NOTALLOWEDSUFF
+  ;
 
 ssh_authfail:
     SSH_LOGINERR_PREF addr SSH_ADDR_SUFF
-    | SSH_LOGINERR_PAM addr
-    | SSH_LOGINERR_PAM addr SSH_VIA
-    | SSH_MAXAUTH addr SSH_ADDR_SUFF
-    ;
+  | SSH_LOGINERR_PAM addr
+  | SSH_LOGINERR_PAM addr SSH_VIA
+  | SSH_MAXAUTH addr SSH_ADDR_SUFF
+  ;
 
 ssh_noidentifstring:
     SSH_NOIDENTIFSTR addr
-    | SSH_NOIDENTIFSTR addr SSH_ADDR_SUFF
-    | SSH_DISCONNECT_PREF addr SSH_PREAUTH_SUFF
-    | SSH_CONNECTION_CLOSED addr SSH_PREAUTH_SUFF { attack->dangerousness = 2; }
-    ;
+  | SSH_NOIDENTIFSTR addr SSH_ADDR_SUFF
+  | SSH_DISCONNECT_PREF addr SSH_PREAUTH_SUFF
+  | SSH_CONNECTION_CLOSED addr SSH_PREAUTH_SUFF { attack->dangerousness = 2; }
+  ;
 
 ssh_badprotocol:
     SSH_BADPROTOCOLIDENTIF addr SSH_BADPROTOCOLIDENTIF_SUFF
-    ;
+  ;
 
 ssh_badkex:
     SSH_BADKEX_PREF addr SSH_BADKEX_SUFF
-    ;
+  ;
 
 /* attacks and blocks from SSHGuard */
 sshguardmsg:
     SSHGUARD_ATTACK_PREF addr SSHGUARD_ATTACK_SUFF
-    | SSHGUARD_BLOCK_PREF addr SSHGUARD_BLOCK_SUFF
-    ;
+  | SSHGUARD_BLOCK_PREF addr SSHGUARD_BLOCK_SUFF
+  ;
 
 /* attack rules for dovecot imap */
 dovecotmsg:
     DOVECOT_IMAP_LOGINERR_PREF addr DOVECOT_IMAP_LOGINERR_SUFF
-    ;
+  ;
 
 /* attack rules for UWIMAP */
 uwimapmsg:
     UWIMAP_LOGINERR '[' addr ']'
-    ;
+  ;
 
 cyrusimapmsg:
     CYRUSIMAP_SASL_LOGINERR_PREF addr CYRUSIMAP_SASL_LOGINERR_SUFF
-    | CYRUSIMAP_TLS_ERR_PREF '[' addr ']'
-    ;
+  | CYRUSIMAP_TLS_ERR_PREF '[' addr ']'
+  ;
 
 /* cucipop reports @addr@ tried to log in with wrong password */
 cucipopmsg:
     CUCIPOP_AUTHFAIL addr
-    ;
+  ;
 
 /* */
 eximmsg:
    EXIM_ESMTP_AUTHFAIL_PREF addr EXIM_ESMTP_AUTHFAIL_SUFF
-   | EXIM_ESMTP_LOGINFAIL_PREF addr EXIM_ESMTP_LOGINFAIL_SUFF
-   ;
+ | EXIM_ESMTP_LOGINFAIL_PREF addr EXIM_ESMTP_LOGINFAIL_SUFF
+ ;
 
 sendmailmsg:
    SENDMAIL_RELAYDENIED_PREF addr SENDMAIL_RELAYDENIED_SUFF
-   | SENDMAIL_AUTHFAILURE_PREF addr SENDMAIL_AUTHFAILURE_SUFF;
-   ;
+ | SENDMAIL_AUTHFAILURE_PREF addr SENDMAIL_AUTHFAILURE_SUFF;
+ ;
 
 postfixmsg:
     POSTFIX_SASL_LOGINERR_PREF addr POSTFIX_SASL_LOGINERR_SUFF
-    | POSTFIX_NO_AUTH_PREF addr ']'
-    | POSTFIX_GREYLIST addr POSTFIX_GREYLIST_SUFF
-    ;
+  | POSTFIX_NO_AUTH_PREF addr ']'
+  | POSTFIX_GREYLIST addr POSTFIX_GREYLIST_SUFF
+  ;
 
 /* attack rules for FreeBSD's ftpd */
 freebsdftpdmsg:
     FREEBSDFTPD_LOGINERR_PREF addr FREEBSDFTPD_LOGINERR_SUFF
-    ;
+  ;
 
 /* attack rules for ProFTPd */
 proftpdmsg:
     PROFTPD_LOGINERR_PREF addr PROFTPD_LOGINERR_SUFF
-    ;
+  ;
 
 /* attack rules for Pure-FTPd */
 pureftpdmsg:
     PUREFTPD_LOGINERR_PREF addr PUREFTPD_LOGINERR_SUFF
-    ;
+  ;
 
 /* attack rules for vsftpd */
 vsftpdmsg:
     VSFTPD_LOGINERR_PREF addr VSFTPD_LOGINERR_SUFF
-    ;
+  ;
 
 /* attack rules for cockpit */
 cockpitmsg:
-    COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF |
-    COCKPIT_AUTHFAIL_PREF addr
-    ;
+    COCKPIT_AUTHFAIL_PREF addr COCKPIT_AUTHFAIL_SUFF
+  | COCKPIT_AUTHFAIL_PREF addr
+  ;
 
 /* attack rules for HTTP 401 Unauhtorized in common log format */
 clfunauhtdmsg:
     addr CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
-    ;
+  ;
 
 /* attack rules for probes for common web services */
 clfwebprobesmsg:
     addr CLF_REQUEST_PREF CLFWEBPROBES_BOTSEARCH_SUFF
-    ;
+  ;
 
 /* attack rules against WordPress */
 clfwordpressmsg:
     addr CLF_REQUEST_PREF CLF_WORDPRESS_SUFF
-    ;
+  ;
 
 /* opensmtpd */
 opensmtpdmsg:
     OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_AUTHFAIL_SUFF
-    | OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_UNSUPPORTED_CMD_SUFF
-    ;
+  | OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_UNSUPPORTED_CMD_SUFF
+  ;
 
 /* attack rules for courier imap/pop */
 couriermsg:
     COURIER_AUTHFAIL_PREF '[' addr ']'
-    ;
+  ;
 
 /* attack rules for openvpn */
 openvpnmsg:
     addr OPENVPN_TLS_ERR_SUFF
-    | '[' addr ']' OPENVPN_TLS_ERR_SUFF
-    ;
+  | '[' addr ']' OPENVPN_TLS_ERR_SUFF
+  ;
 
 /* attack rules for gitea */
 giteamsg:
     GITEA_ERR_PREF addr
-    | GITEA_ERR_PREF addr GITEA_ERR_SUFF
-    | GITEA_ERR_PREF '[' addr ']'
-    | GITEA_ERR_PREF '[' addr ']' GITEA_ERR_SUFF
-    ;
+  | GITEA_ERR_PREF addr GITEA_ERR_SUFF
+  | GITEA_ERR_PREF '[' addr ']'
+  | GITEA_ERR_PREF '[' addr ']' GITEA_ERR_SUFF
+  ;
 
 %%
 
