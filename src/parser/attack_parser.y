@@ -115,51 +115,45 @@ static void yyerror(attack_t *, const char *);
 
 /* log source */
 text:
-    syslogent
-    | multilogent
-    | metalogent
-    | socklogent
-    | busyboxent
-    | logmsg
-    ;
+    log_prefix logmsg
+  | logmsg
+  ;
 
-/**         BEGIN OF "LIBRARY" RULES        **/
+log_prefix:
+    syslogent
+  | multilogent
+  | metalogent
+  | socklogent
+  | busyboxent
+  ;
 
 /* a syslog-generated log entry */
-/* EFFECT:
- * - the target address is stored in attack->address.value
- * - the target address kind is stored in attack->address.kind
- */
 syslogent:
-     /* timestamp hostname procname[pid]: logmsg */
-    /*TIMESTAMP_SYSLOG hostname procname '[' INTEGER ']' ':' logmsg   {*/
-    SYSLOG_BANNER_PID logmsg
-
-    /*| TIMESTAMP_SYSLOG hostname procname ':' logmsg*/
-    | SYSLOG_BANNER logmsg
-    | TIMESTAMP_ISO8601 logmsg /* some have different timestamps */
-    | TIMESTAMP_ISO8601 WORD logmsg /* handle different timestamp with proc name */
-    ;
+    SYSLOG_BANNER
+  | SYSLOG_BANNER_PID      /* timestamp hostname procname[pid]: logmsg */
+  | TIMESTAMP_ISO8601      /* some have different timestamps */
+  | TIMESTAMP_ISO8601 WORD /* handle different timestamp with proc name */
+  ;
 
 /* a multilog-generated log entry */
 multilogent:
-    AT_TIMESTAMP_TAI64 logmsg
-    ;
+    AT_TIMESTAMP_TAI64
+  ;
 
 metalogent:
-    METALOG_BANNER logmsg
-    ;
+    METALOG_BANNER
+  ;
 
 /* a socklog-generated log entry */
 socklogent:
-    SOCKLOG_BANNER_PID logmsg
-    | SOCKLOG_BANNER logmsg
-    ;
+    SOCKLOG_BANNER
+  | SOCKLOG_BANNER_PID
+  ;
 
 /* a busybox syslog log entry */
 busyboxent:
-    BUSYBOX_SYSLOG_BANNER_PID logmsg
-    ;
+    BUSYBOX_SYSLOG_BANNER_PID
+  ;
 
 /* the "payload" of a log entry: the oridinal message generated from a process */
 logmsg:
