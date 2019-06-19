@@ -194,6 +194,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "Did not receive identification string from "                   { return SSH_NOIDENTIFSTR; }
 "error: "?"Received disconnect from "                           { BEGIN(ssh_disconnect); return SSH_DISCONNECT_PREF; }
 "Connection "(closed|reset)" by "                               { BEGIN(ssh_disconnect); return SSH_CONNECTION_CLOSED; }
+"Connection closed by authenticating user "[^ ]+" "             { BEGIN(ssh_disconnect); return SSH_CONNECTION_CLOSED; }
 <ssh_disconnect>[: ].*"[preauth]"                               { BEGIN(INITIAL); return SSH_PREAUTH_SUFF; }
 
  /* SSH: clients connecting with other application protocols */
