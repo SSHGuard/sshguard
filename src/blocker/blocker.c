@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
     sandbox_init();
 
     /* whitelist localhost */
-    if (whitelist_add("127.0.0.1") != 0) {
+    if ((whitelist_add("127.0.0.0/8") != 0) || (whitelist_add("::1") != 0)) {
         fprintf(stderr, "Could not whitelist localhost. Terminating...\n");
         exit(1);
     }
