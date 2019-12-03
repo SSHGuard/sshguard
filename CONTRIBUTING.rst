@@ -1,6 +1,6 @@
-=================
-How to Contribute
-=================
+========================
+Contributing to SSHGuard
+========================
 
 .. contents::
 
@@ -20,10 +20,68 @@ helps us improve SSHGuard.
 
 - Consider maintaining a package for SSHGuard on your operating system.
 
-If there's any part of the code you'd like to dive into, post on the list and
-we'll show you where to get started.
-
 .. _issue tracker: https://bitbucket.org/sshguard/sshguard/issues?status=new&status=open
+
+
+For Contributors
+================
+
+Architecture
+------------
+SSHGuard consists of a pipeline of programs that work together, depicted in
+`<doc/sshguard.dot>`_.
+
+In this diagram, processes shown with a dashed border are sandboxed, if
+sandboxing support is implemented for the OS in *sandbox_init()*. Currently,
+sandboxing is only implemented on FreeBSD with Capsicum and on OpenBSD with
+*pledge()*.
+
+**sshguard** reads the configuration file and spawns a pipeline.
+
+**sshg-logtail** monitors one or more log files, aggregates them, and pipes
+their contents to the next stage.
+
+**sshg-parser** reads its input and looks for attacks. If it finds an attack,
+it reports the service, remote address, address type (IPv4 or IPv6), and score
+("dangerousness") to the next stage. The format is defined in *print_attack()*
+(`<src/parser/parser.c>`_). This is the only program you need to change to
+`add new signatures`_.
+
+**sshg-blocker** maintains a list of recent attackers. If there are enough
+attacks from an attacker in a given time interval, it commands the firewall
+backend to block the attacker's address. After a certain amount of time,
+**sshg-blocker** is also responsible for unblocking an attacker, or
+blacklisting if configured to do so.
+
+**sshg-fw-*** is one of several firewall backends. It reads firewall commands
+from its input and runs the appropriate system commands to do the firewall.
+
+Add New Signatures
+------------------
+Files to change:
+
+- `<src/parser/tests.txt>`_
+- `<src/parser/attack_scanner.l>`_
+- `<src/parser/attack_parser.y>`_
+
+#. Obtain several samples of the log message you want to match. Add these
+   attacks, along with the expected parse result, to *tests.txt*.
+
+#. Run ``make check``, to make sure your new tests fail.
+
+#. Create new tokens for parts of the string you want to match at the top of
+   *attack_parser.y*, where the ``%token`` lines are.
+
+#. Add regular expressions for matching your new tokens in *attack_scanner.l*.
+
+#. Add grammar rules for your attack in *attack_parser.y*. A good starting
+   point is to look at how the existing signatures are matached from the
+   ``msg_single`` rule.
+
+#. Check that your new tests pass, and that you haven't broken existing tests.
+   To help debug your rule, you can run *sshg-parser* directly with the ``-d``
+   flag.
+
 
 For Committers
 ==============

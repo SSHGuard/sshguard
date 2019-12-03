@@ -1,0 +1,22 @@
+/*
+ * sshguard.dot -- graph of SSHGuard architecture
+ * See CONTRIBUTING.rst for an explanation of this graph.
+ */
+digraph {
+    rankdir=LR;
+    driver [label=<sshguard<BR/><I>src/sshguard.in</I>>];
+
+    logtail [label=<sshg-logtail<BR/><I>src/sshg-logtail</I>>];
+    parser [label=<sshg-parser<BR/><I>src/parser/</I>> style=dashed];
+    blocker [label=<sshg-blocker<BR/><I>src/blocker/</I>> style=dashed];
+    fw [label=<sshg-fw-*<BR/><I>src/fw/</I>>];
+
+    logs [label=<System<BR/>Logs> shape=note];
+
+    driver -> logtail[label="spawns"];
+    logs -> logtail[label="file I/O"];
+
+    subgraph cluster_0 {
+        logtail -> parser -> blocker -> fw[label="pipe"];
+    }
+}
