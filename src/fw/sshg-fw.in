@@ -1,6 +1,6 @@
 die() {
-    echo "`basename $0`: $2" >&2
-    exit $1
+    echo "$(basename "$0"): $2" >&2
+    exit "$1"
 }
 
 fw_init || die 69 "Could not initialize firewall"
@@ -16,12 +16,12 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-while read cmd address addrtype cidr; do
+while read -r cmd address addrtype cidr; do
     case $cmd in
         block)
-            fw_block $address $addrtype $cidr;;
+            fw_block "$address" "$addrtype" "$cidr";;
         release)
-            fw_release $address $addrtype $cidr;;
+            fw_release "$address" "$addrtype" "$cidr";;
         flush)
             fw_flush;;
         flushonexit)

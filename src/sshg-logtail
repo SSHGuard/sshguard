@@ -9,7 +9,7 @@ fallback() {
     eval $tailF 2>/dev/null || exec $tailf
 }
 
-case `uname` in
+case $(uname) in
     Darwin|FreeBSD|Linux|NetBSD)
         exec $tailF;;
     OpenBSD)

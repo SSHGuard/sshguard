@@ -9,7 +9,7 @@ err() {
 }
 
 setflag() {
-    if [ ! -z "$2" ]; then
+    if [ -n "$2" ]; then
         flags="$flags -$1 $2"
     fi
 }
@@ -24,8 +24,8 @@ EOF
 }
 
 clean_and_exit() {
-    if [ ! -z "$PID_FILE" ]; then
-        rm -f $PID_FILE
+    if [ -n "$PID_FILE" ]; then
+        rm -f "$PID_FILE"
     fi
     exit
 }
@@ -52,6 +52,7 @@ while getopts "b:l:p:s:a:w:i:hv" opt; do
         w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
         h) usage; exit;;
         v) echo "SSHGuard $version"; exit;;
+        *) echo "Try 'sshguard -h' for help"; exit 1;;
     esac
 done
 
@@ -65,39 +66,39 @@ elif [ ! -x "$BACKEND" ]; then
 fi
 
 # Read config in to flags
-setflag 'a' $THRESHOLD
-setflag 'b' $BLACKLIST_FILE
-setflag 'p' $BLOCK_TIME
-setflag 's' $DETECTION_TIME
-setflag 'N' $IPV6_SUBNET
-setflag 'n' $IPV4_SUBNET
-if [ ! -z "$WHITELIST_ARG" ]; then
+setflag 'a' "$THRESHOLD"
+setflag 'b' "$BLACKLIST_FILE"
+setflag 'p' "$BLOCK_TIME"
+setflag 's' "$DETECTION_TIME"
+setflag 'N' "$IPV6_SUBNET"
+setflag 'n' "$IPV4_SUBNET"
+if [ -n "$WHITELIST_ARG" ]; then
     for arg in $WHITELIST_ARG; do
       flags="$flags -w $arg"
     done
-elif [ ! -z "$WHITELIST_FILE" ]; then
+elif [ -n "$WHITELIST_FILE" ]; then
     flags="$flags -w $WHITELIST_FILE"
 fi
 
 # Log source selection order:
 #     runtime args, logreader and files, logreader, files, or stdin
 shift $((OPTIND-1))
-if [ ! -z "$@" ]; then
+if [ -n "$@" ]; then
     tailcmd="$libexec/sshg-logtail $@"
-elif [ \( ! -z "$LOGREADER" \) -a \( ! -z "$FILES" \) ]; then
+elif [ \( -n "$LOGREADER" \) -a \( -n "$FILES" \) ]; then
     LOGREADER="$LOGREADER | grep --line-buffered '^'"
     FILESREAD="$libexec/sshg-logtail $FILES | grep --line-buffered '^'"
     tailcmd="( $LOGREADER & $FILESREAD )"
-elif [ ! -z "$LOGREADER" ]; then
+elif [ -n "$LOGREADER" ]; then
     tailcmd="$LOGREADER"
-elif [ ! -z "$FILES" ]; then
+elif [ -n "$FILES" ]; then
     tailcmd="$libexec/sshg-logtail $FILES"
 elif [ -z "$tailcmd" ]; then
     err "$config is missing FILES and LOGREADER; please specify one"
     exit 1
 fi
 
-if [ ! -z "$PID_FILE" ]; then
+if [ -n "$PID_FILE" ]; then
     if [ ! -e "$PID_FILE" ]; then
         echo "$$" > $PID_FILE
     else
