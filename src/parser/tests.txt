@@ -89,6 +89,12 @@ M
 Jun 19 09:08:14 isori sshd[93628]: Connection closed by authenticating user root 192.168.7.7 port 42728 [preauth]
 100 192.168.7.7 4 2
 M
+Connection reset by invalid user username 1.2.3.4 port 55895 [preauth]
+100 1.2.3.4 4 2
+M
+Connection closed by invalid user gpadmin 1.2.3.4 port 9224 [preauth]
+100 1.2.3.4 4 2
+M
 Apr 10 13:50:24 quasar sshd[53269]: error: Received disconnect from 95.9.156.208: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
 100 95.9.156.208 4 10
 M
@@ -145,6 +151,15 @@ Failed password for invalid user admin from 2001:db8::a11:beef:7ac1 port 39065 s
 M
 Jul  4 13:55:09 karpov sshd[64301]: Disconnecting invalid user user 10.42.42.42 port 38987: Change of username or service not allowed: (user,ssh-connection) -> (manager,ssh-connection) [preauth]
 100 10.42.42.42 4 10
+M
+Disconnected from authenticating user root 1.2.3.4 port 57142 [preauth]
+100 1.2.3.4 4 10
+M
+Disconnected from invalid user support 1.2.3.4 port 56636 [preauth]
+100 1.2.3.4 4 10
+M
+Disconnected from 1.2.3.4 port 30761 [preauth]
+100 1.2.3.4 4 10
 M
 Dec  1 06:25:27 server sshd[19956]: Accepted publickey for User from 1.2.3.4 port 21563 ssh2: RSA SHA256:...
 *

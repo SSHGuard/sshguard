@@ -193,8 +193,8 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* SSH: connections open and closed without auth attempts */
 "Did not receive identification string from "                   { return SSH_NOIDENTIFSTR; }
 "error: "?"Received disconnect from "                           { BEGIN(ssh_disconnect); return SSH_DISCONNECT_PREF; }
-"Connection "(closed|reset)" by "                               { BEGIN(ssh_disconnect); return SSH_CONNECTION_CLOSED; }
-"Connection closed by authenticating user "[^ ]+" "             { BEGIN(ssh_disconnect); return SSH_CONNECTION_CLOSED; }
+"Disconnected from "(("invalid"|"authenticating")" user "[^ ]+" ")?               { BEGIN(ssh_disconnect); return SSH_DISCONNECT_PREF; }
+"Connection "(closed|reset)" by "(("invalid"|"authenticating")" user "[^ ]+" ")?  { BEGIN(ssh_disconnect); return SSH_CONNECTION_CLOSED; }
 <ssh_disconnect>[: ].*"[preauth]"                               { BEGIN(INITIAL); return SSH_PREAUTH_SUFF; }
 
  /* SSH: clients connecting with other application protocols */
