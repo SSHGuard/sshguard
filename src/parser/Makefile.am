@@ -1,4 +1,5 @@
 AM_CFLAGS=-I$(top_srcdir)/src/common -DSIMCLIST_NO_DUMPRESTORE
+AM_LFLAGS = -v
 AM_YFLAGS = -d
 
 libexec_PROGRAMS = sshg-parser
