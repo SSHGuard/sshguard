@@ -153,18 +153,18 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
   * Some strip the redundant timestamp, eg
   * "2015-05-27T04:31:28.10040 auth.info: sshd[30993]: "
   */
-({TIMESTAMP_ISO8601}" ")?{WORD}.{WORD}": "({TIMESTAMP_SYSLOG}" ")?{PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]: "{SOLARIS_MSGID_TAG}? {
+({TIMESTAMP_ISO8601}" ")?{WORD}"."{WORD}": "({TIMESTAMP_SYSLOG}" ")?{PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]: "{SOLARIS_MSGID_TAG}? {
         yylval.num = getsyslogpid(yytext, yyleng);
         return SOCKLOG_BANNER_PID;
         }
 
-({TIMESTAMP_ISO8601}" ")?{WORD}.{WORD}": "({TIMESTAMP_SYSLOG}" ")?({PROCESSNAME}("/"{PROCESSNAME}){0,2}":")?   { return SOCKLOG_BANNER; }
+({TIMESTAMP_ISO8601}" ")?{WORD}"."{WORD}": "({TIMESTAMP_SYSLOG}" ")?({PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]:")?   { return SOCKLOG_BANNER; }
 
  /*
   * Busybox syslog banner, e/g/
   * "Jun 20 02:18:39 vps auth.info sshd[13482]: "
   */
-{TIMESTAMP_SYSLOG}" "([a-zA-Z0-9]|{WORD}|{HOSTADDR})" "{WORD}.{WORD}" "{PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]: " {
+{TIMESTAMP_SYSLOG}" "([a-zA-Z0-9]|{WORD}|{HOSTADDR})" "{WORD}"."{WORD}" "{PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]: " {
         yylval.num = getsyslogpid(yytext, yyleng);
         return BUSYBOX_SYSLOG_BANNER_PID;
         }
@@ -208,7 +208,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 "Bad protocol version identification".*" from "                 { BEGIN(ssh_badproto); return SSH_BADPROTOCOLIDENTIF; }
 <ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
 
-"Unable to negotiate with "                                     { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
+"fatal: "?"Unable to negotiate with "                                     { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
 <ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
 
  /* SSHGuard */
