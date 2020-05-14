@@ -10,6 +10,16 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.4.1
+=====
+**Added**
+
+- Updated signatures for OpenSSH
+
+**Changed**
+
+- Whitelist entire 127.0.0.0/8 and ::1 block
+
 2.4.0
 =====
 **Added**
