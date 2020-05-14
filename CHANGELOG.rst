@@ -22,6 +22,7 @@ un-deprecated, contact the project mailing list.
 **Changed**
 
 - Whitelist entire 127.0.0.0/8 and ::1 block
+- Whitelist file allows inline comments
 
 2.4.0
 =====

@@ -137,6 +137,7 @@ int whitelist_file(const char *restrict filename) {
     char line[WHITELIST_SRCLINE_LEN];
     int lineno = 0;
     size_t len;
+    char* pos;
 
 
     if (filename == NULL) return -1;
@@ -156,6 +157,9 @@ int whitelist_file(const char *restrict filename) {
         if (len == 0) continue;
         if (line[len-1] == '\n') line[len-1] = '\0';
         /* handling line */
+        /* trim inline comments and whitespace */
+        pos = line;
+        strsep(&pos, " \t#");
         if (whitelist_add(line) != 0) {
             sshguard_log(LOG_ERR, "whitelist: Unable to handle line %d from whitelist file \"%s\".", lineno, filename);
         }
