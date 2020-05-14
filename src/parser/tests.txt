@@ -161,6 +161,9 @@ M
 Disconnected from 1.2.3.4 port 30761 [preauth]
 100 1.2.3.4 4 10
 M
+<35>1 2020-01-03T11:57:14.257387-05:00 1.2.3.4 sshd 86784 - - error: PAM: Authentication error for root from 1.2.3.4
+100 1.2.3.4 4 10
+M
 Dec  1 06:25:27 server sshd[19956]: Accepted publickey for User from 1.2.3.4 port 21563 ssh2: RSA SHA256:...
 *
 M

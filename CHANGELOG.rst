@@ -14,6 +14,7 @@ un-deprecated, contact the project mailing list.
 =====
 **Added**
 
+- Recognize RFC 5424 syslog banners
 - Updated signatures for OpenSSH
 
 **Changed**
