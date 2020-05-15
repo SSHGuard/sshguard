@@ -30,7 +30,7 @@ static const struct service_s services[] = {
 };
 
 const char *service_to_name(enum service code) {
-    for (int i = 0; i < sizeof(services)/sizeof(struct service_s); i++) {
+    for (unsigned int i = 0; i < sizeof(services)/sizeof(struct service_s); i++) {
         if (code == services[i].code) {
             return services[i].name;
         }
