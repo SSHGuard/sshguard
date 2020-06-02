@@ -16,6 +16,7 @@ un-deprecated, contact the project mailing list.
 
 - Recognize RFC 5424 syslog banners
 - Recognize busybox syslog -S banners
+- Recognize rsyslog banners
 - Update signatures for Dovecot
 - Update signatures for OpenSSH
 

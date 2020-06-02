@@ -128,7 +128,7 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
   */
 
  /* handle entries with PID and without PID from processes other than sshguard */
-({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+{FACLEVEL}?[ ]*([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+{PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]: "{SOLARIS_MSGID_TAG}? {
+({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+{FACLEVEL}?[ ]*([a-zA-Z0-9]|{WORD}|{HOSTADDR})[ ]+{PROCESSNAME}("/"{PROCESSNAME}){0,2}"["{NUMBER}"]":?" "{SOLARIS_MSGID_TAG}? {
         /* extract PID */
         yylval.num = getsyslogpid(yytext, yyleng);
         return SYSLOG_BANNER_PID;
