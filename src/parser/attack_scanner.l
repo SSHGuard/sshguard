@@ -117,6 +117,7 @@ HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMI
 
 WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
 TYPO3_LOGIN                .*"/typo3/?loginProvider=".*
+CONTAO_LOGIN               .*"/contao/login?_hash=".*
 %%
 
 
@@ -298,6 +299,10 @@ TYPO3_LOGIN                .*"/typo3/?loginProvider=".*
  /* TYPO3.
     HTTP 200 OK responses to /typo3/?loginProvider= via POST are failed requests, but 303 aren’t. */
 <clf_request>" \"POST "{TYPO3_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_TYPO3_SUFF; }
+
+ /* Contao.
+    HTTP 200 OK responses to /contao/login?_hash via POST are failed requests, but 302 aren’t. */
+<clf_request>" \"POST "{CONTAO_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_CONTAO_SUFF; }
 
  /* OpenSMTPD. */
  /* Unsupported command when attempting to log in. */
