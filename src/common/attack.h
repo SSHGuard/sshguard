@@ -44,9 +44,7 @@ enum service {
     SERVICES_COCKPIT        = 340,  //< cockpit management dashboard
     SERVICES_CLF_UNAUTH     = 350,  //< HTTP 401 in common log format
     SERVICES_CLF_PROBES     = 360,  //< probes for common web services
-    SERVICES_CLF_WORDPRESS  = 370,  //< WordPress logins in common log format
-    SERVICES_CLF_TYPO3      = 380,  //< TYPO3 logins in common log format
-    SERVICES_CLF_CONTAO     = 390,  //< Contao logins in common log format
+    SERVICES_CLF_LOGIN_URL  = 370,  //< CMS framework logins in common log format
     SERVICES_OPENVPN        = 400,  //< OpenVPN
     SERVICES_GITEA          = 500,  //< Gitea
 };

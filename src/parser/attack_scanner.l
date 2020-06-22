@@ -116,9 +116,10 @@ HTTP_BOTSEARCH_WORDPRESS   wp-(admin|config|login|signup)"."php
 HTTP_BOTSEARCH_JOOMLA      ("administrator/")?"index.php?option=com_"
 HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|{HTTP_BOTSEARCH_JOOMLA}|cgi-bin|mysqladmin)[^,]*
 
-WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
-TYPO3_LOGIN                .*"/typo3/?loginProvider=".*
-CONTAO_LOGIN               .*"/contao/login?_hash=".*
+WORDPRESS_LOGIN            "/wp-login"(\.php)?
+TYPO3_LOGIN                "/typo3/?loginProvider="
+CONTAO_LOGIN               "/contao/login?_hash="
+HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 %%
 
 
@@ -293,17 +294,9 @@ CONTAO_LOGIN               .*"/contao/login?_hash=".*
  /* HTTP probes for common web services. */
 <clf_request>" \""{HTTP_REQUEST}" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
 
- /* WordPress.
-    HTTP 200 OK responses to /wp-login.php via POST are failed requests, but GET or 302 aren’t. */
-<clf_request>" \"POST "{WORDPRESS_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_WORDPRESS_SUFF; }
-
- /* TYPO3.
-    HTTP 200 OK responses to /typo3/?loginProvider= via POST are failed requests, but 303 aren’t. */
-<clf_request>" \"POST "{TYPO3_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_TYPO3_SUFF; }
-
- /* Contao.
-    HTTP 200 OK responses to /contao/login?_hash via POST are failed requests, but 302 aren’t. */
-<clf_request>" \"POST "{CONTAO_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_CONTAO_SUFF; }
+ /* Bad login URLs.
+    HTTP 200 OK responses via POST are failed requests */
+<clf_request>" \"POST "{HTTP_LOGIN_200OK_BAD}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_LOGIN_URL_SUFF; }
 
  /* OpenSMTPD. */
  /* Unsupported command when attempting to log in. */

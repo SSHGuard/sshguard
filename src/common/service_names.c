@@ -24,9 +24,7 @@ static const struct service_s services[] = {
     {SERVICES_COCKPIT, "Cockpit"},
     {SERVICES_CLF_UNAUTH, "CLF Unauthorized"},
     {SERVICES_CLF_PROBES, "CLF Probes"},
-    {SERVICES_CLF_WORDPRESS, "Wordpress"},
-    {SERVICES_CLF_TYPO3, "TYPO3"},
-    {SERVICES_CLF_CONTAO, "Contao"},
+    {SERVICES_CLF_LOGIN_URL, "CMS Framework"},
     {SERVICES_OPENVPN, "OpenVPN"},
     {SERVICES_GITEA, "Gitea"},
 };
