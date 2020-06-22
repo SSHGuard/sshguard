@@ -102,6 +102,8 @@ static void yyerror(attack_t *, const char *);
 %token CLFWEBPROBES_BOTSEARCH_SUFF
 /* CLF, WordPress brute-force attacks */
 %token CLF_WORDPRESS_SUFF
+/* CLF, TYPO3 brute-force attacks */
+%token CLF_TYPO3_SUFF
 /* OpenSMTPD */
 %token OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_AUTHFAIL_SUFF OPENSMTPD_UNSUPPORTED_CMD_SUFF
 /* courier */
@@ -179,6 +181,7 @@ msg_single:
   | clfunauhtdmsg     { attack->service = SERVICES_CLF_UNAUTH; }
   | clfwebprobesmsg   { attack->service = SERVICES_CLF_PROBES; }
   | clfwordpressmsg   { attack->service = SERVICES_CLF_WORDPRESS; }
+  | clftypo3msg       { attack->service = SERVICES_CLF_TYPO3; }
   | opensmtpdmsg      { attack->service = SERVICES_OPENSMTPD; }
   | couriermsg        { attack->service = SERVICES_COURIER; }
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
@@ -329,6 +332,11 @@ clfwebprobesmsg:
 /* attack rules against WordPress */
 clfwordpressmsg:
     addr CLF_REQUEST_PREF CLF_WORDPRESS_SUFF
+  ;
+
+/* attack rules against TYPO3 */
+clftypo3msg:
+    addr CLF_REQUEST_PREF CLF_TYPO3_SUFF
   ;
 
 /* opensmtpd */

@@ -25,6 +25,7 @@ static const struct service_s services[] = {
     {SERVICES_CLF_UNAUTH, "CLF Unauthorized"},
     {SERVICES_CLF_PROBES, "CLF Probes"},
     {SERVICES_CLF_WORDPRESS, "Wordpress"},
+    {SERVICES_CLF_TYPO3, "TYPO3"},
     {SERVICES_OPENVPN, "OpenVPN"},
     {SERVICES_GITEA, "Gitea"},
 };

@@ -116,6 +116,7 @@ HTTP_BOTSEARCH_WORDPRESS   wp-(admin|config|login|signup)"."php
 HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|cgi-bin|mysqladmin)[^,]*
 
 WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
+TYPO3_LOGIN                .*"/typo3/?loginProvider=".*
 %%
 
 
@@ -293,6 +294,10 @@ WORDPRESS_LOGIN            .*"/wp-login"(\.php)?
  /* WordPress.
     HTTP 200 OK responses to /wp-login.php via POST are failed requests, but GET or 302 aren’t. */
 <clf_request>" \"POST "{WORDPRESS_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_WORDPRESS_SUFF; }
+
+ /* TYPO3.
+    HTTP 200 OK responses to /typo3/?loginProvider= via POST are failed requests, but 303 aren’t. */
+<clf_request>" \"POST "{TYPO3_LOGIN}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_TYPO3_SUFF; }
 
  /* OpenSMTPD. */
  /* Unsupported command when attempting to log in. */
