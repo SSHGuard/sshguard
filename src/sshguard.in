@@ -9,7 +9,7 @@ err() {
 }
 
 setflag() {
-    if [ -n "$2" ]; then
+    if [ ! -z "$2" ]; then
         flags="$flags -$1 $2"
     fi
 }
@@ -24,7 +24,7 @@ EOF
 }
 
 clean_and_exit() {
-    if [ -n "$PID_FILE" ]; then
+    if [ ! -z "$PID_FILE" ]; then
         rm -f "$PID_FILE"
     fi
     exit
@@ -72,33 +72,33 @@ setflag 'p' "$BLOCK_TIME"
 setflag 's' "$DETECTION_TIME"
 setflag 'N' "$IPV6_SUBNET"
 setflag 'n' "$IPV4_SUBNET"
-if [ -n "$WHITELIST_ARG" ]; then
+if [ ! -z "$WHITELIST_ARG" ]; then
     for arg in $WHITELIST_ARG; do
       flags="$flags -w $arg"
     done
-elif [ -n "$WHITELIST_FILE" ]; then
+elif [ ! -z "$WHITELIST_FILE" ]; then
     flags="$flags -w $WHITELIST_FILE"
 fi
 
 # Log source selection order:
 #     runtime args, logreader and files, logreader, files, or stdin
 shift $((OPTIND-1))
-if [ -n "$@" ]; then
+if [ ! -z "$@" ]; then
     tailcmd="$libexec/sshg-logtail $@"
-elif [ \( -n "$LOGREADER" \) -a \( -n "$FILES" \) ]; then
+elif [ \( ! -z "$LOGREADER" \) -a \( ! -z "$FILES" \) ]; then
     LOGREADER="$LOGREADER | grep --line-buffered '^'"
     FILESREAD="$libexec/sshg-logtail $FILES | grep --line-buffered '^'"
     tailcmd="( $LOGREADER & $FILESREAD )"
-elif [ -n "$LOGREADER" ]; then
+elif [ ! -z "$LOGREADER" ]; then
     tailcmd="$LOGREADER"
-elif [ -n "$FILES" ]; then
+elif [ ! -z "$FILES" ]; then
     tailcmd="$libexec/sshg-logtail $FILES"
 elif [ -z "$tailcmd" ]; then
     err "$config is missing FILES and LOGREADER; please specify one"
     exit 1
 fi
 
-if [ -n "$PID_FILE" ]; then
+if [ ! -z "$PID_FILE" ]; then
     if [ ! -e "$PID_FILE" ]; then
         echo "$$" > $PID_FILE
     else
