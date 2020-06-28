@@ -64,6 +64,11 @@ Files to change:
 - `<src/parser/attack_scanner.l>`_
 - `<src/parser/attack_parser.y>`_
 
+If you are adding a new service, changes are also needed in:
+
+- `<src/common/attack.h>`_
+- `<src/common/service_names.c>`_
+
 #. Obtain several samples of the log message you want to match. Add these
    attacks, along with the expected parse result, to *tests.txt*.
 
@@ -81,6 +86,15 @@ Files to change:
 #. Check that your new tests pass, and that you haven't broken existing tests.
    To help debug your rule, you can run *sshg-parser* directly with the ``-d``
    flag.
+
+Submitting Your Patches
+-----------------------
+We welcome your patches through:
+
+- Email submission in ``git format-patch`` form or as a unified diff to the
+  SSHGuard Users' Mailing List <sshguard-users@lists.sourceforge.net>
+
+- A BitBucket pull request
 
 
 For Committers
