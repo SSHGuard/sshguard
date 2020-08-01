@@ -17,6 +17,7 @@ un-deprecated, contact the project mailing list.
 - Recognize RFC 5424 syslog banners
 - Recognize busybox syslog -S banners
 - Recognize rsyslog banners
+- Recognize web services TYPO3, Contao, and Joomla
 - Update signatures for Dovecot
 - Update signatures for OpenSSH
 
@@ -24,6 +25,10 @@ un-deprecated, contact the project mailing list.
 
 - Whitelist entire 127.0.0.0/8 and ::1 block
 - Whitelist file allows inline comments
+
+**Fixed**
+
+- Fix FILES and LOGREADER configuration file options
 
 2.4.0
 =====
