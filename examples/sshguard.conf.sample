@@ -49,3 +49,14 @@ IPV4_SUBNET=32
 # IP addresses listed in the WHITELIST_FILE are considered to be
 # friendlies and will never be blocked.
 #WHITELIST_FILE=/etc/friends
+
+# If PARSER is unset, SSHGuard will use the installed sshg-parser as its
+# parser. Setting PARSER overrides this, so that you can use your own parser.
+#PARSER=
+
+# Run POST_PARSER as a filter after the parser. POST_PARSER must read as input
+# and produce as output lines in the format used by sshg-parser. This example
+# implements primitive whitelisting, preventing sshg-blocker from seeing
+# attacks from 1.2.3.4. Unlike whitelisting, attacks filtered by POST_PARSER
+# are not logged by SSHGuard.
+#POST_PARSER="grep -v 1.2.3.4"
