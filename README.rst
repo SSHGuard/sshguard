@@ -31,10 +31,15 @@ follow the setup instructions in `sshguard-setup(7)
 additional options.
 
 
+Troubleshooting
+===============
+See the "Troubleshooting" section in `sshguard-setup(7)
+<doc/sshguard-setup.7.rst>`_.
+
+
 Contributing
 ============
-See `<CONTRIBUTING.rst>`_ for both people who want to write code, and those
-who do not.
+See `<CONTRIBUTING.rst>`_>.
 
 
 License

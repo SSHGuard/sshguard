@@ -6,7 +6,7 @@ sshguard-setup
 setting up SSHGuard on your system
 ----------------------------------
 
-:Date: May 23, 2019
+:Date: August 27, 2020
 :Manual group: SSHGuard Manual
 :Manual section: 7
 :Version: 2.4
@@ -200,6 +200,53 @@ Moreover, you can display sshguard's tables with::
 
     # nft list table ip sshguard
     # nft list table ip6 sshguard
+
+
+TROUBLESHOOTING
+===============
+
+Is SSHGuard configured correctly?
+---------------------------------
+Check that the correct **FILES** (or **LOGREADER**) and BACKEND are set in
+*sshguard.conf*.
+
+Is SSHGuard running?
+--------------------
+SSHGuard spawns a pipeline of cooperating processes. You can verify that
+SSHGuard is started correctly by viewing your process list using ``ps`` or
+``top``. Shown here are the processes associated with an example
+configuration::
+
+  /bin/sh /opt/sshguard/sbin/sshguard
+  tail -F -n 0 /tmp/log.txt
+  /opt/sshguard/libexec/sshg-parser
+  /opt/sshguard/libexec/sshg-blocker -a 30 -p 120 -s 1800 -N 128 -n 32
+  /bin/sh /usr/local/libexec/sshg-fw-null
+
+In order:
+
+  - SSHGuard, installed in */opt/sshguard*, is being interpreted by */bin/sh*.
+
+  - SSHGuard launched ``tail -F -n 0``, which is monitoring */tmp/log.txt*.
+
+  - The default parser ``sshg-parser`` is running.
+
+  - The blocker is running with options ``-a 30 -p 120 -s 1800 -N 128 -n 32``.
+
+  - The firewall ``sshg-fw-null`` is running. The null backend doesn't actually
+    block any attacks.
+
+Is SSHGuard recognizing attacks?
+--------------------------------
+SSHGuard recognizes attacks by parsing log messages. The format of log
+messages can occasionally change. If you are using the default, built-in
+attack parser, you can check if SSHGuard recognizes your attacks by running::
+
+    $ cat /var/log/auth.log | %PREFIX%/libexec/sshg-parser -a
+
+Log messages that are recognized as attacks are prefixed with a '*' at the
+beginning of each line. If a log message that should be recognized as an
+attack is not, consider reporting it.
 
 
 EXAMPLES
