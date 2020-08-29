@@ -3,7 +3,6 @@
 # This file is part of SSHGuard.
 
 FIREW_CMD="firewall-cmd --quiet"
-IPSET_CMD="ipset -quiet"
 
 fw_init() {
     ${FIREW_CMD} --query-rich-rule="rule family=ipv6 source ipset=sshguard6 drop" || {
@@ -26,8 +25,7 @@ fw_release() {
 }
 
 fw_flush() {
-    ${IPSET_CMD} flush sshguard6
-    ${IPSET_CMD} flush sshguard4
+    ${FIREW_CMD} --reload
 }
 
 fw_fin() {
