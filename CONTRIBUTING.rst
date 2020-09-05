@@ -87,6 +87,42 @@ If you are adding a new service, changes are also needed in:
    To help debug your rule, you can run *sshg-parser* directly with the ``-d``
    flag.
 
+Firewall Backend Interface
+--------------------------
+``sshg-blocker`` sends line-delimited commands to a firewall backend through a
+pipe, which does the actual work of blocking and releasing addresses using the
+underlying firewall. The firewall backend must support these commands:
+
+- ``block ADDR KIND SUBNET_SIZE`` (fw_block() in *blocklist.c*). This command
+  blocks an IP address block given in CIDR notation as *ADDR*/*SUBNET_SIZE*
+  which is either IPv4 if *KIND* is '4' or IPv6 if *KIND* is '6'. As is the
+  case with CIDR notation, a *SUBNET_SIZE* of 32 indicates that only one IP
+  address must be blocked.
+
+  Since the firewall backend likely runs with elevated permissions,
+  implementations should validate their inputs.
+
+  At its option, an implementation may gather several ``block`` commands to
+  issue to the underlying backend at once to reduce overhead.
+
+- ``release ADDR KIND SUBNET_SIZE`` (fw_release() in *blocklist.c*). This
+  command undoes the ``block`` command, taking the same arguments. The backend
+  may assume that a ``release`` command is never issued without a
+  corresponding ``block`` command.
+
+  If block addresses overlap, it is up to the implementation to decide when to
+  allow access through the firewall. For example, if both 1.2.3.4/32 and
+  1.2.3.0/24 were blocked, in that order, and 1.2.3.4/32 was released, the
+  firewall backend may continue to block 1.2.3.4 until both are released, or
+  may unblock it immediately.
+
+- ``flushonexit`` (main() in *blocker.c*). This command instructs the backend
+  to release all blocked addresses when the backend exits. ``sshg-blocker``
+  will usually issue this command before any others. Implementations should
+  release all blocked addresses, including those that do not have a
+  corresponding ``block`` command (for example, blocks from a previous
+  invocation). 
+
 Submitting Your Patches
 -----------------------
 We welcome your patches through:
