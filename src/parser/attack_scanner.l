@@ -41,7 +41,7 @@ static int getsyslogpid(char *syslogbanner, int length);
  /* for SSHGuard */
 %s sshguard_attack sshguard_block
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_greylist opensmtpd_failedcmd
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_greylist opensmtpd_failedcmd postscreen
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for HTTP services */
@@ -260,6 +260,11 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 
 "action=greylist".*"client_address="                            { BEGIN(postfix_greylist); return POSTFIX_GREYLIST; }
 <postfix_greylist>",".*                                         { BEGIN(INITIAL); return POSTFIX_GREYLIST_SUFF; }
+
+"PREGREET".*"["                                                 { BEGIN(postscreen); return POSTSCREEN_PREF; }
+"DNSBL".*"["                                                    { BEGIN(postscreen); return POSTSCREEN_PREF; }
+"HANGUP".*"["                                                   { BEGIN(postscreen); return POSTSCREEN_PREF; }
+<postscreen>"]:".*                                              { BEGIN(INITIAL); return POSTSCREEN_SUFF; }
 
  /* FreeBSD's ftpd login errors */
 "FTP LOGIN FAILED FROM "                                        { BEGIN(freebsdftpd_loginerr); return FREEBSDFTPD_LOGINERR_PREF; }

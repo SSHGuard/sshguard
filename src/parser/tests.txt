@@ -273,6 +273,15 @@ M
 Jun 20 16:46:17 ares postgrey[919]: action=greylist, reason=early-retry (295s missing), client_name=r244.mail.kbc.be, client_address=172.82.231.244, sender=bounce@mail.kbc.be, recipient=lilydehoux@zeelandned.nl
 260 172.82.231.244 4 10
 M
+Sep  6 11:47:43 poseidon postfix/postscreen[14766]: PREGREET 14 after 0.04 from [1.2.3.4]:55868: EHLO ylmf-pc\r\n
+260 1.2.3.4 4 10
+M
+Sep 10 07:01:57 poseidon postfix/postscreen[25914]: DNSBL rank 3 for [1.2.3.4]:64273
+260 1.2.3.4 4 10
+M
+Sep  6 11:47:43 poseidon postfix/postscreen[14766]: HANGUP after 0.07 from [1.2.3.4]:55868 in tests after SMTP handshake
+260 1.2.3.4 4 10
+M
 
 #### OpenSMTPD
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"

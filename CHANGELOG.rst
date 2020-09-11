@@ -10,6 +10,12 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+Next
+====
+**Added**
+
+- Recognize rejections from Postfix's postscreen daemon
+
 2.4.1
 =====
 **Added**
