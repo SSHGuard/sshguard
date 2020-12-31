@@ -92,7 +92,7 @@ selected at compile-time.
 pf
 --
 SSHGuard adds attackers to table *<sshguard>*. Create the table and block
-attackers by adding the following lines to *pf.conf*::
+attackers by adding the following lines to the end of *pf.conf*::
 
     table <sshguard> persist
     block in proto tcp from <sshguard>
