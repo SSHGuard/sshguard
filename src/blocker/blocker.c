@@ -161,7 +161,7 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
             abort();
         }
     }
-    sshguard_log(LOG_WARNING, "Blocking \"%s/%u\" %s (%u attacks in %lld "
+    sshguard_log(LOG_INFO, "Blocking \"%s/%u\" %s (%u attacks in %lld "
                               "secs, after %d abuses over %lld secs.)",
                  tmpent->attack.address.value, subnet_size, time_msg, tmpent->numhits,
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
@@ -189,18 +189,18 @@ static void report_address(attack_t attack) {
 
     /* address already blocked? (can happen for 100 reasons) */
     if (blocklist_contains(attack)) {
-        sshguard_log(LOG_INFO, "%s has already been blocked.",
+        sshguard_log(LOG_DEBUG, "%s has already been blocked.",
                 attack.address.value);
         return;
     }
 
     if (whitelist_match(attack.address.value, attack.address.kind)) {
-        sshguard_log(LOG_INFO, "%s: not blocking (on whitelist)",
+        sshguard_log(LOG_DEBUG, "%s: not blocking (on whitelist)",
                 attack.address.value);
         return;
     }
 
-    sshguard_log(LOG_NOTICE,
+    sshguard_log(LOG_DEBUG,
                  "Attack from \"%s\" on service %s with danger %u.",
                  attack.address.value, service_to_name(attack.service),
                  attack.dangerousness);
