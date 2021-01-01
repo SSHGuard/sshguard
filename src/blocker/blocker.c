@@ -78,7 +78,7 @@ static void init_log(int debug) {
         flags |= LOG_PERROR;
         dest = LOG_LOCAL6;
     } else {
-        setlogmask(LOG_UPTO(LOG_NOTICE));
+        setlogmask(LOG_UPTO(LOG_INFO));
     }
 
     // Set local time zone and open log before entering sandbox.
