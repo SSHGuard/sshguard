@@ -96,22 +96,22 @@ Connection closed by invalid user gpadmin 1.2.3.4 port 9224 [preauth]
 100 1.2.3.4 4 2
 M
 Apr 10 13:50:24 quasar sshd[53269]: error: Received disconnect from 95.9.156.208: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
-100 95.9.156.208 4 10
+*
 M
 Apr 10 13:50:24 quasar sshd[53269]: error: Received disconnect from 2001:db8::a11:beef:7ac0: 3: com.jcraft.jsch.JSchException: Auth fail [preauth]
-100 2001:db8::a11:beef:7ac0 6 10
+*
 M
 Apr 10 06:55:42 quasar sshd[50880]: Received disconnect from 130.207.203.56: 11: These aren't the droids we're looking for. [preauth]
-100 130.207.203.56 4 10
+*
 M
 Apr 10 06:55:42 quasar sshd[50880]: Received disconnect from 2001:db8::a11:beef:7ac0: 11: These aren't the droids we're looking for. [preauth]
-100 2001:db8::a11:beef:7ac0 6 10
+*
 M
 Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 103.237.33.58: 11: Bye Bye [preauth]
-100 103.237.33.58 4 10
+*
 M
 Apr  9 13:24:07 quasar sshd[44787]: Received disconnect from 2001:db8::a11:beef:7ac0: 11: Bye Bye [preauth]
-100 2001:db8::a11:beef:7ac0 6 10
+*
 M
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 192.168.2.1
 100 192.168.2.1 4 10
@@ -126,10 +126,10 @@ Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 2001:db8::a11
 100 2001:db8::a11:beef:7ac0 6 10
 M
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 192.168.2.200: 14: No supported authentication methods available [preauth]
-100 192.168.2.200 4 10
+*
 M
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 2001:db8::a11:beef:7ac0: 14: No supported authentication methods available [preauth]
-100 2001:db8::a11:beef:7ac0 6 10
+*
 M
 error: maximum authentication attempts exceeded for root from 117.81.26.226 port 4919 ssh2 [preauth]
 100 117.81.26.226 4 10
