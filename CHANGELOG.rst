@@ -10,11 +10,19 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
-Next
-====
+2.4.2
+=====
 **Added**
 
 - Recognize rejections from Postfix's postscreen daemon
+- The parser can now be changed using the *PARSER* and *POST_PARSER* options
+
+**Changed**
+
+- Remove some false positive attack signatures for SSH and Cyrus
+- Adjust log verbosity of some log messages
+- The *firewalld* backend now uses *firewall-cmd* instead of *iptables* to
+  flush block lists
 
 2.4.1
 =====
