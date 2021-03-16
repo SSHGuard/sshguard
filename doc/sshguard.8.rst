@@ -20,7 +20,7 @@ sshguard
 block brute-force attacks by aggregating system logs
 ----------------------------------------------------
 
-:Date: May 23, 2019
+:Date: March 16, 2021
 :Manual group: SSHGuard Manual
 :Manual section: 8
 :Version: 2.4
@@ -42,35 +42,40 @@ DESCRIPTION
 services. It aggregates system logs and blocks repeat offenders using one of
 several firewall backends.
 
-**sshguard** can monitor log files.
-Log messages are parsed line-by-line for recognized patterns. An attack is
-detected when several patterns are matched in a set time interval. Attackers
-are blocked temporarily but can also be semi-permanently banned using the
-blacklist option.
+**sshguard** can monitor log files and the standard output of running a shell
+command. Log messages are parsed line-by-line for recognized attack patterns.
+Attackers are blocked when enough attack patterns are detected in a
+configurable time interval. Attackers are blocked temporarily but can also be
+permanently blocked using the blacklist option.
+
+**sshguard** must be configured before its first run. See
+**sshguard-setup(7)**.
 
 OPTIONS
 =======
 **-a** *threshold* (default 30)
-    Block attackers when their cumulative attack score exceeds *threshold*.
-    Most attacks have a score of 10.
+    Each detected attack increases an attacker's attack score, usually by 10.
+    Block attackers when their attack score exceeds *threshold*.
 
 **-b** *threshold*:*blacklist_file*
-    Blacklist an attacker when its score exceeds *threshold*. Blacklisted
-    addresses are loaded from and added to *blacklist-file*.
+    Blacklist an attacker when its attack score exceeds *threshold*.
+    Blacklisted addresses are written to *blacklist-file* and never unblocked,
+    even after restarting **sshguard**.
 
 **-i** *pidfile*
-    Write the PID of **sshguard** to `pidfile`.
+    Write the PID of **sshguard** to *pidfile*. *pidfile* is removed when
+    **sshguard** exits.
 
 **-p** *blocktime* (default 120)
-    Block attackers for initially *blocktime* seconds after exceeding
-    *threshold*. Subsequent blocks increase by a factor of 1.5.
-
-    **sshguard** unblocks attacks at random intervals, so actual block times
-    will be longer.
+    Block first-time attackers for *blocktime* seconds. Subsequent blocks
+    increase in duration by a factor of 1.5. Since **sshguard** unblocks
+    attackers at random intervals, actual block times may be somewhat longer.
 
 **-s** *detection_time* (default 1800)
-    Remember potential attackers for up to *detection_time* seconds before
-    resetting their score.
+    Reset an attacker's attack score after *detection_time* seconds since the
+    last attack. This means that attackers who attack every *detection_time*
+    seconds are never blocked by **sshguard**. However, an increased
+    *detection_time* may have an impact on legitimate users.
 
 [**-w** *address* | *whitelist_file*]
     Whitelist a single address, hostname, or address block given as
@@ -87,7 +92,7 @@ OPTIONS
 ENVIRONMENT
 ===========
 SSHGUARD_DEBUG
-    Set to enable verbose output from sshg-blocker.
+    Set to enable verbose output from **sshg-blocker**.
 
 FILES
 =====
