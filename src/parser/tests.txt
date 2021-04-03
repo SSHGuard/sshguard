@@ -526,3 +526,9 @@ M
 May 9 11:11:17 sshd[30876]: Invalid user www from 139.59.34.17 port 51066
 100 139.59.34.17 4 10
 M
+
+# OpenVPN Portshare
+2019-10-21T23:07:09+0200 [stdout#info] [OVPN 0] OUT: 'Mon Oct 21 21:07:09 2019 192.168.0.1:28288 SIGTERM[soft,port-share-redirect] received, client-instance exiting'
+410 192.168.0.1 4 10
+M
+

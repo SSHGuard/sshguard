@@ -110,6 +110,9 @@ static void yyerror(attack_t *, const char *);
 %token OPENVPN_TLS_ERR_SUFF
 /* Gitea */
 %token GITEA_ERR_PREF GITEA_ERR_SUFF
+/* OpenVPN Portshare */
+%token OPENVPN_PS_TERM_PREF
+%token OPENVPN_PS_TERM_SUFF
 
 %%
 
@@ -183,6 +186,7 @@ msg_single:
   | couriermsg        { attack->service = SERVICES_COURIER; }
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
   | giteamsg          { attack->service = SERVICES_GITEA; }
+  | openvpnpsmsg      { attack->service = SERVICES_OPENVPN_PS; }
   ;
 
 /* an address */
@@ -354,6 +358,12 @@ giteamsg:
   | GITEA_ERR_PREF addr GITEA_ERR_SUFF
   | GITEA_ERR_PREF '[' addr ']'
   | GITEA_ERR_PREF '[' addr ']' GITEA_ERR_SUFF
+  ;
+
+/* attack rules for openvpn portshare */
+openvpnpsmsg:
+    OPENVPN_PS_TERM_PREF addr OPENVPN_PS_TERM_SUFF
+  | OPENVPN_PS_TERM_PREF '[' addr ']' OPENVPN_PS_TERM_SUFF
   ;
 
 %%

@@ -69,6 +69,9 @@ RFC5234_HEADER      "<"{NUMBER}">"{NUMBER}
 TIMESTAMP_LOCAL     {DAYNO}"/"{MONTH}"/"{YEAR}":"{HOUR}":"{MINPS}":"{MINPS}" "{TIMEZONE}
 TIMESTAMP_YMD_HMS   {YEAR}"/"{MONTHNO}"/"{DAYNO}" "{HOUR}":"{MINPS}":"{MINPS}
 
+ /* Mon Jan 01 21:00:00 2010 */
+TIMESTAMP_DM24H_Y   (Mon|Tue|Wed|Thu|Fri|Sat|Sun)\ {MONTH}\ {DAYNO}\ [0-9:]{8}\ {YEAR}
+
  /* all words but "sshguard" provided that posix regex don't support negation nor intersection:
   * 1) all words of 2 to 7 characters or 8-* chars
   * 2) words of 7 chars different to "sshguard" (^s.* | s^s.* | ss^h.*
@@ -316,6 +319,9 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 ({TIMESTAMP_YMD_HMS}" ")?(\x1b"["[0-9m;]+)?("["[A-Z]"] ")?"Failed authentication attempt for ".*" from " { BEGIN(gitea_autherr); return GITEA_ERR_PREF; }
 <gitea_autherr>(."["[0-9m;]+)?                                  { BEGIN(INITIAL); return GITEA_ERR_SUFF; }
 
+ /* OpenVPN Portshare */
+{TIMESTAMP_ISO8601}" \[stdout#info\] \[OVPN "[0-9]+"\] OUT: \'"{TIMESTAMP_DM24H_Y}" "         { return OPENVPN_PS_TERM_PREF; }
+":"{NUMBER}" SIGTERM\[soft,port-share-redirect\] received, client-instance exiting\'" { return OPENVPN_PS_TERM_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
