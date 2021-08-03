@@ -40,6 +40,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 %s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex cockpit_authfail
  /* for SSHGuard */
 %s sshguard_attack sshguard_block
+%s bind
  /* for Mail services */
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_greylist opensmtpd_failedcmd postscreen
  /* for FTP services */
@@ -222,6 +223,10 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 <sshguard_attack>"\" on service "{NUMBER}" with danger "{NUMBER}"."    { BEGIN(INITIAL); return SSHGUARD_ATTACK_SUFF; }
 "Blocking \""                                                   { BEGIN(sshguard_block); return SSHGUARD_BLOCK_PREF; }
 <sshguard_block>"/"{NUMBER}"\" for "{NUMBER}" secs ("{NUMBER}" attacks in "{NUMBER}" secs,".+  { BEGIN(INITIAL); return SSHGUARD_BLOCK_SUFF; }
+
+ /* BIND */
+"client @"{WORD}" "                                             { BEGIN(bind); return BIND_PREF; }
+<bind>"#".*"query".*"denied".*                                  { BEGIN(INITIAL); return BIND_QUERY_DENIED; }
 
  /* Cucipop */
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }

@@ -532,3 +532,7 @@ M
 410 192.168.0.1 4 10
 M
 
+# BIND query denied
+Jul 28 08:45:16 router1 named[135105]: client @0x7f13c4158c00 1.2.3.4#3074 (example.com): query (cache) example.com/RRSIG/IN' denied
+120 1.2.3.4 4 10
+M

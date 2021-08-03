@@ -66,6 +66,8 @@ static void yyerror(attack_t *, const char *);
 /* SSHGuard */
 %token SSHGUARD_ATTACK_PREF SSHGUARD_ATTACK_SUFF
 %token SSHGUARD_BLOCK_PREF SSHGUARD_BLOCK_SUFF
+/* BIND */
+%token BIND_PREF BIND_QUERY_DENIED
 /* dovecot */
 %token DOVECOT_IMAP_LOGINERR_PREF DOVECOT_IMAP_LOGINERR_SUFF
 /* uwimap */
@@ -167,6 +169,7 @@ repetition_suffix:
 msg_single:
     sshmsg            { attack->service = SERVICES_SSH; }
   | sshguardmsg       { attack->service = SERVICES_SSHGUARD; }
+  | bindmsg           { attack->service = SERVICES_BIND; }
   | dovecotmsg        { attack->service = SERVICES_DOVECOT; }
   | uwimapmsg         { attack->service = SERVICES_UWIMAP; }
   | cyrusimapmsg      { attack->service = SERVICES_CYRUSIMAP; }
@@ -255,6 +258,10 @@ ssh_badkex:
 sshguardmsg:
     SSHGUARD_ATTACK_PREF addr SSHGUARD_ATTACK_SUFF
   | SSHGUARD_BLOCK_PREF addr SSHGUARD_BLOCK_SUFF
+  ;
+
+bindmsg:
+    BIND_PREF addr BIND_QUERY_DENIED
   ;
 
 /* attack rules for dovecot imap */
