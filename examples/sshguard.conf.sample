@@ -37,8 +37,6 @@ IPV6_SUBNET=128
 IPV4_SUBNET=32
 
 #### EXTRAS ####
-# !! Warning: These features may not work correctly with sandboxing. !!
-
 # Full path to PID file (optional, no default)
 #PID_FILE=/run/sshguard.pid
 
