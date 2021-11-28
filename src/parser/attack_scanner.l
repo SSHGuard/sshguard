@@ -259,7 +259,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 
  /* postfix */
 "warning: "({WORD}|{HOSTADDR})"["                               { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
-<postfix_loginerr>"]: SASL "[-A-Z0-9]+" authentication failed".*    { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
+<postfix_loginerr>"]: SASL "[-A-Z0-9]+" authentication fail".*  { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
 "lost connection after AUTH from ".*"["                         { return POSTFIX_NO_AUTH_PREF; }
 
 "action=greylist".*"client_address="                            { BEGIN(postfix_greylist); return POSTFIX_GREYLIST; }

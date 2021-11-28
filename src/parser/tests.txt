@@ -252,6 +252,9 @@ M
 Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[2001:db8::a11:beef:7ac0]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
 260 2001:db8::a11:beef:7ac0 6 10
 M
+warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: authentication failure
+260 1.2.3.4 4 10
+M
 2015-03-12 03:17:22 login authenticator failed for vps.o2c.net (User) [87.76.31.6]: 535 Incorrect authentication data (set_id=dog)
 240 87.76.31.6 4 10
 M
