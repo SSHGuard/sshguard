@@ -234,6 +234,9 @@ M
 2019-10-15 08:08:52 imap-login: Info: Disconnected (auth failed, 1 attempts in 2 secs): user=<test>, method=PLAIN, rip=172.21.0.1, lip=172.21.0.3, TLS, session=<1MyTfu0USIqsFQAB>
 210 172.21.0.1 4 10
 M
+submission-login: Disconnected: Aborted login by logging out (auth failed, 1 attempts in 2 secs): user=<sarah>, method=LOGIN, rip=1.2.3.4, lip=1.1.1.1, TLS, session=<cIMEtT/mtP8tfUIY>
+210 1.2.3.4 4 10
+M
 Login failed user=XYZ auth=XYZ host=XYZ [6.6.6.0]
 200 6.6.6.0 4 10
 M
