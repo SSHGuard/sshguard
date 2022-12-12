@@ -255,6 +255,9 @@ M
 Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[2001:db8::a11:beef:7ac0]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
 260 2001:db8::a11:beef:7ac0 6 10
 M
+Jun 21 12:00:56 acme postfix/submission/smtpd[20201]: warning: non-SMTP command from unknown[1.2.3.4]: GET / HTTP/1.1
+260 1.2.3.4 4 10
+M
 warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: authentication failure
 260 1.2.3.4 4 10
 M

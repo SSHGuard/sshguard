@@ -261,6 +261,9 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 "warning: "({WORD}|{HOSTADDR})"["                               { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
 <postfix_loginerr>"]: SASL "[-A-Z0-9]+" authentication fail".*  { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
 "lost connection after AUTH from ".*"["                         { return POSTFIX_NO_AUTH_PREF; }
+ /* non-SMTP on an SMTP port suggests port-scanning activity */
+"warning: non-SMTP command from "({WORD}|{HOSTADDR})"["         { BEGIN(postfix_loginerr); return POSTFIX_NONSMTP; }
+<postfix_loginerr>"]:".*                                        { BEGIN(INITIAL); return POSTFIX_NONSMTP_SUFF; }
 
 "action=greylist".*"client_address="                            { BEGIN(postfix_greylist); return POSTFIX_GREYLIST; }
 <postfix_greylist>",".*                                         { BEGIN(INITIAL); return POSTFIX_GREYLIST_SUFF; }
