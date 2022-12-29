@@ -447,6 +447,9 @@ M
 127.1.2.4 - - [18/Jun/2020:16:05:21 +0200] "POST /contao/login?_hash=tw9jzczttzj9twxzjztwx9twzjtwxjtzj9ztwdjzxwt%3D&redirect=https%3A%2F%2Fexample.org%2Fcontao HTTP/2.0" 200 654 "-" "Mozilla/5.0" "-"
 370 127.1.2.4 4 10
 M
+1.2.3.4 - - [28/Dec/2022:20:45:56 +0200] "GET /LICENSE.txt HTTP/2.0" 444 0 "-" "curl/7.74.0" (0.000)
+360 1.2.3.4 4 10
+M
 reverse mapping checking getaddrinfo for XYZ [6.6.6.0] XYZ POSSIBLE BREAK-IN ATTEMPT!
 *
 M

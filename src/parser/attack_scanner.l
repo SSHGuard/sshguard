@@ -305,6 +305,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 
  /* HTTP probes for common web services. */
 <clf_request>" \""{HTTP_REQUEST}" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
+<clf_request>" \""{HTTP_REQUEST}" ".*" "{HTTP_VERSION}"\" 444".+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
 
  /* Bad login URLs.
     HTTP 200 OK responses via POST are failed requests */
