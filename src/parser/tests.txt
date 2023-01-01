@@ -527,13 +527,16 @@ M
 Mar 07 08:34:31 myhost gitea[15884]: 2019/03/07 08:34:31 [I] Failed authentication attempt for blabla from [::1]
 500 ::1 6 10
 M
+
 Failed authentication attempt for blabla from 213.60.123.190
 500 213.60.123.190 4 10
 M
+
 # Rsyslog 8 (#128)
 2020-05-29T11:28:56.058908+02:00 bastion sshd[20974] error: PAM: Authentication error for illegal user plop from 10.11.12.13
 100 10.11.12.13 4 10
 M
+
 # Busybox 'syslog -S' hides host names (#115)
 May 9 11:11:17 sshd[30876]: Invalid user www from 139.59.34.17 port 51066
 100 139.59.34.17 4 10
@@ -547,4 +550,14 @@ M
 # BIND query denied
 Jul 28 08:45:16 router1 named[135105]: client @0x7f13c4158c00 1.2.3.4#3074 (example.com): query (cache) example.com/RRSIG/IN' denied
 120 1.2.3.4 4 10
+M
+
+# Gitea 1.17.x FreeBSD
+2023/01/01 15:33:04 ...ers/web/auth/auth.go:200:SignInPost() [I] [63b199a0] Failed authentication attempt for test from 192.168.1.2:13798: user does not exist [uid: 0, name: test, keyid: 0]
+500 192.168.1.2 4 10
+M
+
+# Gitea 1.17 colored
+[36m2023/01/01 17:25:12 [0m[32m...ers/web/auth/auth.go:200:[32mSignInPost()[0m [1;32m[I][0m [[93m63b1b3e8[0m] Failed authentication attempt for [1mtest[0m from [1m1.2.3.4:0[0m: [1muser does not exist [uid: 0, name: test, keyid: 0][0m
+500 1.2.3.4 4 10
 M

@@ -70,6 +70,8 @@ RFC5234_HEADER      "<"{NUMBER}">"{NUMBER}
 TIMESTAMP_LOCAL     {DAYNO}"/"{MONTH}"/"{YEAR}":"{HOUR}":"{MINPS}":"{MINPS}" "{TIMEZONE}
 TIMESTAMP_YMD_HMS   {YEAR}"/"{MONTHNO}"/"{DAYNO}" "{HOUR}":"{MINPS}":"{MINPS}
 
+COLOR_CODE          \x1b"["[0-9;]+"m"
+
  /* Mon Jan 01 21:00:00 2010 */
 TIMESTAMP_DM24H_Y   (Mon|Tue|Wed|Thu|Fri|Sat|Sun)\ {MONTH}\ {DAYNO}\ [0-9:]{8}\ {YEAR}
 
@@ -325,8 +327,8 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 ":"{NUMBER}" TLS Error: TLS handshake failed"                   { return OPENVPN_TLS_ERR_SUFF; }
 
  /* Gitea - also with color codes */
-({TIMESTAMP_YMD_HMS}" ")?(\x1b"["[0-9m;]+)?("["[A-Z]"] ")?"Failed authentication attempt for ".*" from " { BEGIN(gitea_autherr); return GITEA_ERR_PREF; }
-<gitea_autherr>(."["[0-9m;]+)?                                  { BEGIN(INITIAL); return GITEA_ERR_SUFF; }
+(({COLOR_CODE})?{TIMESTAMP_YMD_HMS}" "({COLOR_CODE})?)?(({COLOR_CODE})?[a-zA-Z0-9\:\(\)\/\.]*({COLOR_CODE}[^[]*{COLOR_CODE})?" ")?(({COLOR_CODE})?"["[A-Z]"]"({COLOR_CODE})?" ")?("["({COLOR_CODE})?[0-9a-f]*({COLOR_CODE})?"] ")?"Failed authentication attempt for "({COLOR_CODE})?.*({COLOR_CODE})?" from "({COLOR_CODE})?  { BEGIN(gitea_autherr); return GITEA_ERR_PREF; }
+<gitea_autherr>(":"[0-9]{1,5}({COLOR_CODE})?":".*)?({COLOR_CODE})?  { BEGIN(INITIAL); return GITEA_ERR_SUFF; }
 
  /* OpenVPN Portshare */
 {TIMESTAMP_ISO8601}" \[stdout#info\] \[OVPN "[0-9]+"\] OUT: \'"{TIMESTAMP_DM24H_Y}" "         { return OPENVPN_PS_TERM_PREF; }
