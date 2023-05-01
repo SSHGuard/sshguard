@@ -572,4 +572,13 @@ M
 600 80.66.76.21 4 10
 M
 
+#MSSQL
+2023-05-01 15:32:57.55 Logon       Login failed. The login is from an untrusted domain and cannot be used with Integrated authentication. [CLIENT: 87.236.176.168]
+600 87.236.176.168 4 10
+M
+
+#MSSQL
+2023-05-01 15:05:09.16 Logon       Length specified in network packet payload did not match number of bytes read; the connection has been closed. Please contact the vendor of the client library. [CLIENT: 198.199.105.106]
+600 198.199.105.106 4 10
+M
 

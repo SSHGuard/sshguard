@@ -335,8 +335,10 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 ":"{NUMBER}" SIGTERM\[soft,port-share-redirect\] received, client-instance exiting\'" { return OPENVPN_PS_TERM_SUFF; }
 
  /* MSSQL Failed login */
-"Login failed for user \'"{WORD}"\'. Reason: Password did not match that for the login provided. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
-"Login failed for user \'"{WORD}"\'. Reason: Could not find a login matching the name provided. [CLIENT: "  { return MSSQL_AUTHFAIL_PREF; }
+"Login failed for user \'"{WORD}"\'. Reason: Password did not match that for the login provided. [CLIENT: "        { return MSSQL_AUTHFAIL_PREF; }
+"Login failed for user \'"{WORD}"\'. Reason: Could not find a login matching the name provided. [CLIENT: "         { return MSSQL_AUTHFAIL_PREF; }
+"Login failed. The login is from an untrusted domain and cannot be used with Integrated authentication. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
+"Length specified in network packet payload did not match number of bytes read; the connection has been closed. Please contact the vendor of the client library. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
