@@ -49,6 +49,7 @@ enum service {
     SERVICES_OPENVPN        = 400,  //< OpenVPN
     SERVICES_OPENVPN_PS     = 410,  //< OpenVPN Portshare
     SERVICES_GITEA          = 500,  //< Gitea
+    SERVICES_MSSQL          = 600,  //< Microsoft SQL Server for Linux
 };
 
 /* an attack (source address & target service info) */

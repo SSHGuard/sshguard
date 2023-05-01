@@ -116,6 +116,8 @@ static void yyerror(attack_t *, const char *);
 /* OpenVPN Portshare */
 %token OPENVPN_PS_TERM_PREF
 %token OPENVPN_PS_TERM_SUFF
+/* MSSQL */
+%token MSSQL_AUTHFAIL_PREF
 
 %%
 
@@ -191,6 +193,7 @@ msg_single:
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
   | giteamsg          { attack->service = SERVICES_GITEA; }
   | openvpnpsmsg      { attack->service = SERVICES_OPENVPN_PS; }
+  | sqlservrmsg       { attack->service = SERVICES_MSSQL; }
   ;
 
 /* an address */
@@ -367,6 +370,11 @@ giteamsg:
   | GITEA_ERR_PREF addr GITEA_ERR_SUFF
   | GITEA_ERR_PREF '[' addr ']'
   | GITEA_ERR_PREF '[' addr ']' GITEA_ERR_SUFF
+  ;
+
+/* attack rules for mssql */
+sqlservrmsg:
+    MSSQL_AUTHFAIL_PREF addr ']' 
   ;
 
 /* attack rules for openvpn portshare */

@@ -28,6 +28,7 @@ static const struct service_s services[] = {
     {SERVICES_OPENVPN, "OpenVPN"},
     {SERVICES_GITEA, "Gitea"},
     {SERVICES_OPENVPN_PS, "OpenVPN Portshare"},
+    {SERVICES_MSSQL, "MSSQL"},
 };
 
 const char *service_to_name(enum service code) {

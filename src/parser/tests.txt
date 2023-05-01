@@ -561,3 +561,15 @@ M
 [36m2023/01/01 17:25:12 [0m[32m...ers/web/auth/auth.go:200:[32mSignInPost()[0m [1;32m[I][0m [[93m63b1b3e8[0m] Failed authentication attempt for [1mtest[0m from [1m1.2.3.4:0[0m: [1muser does not exist [uid: 0, name: test, keyid: 0][0m
 500 1.2.3.4 4 10
 M
+
+#MSSQL 
+2023-04-21 23:17:02.54 Logon       Login failed for user 'sa'. Reason: Password did not match that for the login provided. [CLIENT: 87.251.75.20]
+600 87.251.75.20 4 10
+M
+
+#MSSQL
+2023-04-21 23:17:02.54 Logon       Login failed for user 'admin'. Reason: Could not find a login matching the name provided. [CLIENT: 80.66.76.21]
+600 80.66.76.21 4 10
+M
+
+
