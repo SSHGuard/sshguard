@@ -335,6 +335,7 @@ cockpitmsg:
 /* attack rules for HTTP 401 Unauhtorized in common log format */
 clfunauhtdmsg:
     addr CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
+  | addr CLF_REQUEST_PREF CLF_UNAUTHOIRIZED_SUFF
   ;
 
 /* attack rules for probes for common web services */

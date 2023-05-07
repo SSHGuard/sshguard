@@ -459,7 +459,7 @@ reverse mapping checking getaddrinfo for XYZ [6.6.6.0] XYZ POSSIBLE BREAK-IN ATT
 *
 M
 10.42.42.40 - - [19/Apr/1943:03:14:15 +0000] "GET / HTTP/1.1" 401 314 "-" "Mozilla/5.0"
-*
+350 10.42.42.40 4 10
 M
 2001:db8::a11:beef:7ac0 - - [19/Apr/1943:03:14:15 +0000] "GET / HTTP/2.0" 301 401 "-" "Mozilla/5.0"
 *
@@ -511,6 +511,10 @@ M
 M
 10.42.42.56 - - [19/Apr/1943:03:14:15 +0000] "GET /somewhere HTTP/1.1" 200 "https://example.com/wp-admin.php" "Mozilla/5.0"
 *
+M
+# generic 401 unauthorized
+1.2.3.4 - - [24/Apr/2023:10:22:25 +0300] "POST /?_task=login HTTP/2.0" 401 5440 "https://webmail.some.com/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15" (3.213)
+350 1.2.3.4 4 10
 M
 
 # Greedy SYSLOG_BANNER token (#93)
