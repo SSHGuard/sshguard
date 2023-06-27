@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 
 #include "attack.h"
+#include "sandbox.h"
 
 int attack_from_hostname(attack_t *attack, const char *name) {
     struct addrinfo addrinfo_hints;

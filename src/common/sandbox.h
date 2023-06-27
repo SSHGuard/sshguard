@@ -3,22 +3,14 @@
 #include "config.h"
 
 #if defined(CAPSICUM)
-#   if defined(HAVE_SYS_CAPSICUM_H)
-#   include <sys/capsicum.h>
-#   elif defined(HAVE_SYS_CAPABILITY_H)
-#   include <sys/capability.h>
-#   endif
+#define WITH_CASPER
+#include <sys/nv.h>
+#include <libcasper.h>
+#include <casper/cap_net.h>
+
+extern cap_channel_t *capcas, *capnet;
+
+#define getaddrinfo(name, serv, hints, res) cap_getaddrinfo(capnet, name, serv, hints, res)
 #endif
 
-static inline void sandbox_init() {
-#ifdef CAPSICUM
-    if (cap_enter() != 0) {
-        perror("Could not enter capability mode");
-    }
-#endif
-#ifdef __OpenBSD__
-    if (pledge("dns stdio", NULL) != 0) {
-        perror("Could not pledge");
-    }
-#endif
-}
+void sandbox_init();

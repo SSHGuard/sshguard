@@ -21,9 +21,10 @@ AM_PROG_LEX
 AS_BOX([Headers, Types, and Compiler Checks])
 AC_CHECK_HEADERS([getopt.h])
 
-AC_CHECK_HEADERS([sys/capsicum.h sys/capability.h], capsicum_found=candidate)
+AC_CHECK_HEADERS([capsicum_helpers.h libcasper.h], capsicum_found=candidate)
 AS_IF([test "$capsicum_found" == "candidate"],
-      AC_CHECK_FUNCS([cap_enter cap_rights_limit], capsicum_found=yes))
+      [AC_SEARCH_LIBS([cap_init], [casper], [capsicum_found=yes])]
+      [AC_SEARCH_LIBS([cap_getaddrinfo], [cap_net], [capsicum_found=yes])])
 AS_IF([test "$capsicum_found" == "yes"],
       [AC_DEFINE([CAPSICUM], [1], [Use Capsicum])])
 
