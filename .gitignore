@@ -2,6 +2,7 @@
 *.log
 *.swp
 *.trs
+*~
 .deps/
 .dirstamp
 Makefile
