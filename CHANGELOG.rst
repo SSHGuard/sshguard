@@ -10,6 +10,23 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.4.3
+=====
+**Added**
+
+- Add signature for BIND
+- Add signature for Gitea
+- Add signature for Microsoft SQL Server for Linux
+- Add signature for OpenVPN Portshare
+- Add signature for user-defined HTTP attacks
+- Update signatures for Dovecot
+- Update signatures for Postfix
+
+**Fixed**
+
+- Fix memset off-by-one
+- Resolve DNS names in capability mode using casper
+
 2.4.2
 =====
 **Added**
