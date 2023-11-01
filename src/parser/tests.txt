@@ -292,6 +292,11 @@ Sep  6 11:47:43 poseidon postfix/postscreen[14766]: HANGUP after 0.07 from [1.2.
 260 1.2.3.4 4 10
 M
 
+#### Cyrus
+Oct 29 18:51:24 mailsrv imaps[79980]: badlogin: [192.168.1.1] CRAM-MD5 (testbox@domain) [SASL(-13): authentication failure: incorrect digest response]
+220 192.168.1.1 4 10
+M
+
 #### OpenSMTPD
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
 270 185.236.202.133 4 10
