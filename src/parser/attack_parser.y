@@ -61,6 +61,7 @@ static void yyerror(attack_t *, const char *);
 %token SSH_MAXAUTH
 %token SSH_ADDR_SUFF
 %token SSH_NOIDENTIFSTR SSH_BADPROTOCOLIDENTIF SSH_BADPROTOCOLIDENTIF_SUFF
+%token SSH_INVALIDFORMAT_PREF SSH_INVALIDFORMAT_SUFF
 %token SSH_BADKEX_PREF SSH_BADKEX_SUFF
 %token SSH_DISCONNECT_PREF SSH_CONNECTION_CLOSED SSH_PREAUTH_SUFF
 /* SSHGuard */
@@ -225,6 +226,7 @@ sshmsg:
   | ssh_authfail
   | ssh_noidentifstring
   | ssh_badprotocol
+  | ssh_invalid_format
   | ssh_badkex
   ;
 
@@ -252,6 +254,10 @@ ssh_noidentifstring:
 
 ssh_badprotocol:
     SSH_BADPROTOCOLIDENTIF addr SSH_BADPROTOCOLIDENTIF_SUFF
+  ;
+
+ssh_invalid_format:
+    SSH_INVALIDFORMAT_PREF addr SSH_INVALIDFORMAT_SUFF
   ;
 
 ssh_badkex:

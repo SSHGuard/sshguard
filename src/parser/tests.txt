@@ -80,6 +80,12 @@ M
 Bad protocol version identification XYZ from 2001:db8::a11:beef:7ac0
 100 2001:db8::a11:beef:7ac0 6 10
 M
+Dec 16 21:29:46 host sshd[73122]: banner exchange: Connection from 6.6.6.0 port 65403: invalid format
+100 6.6.6.0 4 10
+M
+Dec 16 21:29:46 host sshd[73122]: banner exchange: Connection from 2001:db8::a11:beef:7ac0 port 65403: invalid format
+100 2001:db8::a11:beef:7ac0 6 10
+M
 Apr 10 02:43:29 quasar sshd[50112]: Connection closed by 66.240.236.119 [preauth]
 100 66.240.236.119 4 2
 M

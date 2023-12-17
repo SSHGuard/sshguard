@@ -37,7 +37,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 
  /* Start Conditions */
  /* for Login services */
-%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_badkex cockpit_authfail
+%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_invalid_format ssh_badkex cockpit_authfail
  /* for SSHGuard */
 %s sshguard_attack sshguard_block
 %s bind
@@ -216,6 +216,9 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
  /* SSH: clients connecting with other application protocols */
 "Bad protocol version identification".*" from "                 { BEGIN(ssh_badproto); return SSH_BADPROTOCOLIDENTIF; }
 <ssh_badproto>[ \n].*                                           { BEGIN(INITIAL); return SSH_BADPROTOCOLIDENTIF_SUFF; }
+
+"banner exchange: Connection from "                             { BEGIN(ssh_invalid_format); return SSH_INVALIDFORMAT_PREF; }
+<ssh_invalid_format>(" port ".*)[: ]"invalid format"            { BEGIN(INITIAL); return SSH_INVALIDFORMAT_SUFF; }
 
 "fatal: "?"Unable to negotiate with "                                     { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
 <ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
