@@ -68,7 +68,7 @@ OPTIONS
 
 **-p** *blocktime* (default 120)
     Block first-time attackers for *blocktime* seconds. Subsequent blocks
-    increase in duration by a factor of 1.5. Since **sshguard** unblocks
+    increase in duration by a factor of 2. Since **sshguard** unblocks
     attackers at random intervals, actual block times may be somewhat longer.
 
 **-s** *detection_time* (default 1800)
