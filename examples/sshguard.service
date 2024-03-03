@@ -2,7 +2,6 @@
 
 [Unit]
 Description=SSHGuard - blocks brute-force login attempts
-After=syslog.target
 After=iptables.target
 After=ip6tables.target
 After=libvirtd.service
