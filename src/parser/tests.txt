@@ -597,3 +597,19 @@ M
 600 198.199.105.106 4 10
 M
 
+#### Proxmox VE
+May 04 23:45:19 deb12-pve pvedaemon[2352]: authentication failure; rhost=::ffff:192.0.2.74 user=tester@pve msg=Authentication failure
+700 192.0.2.74 4 10
+M
+May 05 00:11:56 deb12-pve pvedaemon[2350]: authentication failure; rhost=2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd user=root@pam msg=Authentication failure
+700 2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd 6 10
+M
+May 05 00:07:09 deb12-pve pvedaemon[2351]: authentication failure; rhost=::ffff:192.0.2.154 user=tester2@pam msg=no such user ('tester2@pam')
+700 192.0.2.154 4 10
+M
+May 05 00:08:19 deb12-pve pvedaemon[2352]: authentication failure; rhost=::ffff:192.0.2.7 user=tester3@pve msg=no such user ('tester3@pve')
+700 192.0.2.7 4 10
+M
+May 05 00:12:11 deb12-pve pvedaemon[2352]: authentication failure; rhost=2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd user=root@pve msg=no such user ('root@pve')
+700 2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd 6 10
+M

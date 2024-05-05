@@ -119,6 +119,8 @@ static void yyerror(attack_t *, const char *);
 %token OPENVPN_PS_TERM_SUFF
 /* MSSQL */
 %token MSSQL_AUTHFAIL_PREF
+/* Proxmox VE */
+%token PROXMOXVE_AUTHFAIL_PREF PROXMOXVE_AUTHFAIL_SUFF
 
 %%
 
@@ -195,6 +197,7 @@ msg_single:
   | giteamsg          { attack->service = SERVICES_GITEA; }
   | openvpnpsmsg      { attack->service = SERVICES_OPENVPN_PS; }
   | sqlservrmsg       { attack->service = SERVICES_MSSQL; }
+  | proxmoxvemsg      { attack->service = SERVICES_PROXMOXVE; }
   ;
 
 /* an address */
@@ -388,6 +391,11 @@ sqlservrmsg:
 openvpnpsmsg:
     OPENVPN_PS_TERM_PREF addr OPENVPN_PS_TERM_SUFF
   | OPENVPN_PS_TERM_PREF '[' addr ']' OPENVPN_PS_TERM_SUFF
+  ;
+
+ /* attack rules for Proxmox VE */
+proxmoxvemsg:
+    PROXMOXVE_AUTHFAIL_PREF addr PROXMOXVE_AUTHFAIL_SUFF
   ;
 
 %%

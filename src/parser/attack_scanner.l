@@ -37,7 +37,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 
  /* Start Conditions */
  /* for Login services */
-%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_invalid_format ssh_badkex cockpit_authfail
+%s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_invalid_format ssh_badkex cockpit_authfail proxmoxve_authfail
  /* for SSHGuard */
 %s sshguard_attack sshguard_block
 %s bind
@@ -343,6 +343,11 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 "Login failed for user \'"{WORD}"\'. Reason: Could not find a login matching the name provided. [CLIENT: "         { return MSSQL_AUTHFAIL_PREF; }
 "Login failed. The login is from an untrusted domain and cannot be used with Integrated authentication. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
 "Length specified in network packet payload did not match number of bytes read; the connection has been closed. Please contact the vendor of the client library. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
+
+ /* Proxmox VE */
+ /* failed authentication */
+"authentication failure; rhost="  { BEGIN(proxmoxve_authfail); return PROXMOXVE_AUTHFAIL_PREF; }
+<proxmoxve_authfail>" "+"user=".+" "+"msg=".+                        { BEGIN(INITIAL); return PROXMOXVE_AUTHFAIL_SUFF; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
