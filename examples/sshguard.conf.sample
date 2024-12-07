@@ -12,7 +12,7 @@
 # debian-style systems
 #FILES="/var/log/mail.log /var/log/auth.log"
 # slackware and redhat-style systems
-#FILES="/var/log/authlog /var/log/secure"
+#FILES="/var/log/maillog /var/log/secure"
 
 # Shell command that provides logs on standard output. (optional, no default)
 # ssh and sendmail from systemd journal
