@@ -57,7 +57,7 @@ HOUR        (0|1)[0-9]|2[0-4]
 MINPS       [0-5][0-9]
 SECONDFRAC  [0-5][0-9]([.,][0-9]+)?
 WORD        [a-zA-Z0-9][-_a-zA-Z0-9]+
-NUMBER      [1-9][0-9]*
+NUMBER      [0-9]*
 FILENAME    [a-zA-Z0-9\/.-]+
 YEAR        (1|2)[0-9]{3}
 TIMEZONE    Z|[-+]{HOUR}(:?{MINPS})?
