@@ -37,7 +37,7 @@ static void print_usage() {
     fprintf(stderr, "usage: sshg-parser [-adht]\n");
 }
 
-static void test_next_line(char buf[static MAX_LEN]) {
+static void test_next_line(char buf[static MAX_LEN], unsigned int lineno) {
     static unsigned char state = 0;
     static char expected[MAX_LEN], result[MAX_LEN];
     static bool match;
@@ -70,7 +70,7 @@ static void test_next_line(char buf[static MAX_LEN]) {
                     if (match) {
                         putchar('\n');
                     } else {
-                        printf(" # actual: %s", result);
+                        printf(" # %u: actual: %s", lineno, result);
                     }
                     break;
                 case 'X': // expected fail
@@ -117,9 +117,11 @@ int main(int argc, char *argv[]) {
 
     yydebug = yy_flex_debug = debug;
 
+    unsigned int lineno = 0;
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
+        lineno++;
         if (test_mode) {
-            test_next_line(buf);
+            test_next_line(buf, lineno);
         } else {
             attack_t attack;
             bool is_attack = !parse_line(buf, &attack);
