@@ -431,6 +431,16 @@ M
 10.42.42.45 - - [19/Apr/1943:03:14:17 +0000] "GET /roundcube/ HTTP/2.0" 410 - "-" "Mozilla/4.0"
 360 10.42.42.45 4 10
 M
+1.2.3.4 - - [25/Dec/2024:20:36:18 +0200] "POST /webmail/?_task=login HTTP/2.0" 401 5456 "https://www.example.com/webmail/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15" (2.681)
+360 1.2.3.4 4 10
+M
+# False positives for roundcube/mail
+1.2.3.4 - - [14/Dec/2024:19:26:59 +0200] "GET /legacy/cache/jsLanguage/EmailTemplates/en_us.js?v=wOT4aAGD9wl0AmTvsx-RxA HTTP/2.0" 404 20 "https://www.example.com/legacy/index.php?action=DetailView&module=EmailTemplates&record=78cc0f92-d2c6-673d-f4cd-675c2b2862f3&return_module=EmailTemplates&return_action=DetailView" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
+*
+M
+1.2.3.4 - - [23/Dec/2024:16:28:38 +0200] "POST /legacy/index.php?entryPoint=emailTemplateData HTTP/2.0" 499 0 "https://www.example.com/legacy/index.php?action=WizardMarketing&module=Campaigns&return_module=Campaigns&return_action=WizardHome&return_id=443ce73a-98f0-a38d-cba6-67696337e5ee&campaign_id=443ce73a-98f0-a38d-cba6-67696337e5ee&jump=3&show_wizard_marketing=1&marketing_id=1e5a3b65-5d8a-a618-f327-6769633abade&record=1e5a3b65-5d8a-a618-f327-6769633abade&campaign_type=NewsLetter" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0" (0.058)
+*
+M
 10.42.42.46 - - [17/Jun/2020:00:26:51 +0200] "GET /administrator/index.php?option=com_login HTTP/1.1" 404 286 "-" "Mozilla/5.0"
 360 10.42.42.46 4 10
 M

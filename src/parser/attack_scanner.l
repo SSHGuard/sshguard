@@ -120,7 +120,7 @@ HTTP_BOTSEARCH_WEBMAIL     roundcube|(ext)?mail|horde|(v-?)?webmail
 HTTP_BOTSEARCH_PHPMYADMIN  (typo3"/"|xampp"/"|admin"/")?(pma|(php)?[Mm]y[Aa]dmin)
 HTTP_BOTSEARCH_WORDPRESS   wp-(admin|config|login|signup)"."php
 HTTP_BOTSEARCH_JOOMLA      ("administrator/")?"index.php?option=com_"
-HTTP_BOTSEARCH             .*({HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|{HTTP_BOTSEARCH_JOOMLA}|cgi-bin|mysqladmin)[^,]*
+HTTP_BOTSEARCH             .*("/"{HTTP_BOTSEARCH_WEBMAIL}|{HTTP_BOTSEARCH_PHPMYADMIN}|{HTTP_BOTSEARCH_WORDPRESS}|{HTTP_BOTSEARCH_JOOMLA}|cgi-bin|mysqladmin)[^,]*
 
 WORDPRESS_LOGIN            "/wp-login"(\.php)?
 TYPO3_LOGIN                "/typo3/?loginProvider="
