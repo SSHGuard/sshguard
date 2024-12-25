@@ -411,7 +411,7 @@ M
 360 10.42.42.40 4 10
 M
 10.42.42.41 - - [19/Apr/1943:03:14:11 +0000] "GET /wp-admin.php HTTP/1" 401 - "-" "Mozilla/5.0"
-360 10.42.42.41 4 10
+350 10.42.42.41 4 10
 M
 10.42.42.42 - - [19/Apr/1943:03:14:12 +0000] "GET /wordress/wp-login.php HTTP/2.0" 404 2571 "-" "Mozilla/5.0" "extra-field" "more-data"
 360 10.42.42.42 4 10
@@ -432,7 +432,10 @@ M
 360 10.42.42.45 4 10
 M
 1.2.3.4 - - [25/Dec/2024:20:36:18 +0200] "POST /webmail/?_task=login HTTP/2.0" 401 5456 "https://www.example.com/webmail/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15" (2.681)
-360 1.2.3.4 4 10
+350 1.2.3.4 4 10
+M
+1.2.3.4 - - [25/Dec/2024:20:12:51 +0200] "POST /?_task=login HTTP/2.0" 401 5449 "https://webmail.example.com/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15" (2.644)
+350 1.2.3.4 4 10
 M
 # False positives for roundcube/mail
 1.2.3.4 - - [14/Dec/2024:19:26:59 +0200] "GET /legacy/cache/jsLanguage/EmailTemplates/en_us.js?v=wOT4aAGD9wl0AmTvsx-RxA HTTP/2.0" 404 20 "https://www.example.com/legacy/index.php?action=DetailView&module=EmailTemplates&record=78cc0f92-d2c6-673d-f4cd-675c2b2862f3&return_module=EmailTemplates&return_action=DetailView" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"

@@ -46,14 +46,12 @@ static void yyerror(attack_t *, const char *);
 }
 
 /* semantic values for tokens */
-%token <str> IPv4 IPv6 HOSTADDR WORD
+%token <str> IPv4 IPv6 HOSTADDR WORD STRING
 %token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID BUSYBOX_SYSLOG_BANNER_PID
 
 /* flat tokens */
 %token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 RFC_5234_BANNER METALOG_BANNER SOCKLOG_BANNER
 %token REPETITIONS
-%token HTTP_REQUEST HTTP_VERSION HTTP_REDIRECT HTTP_AUTHFAIL HTTP_CLIERROR
-%token HTTP_BOTSEARCH_WEBMAIL HTTP_BOTSEARCH_PHPMYADMIN HTTP_BOTSEARCH_WORDPRESS HTTP_BOTSEARCH_JOOMLA HTTP_BOTSEARCH
 /* ssh */
 %token SSH_INVALUSERPREF SSH_NOTALLOWEDPREF SSH_NOTALLOWEDSUFF
 %token SSH_LOGINERR_PREF SSH_LOGINERR_PAM
@@ -98,14 +96,11 @@ static void yyerror(attack_t *, const char *);
 %token VSFTPD_LOGINERR_PREF VSFTPD_LOGINERR_SUFF
 /* cockpit */
 %token COCKPIT_AUTHFAIL_PREF COCKPIT_AUTHFAIL_SUFF
-/* CLF request */
-%token CLF_REQUEST_PREF
-/* CLF, unauhtorized */
-%token CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
+%token CLF_TIMESTAMP CLF_SUFFIX
 /* CLF, common webapp probes */
-%token CLFWEBPROBES_BOTSEARCH_SUFF
+%token CLF_WEB_PROBE
 /* CLF, common CMS frameworks brute-force attacks */
-%token CLF_LOGIN_URL_SUFF
+%token CLF_CMS_LOGIN
 /* OpenSMTPD */
 %token OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_AUTHFAIL_SUFF OPENSMTPD_UNSUPPORTED_CMD_SUFF
 /* courier */
@@ -188,9 +183,7 @@ msg_single:
   | pureftpdmsg       { attack->service = SERVICES_PUREFTPD; }
   | vsftpdmsg         { attack->service = SERVICES_VSFTPD; }
   | cockpitmsg        { attack->service = SERVICES_COCKPIT; }
-  | clfunauhtdmsg     { attack->service = SERVICES_CLF_UNAUTH; }
-  | clfwebprobesmsg   { attack->service = SERVICES_CLF_PROBES; }
-  | clfcmsmsg         { attack->service = SERVICES_CLF_LOGIN_URL; }
+  | clfmsg
   | opensmtpdmsg      { attack->service = SERVICES_OPENSMTPD; }
   | couriermsg        { attack->service = SERVICES_COURIER; }
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
@@ -341,21 +334,50 @@ cockpitmsg:
   | COCKPIT_AUTHFAIL_PREF addr
   ;
 
-/* attack rules for HTTP 401 Unauhtorized in common log format */
-clfunauhtdmsg:
-    addr CLF_UNAUTHOIRIZED_PREF CLF_UNAUTHOIRIZED_SUFF
-  | addr CLF_REQUEST_PREF CLF_UNAUTHOIRIZED_SUFF
+/** CLF {{{
+ * Handle logs in Common Log Format. These logs take the form of:
+ *   host rfc931 username date:time request statuscode bytes [referrer [user_agent [cookies]]]
+ * Additionally, we support an unlimited number of extra fields.
+ */
+clfmsg: addr clffield clffield CLF_TIMESTAMP clfrequest clfstatus clfbytes clfext clfsuffix;
+
+clfext: /*empty*/ | clffield clfext // optional extra fields
+
+clfsuffix: /*empty*/ | CLF_SUFFIX;
+
+clffield: STRING | WORD | '-';
+
+clfrequest:
+  CLF_WEB_PROBE { attack->service = SERVICES_CLF_PROBES; }
+  | CLF_CMS_LOGIN { attack->service = SERVICES_CLF_LOGIN_URL; }
+  | STRING // in case we didn't match any known attacks
   ;
 
-/* attack rules for probes for common web services */
-clfwebprobesmsg:
-    addr CLF_REQUEST_PREF CLFWEBPROBES_BOTSEARCH_SUFF
-  ;
+clfstatus: INTEGER {
+    if (yylval.num == 401) {
+        attack->service = SERVICES_CLF_UNAUTH;
+    } else if (attack->service == SERVICES_CLF_LOGIN_URL) {
+        // HTTP 200 OK responses via POST are failed requests
+        if (yylval.num != 200) {
+            attack->service = -1;
+        }
+    } else if (attack->service == SERVICES_CLF_PROBES) {
+        // Probes with good status codes aren't probes, just legitimate requests
+        switch (yylval.num) { // fall through all good response codes
+        case 200: // OK
+        case 301: // permanent redirect
+        case 302: // redirect
+            attack->service = -1;
+            break;
+        }
+    } else if (yylval.num == 444) {
+        attack->service = SERVICES_CLF_PROBES; // TODO: Is this necessary?
+    }
+};
 
-/* attack rules against common CMS frameworks */
-clfcmsmsg:
-    addr CLF_REQUEST_PREF CLF_LOGIN_URL_SUFF
-  ;
+clfbytes: INTEGER | clffield;
+
+// }}}
 
 /* opensmtpd */
 opensmtpdmsg:
@@ -404,13 +426,14 @@ static void yyerror(__attribute__((unused)) attack_t *a,
     __attribute__((unused)) const char *s) { /* do nothing */ }
 
 int parse_line(char *str, attack_t *attack) {
-
-    /* TODO: reduce danger for SERVICES_CLF_PROBES */
+    attack->service = -1; // invalid service
     attack->dangerousness = DEFAULT_ATTACKS_DANGEROUSNESS;
 
     scanner_init(str);
     int ret = yyparse(attack);
     scanner_fin();
+    if (attack->service == -1)
+        return 1; // successful parse but no service (e.g. successful CLF)
 
     return ret;
 }

@@ -36,6 +36,7 @@ static int getsyslogpid(char *syslogbanner, int length);
 %array
 
  /* Start Conditions */
+%x quoted_string
  /* for Login services */
 %s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_invalid_format ssh_badkex cockpit_authfail proxmoxve_authfail
  /* for SSHGuard */
@@ -45,8 +46,6 @@ static int getsyslogpid(char *syslogbanner, int length);
 %s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_greylist opensmtpd_failedcmd postscreen
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
- /* for HTTP services */
-%s clf_request clf_request_withuser clf_unauhtorized clfwebprobes_botsearch
  /* for git services */
 %s gitea_autherr
 
@@ -97,20 +96,6 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 
 HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
 HTTP_VERSION    HTTP"/"[0-9]("."[0-9])?
-HTTP_STATUSCODE [0-9]{3}
-HTTP_SUCCESS    200
-HTTP_REDIRECT   3[0-9]{2}
-HTTP_AUTHFAIL   401
-HTTP_CLIERROR   4[0-9]{2}
-
- /* Common Log Format. */
-CLF_MISSING        "-"|"\"-\""
-CLF_USER_ID        {WORD}|"\""{WORD}"\""
-CLF_USER_NAME      {WORD}|"\""{WORD}"\""
-CLF_OPT_USER_ID    {CLF_MISSING}|{WORD}
-CLF_OPT_USER_NAME  {CLF_MISSING}|{WORD}
-CLF_TIMESTAMP      "["({TIMESTAMP_LOCAL}|{TIMESTAMP_ISO8601})"]"
-CLF_REQUEST        "\""{HTTP_REQUEST}" "{FILENAME}" "{HTTP_VERSION}"\""
 
  /* Common configuration for http botsearch
   * Adapted from fail2ban botsearch filters & tweaked by alip☮exherbo.org,
@@ -301,21 +286,20 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 "pam_unix(cockpit:auth): "?"authentication failure; logname= uid=0 euid=0 tty= ruser= rhost="  { BEGIN(cockpit_authfail); return COCKPIT_AUTHFAIL_PREF; }
 <cockpit_authfail>" "+"user=".+                                    { BEGIN(INITIAL); return COCKPIT_AUTHFAIL_SUFF; }
 
- /* HTTP Basic AUTH – unauthorized. */
-{CLF_OPT_USER_ID}" "{CLF_USER_NAME}" "{CLF_TIMESTAMP} { BEGIN(clf_request_withuser); return CLF_UNAUTHOIRIZED_PREF; }
-<clf_request_withuser>" "{CLF_REQUEST}" "{HTTP_AUTHFAIL}.+ { BEGIN(INITIAL); return CLF_UNAUTHOIRIZED_SUFF; }
 
- /* Common Log Format */
-{CLF_OPT_USER_ID}" "{CLF_OPT_USER_NAME}" "{CLF_TIMESTAMP} { BEGIN(clf_request); return CLF_REQUEST_PREF; }
+ /* CLF {{{ */
+"["({TIMESTAMP_LOCAL}|{TIMESTAMP_ISO8601})"]" return CLF_TIMESTAMP;
 
  /* HTTP probes for common web services. */
-<clf_request>" \""{HTTP_REQUEST}" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\" "{HTTP_CLIERROR}.+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
-<clf_request>" \""{HTTP_REQUEST}" ".*" "{HTTP_VERSION}"\" 444".+ { BEGIN(INITIAL); return CLFWEBPROBES_BOTSEARCH_SUFF; }
-<clf_request>" \""{HTTP_REQUEST}" ".*" "{HTTP_VERSION}"\" 401".+ { BEGIN(INITIAL); return CLF_UNAUTHOIRIZED_SUFF; } // any other HTTP 401 unauthorized
+"\""{HTTP_REQUEST}" "{HTTP_BOTSEARCH}" "{HTTP_VERSION}"\"" { return CLF_WEB_PROBE; }
 
  /* Bad login URLs.
     HTTP 200 OK responses via POST are failed requests */
-<clf_request>" \"POST "{HTTP_LOGIN_200OK_BAD}" "{HTTP_VERSION}"\" 200".+  { BEGIN(INITIAL); return CLF_LOGIN_URL_SUFF; }
+" \"POST "{HTTP_LOGIN_200OK_BAD}" "{HTTP_VERSION}"\"" { return CLF_CMS_LOGIN; }
+
+"("[0-9]+(.[0.-9]+)")" return CLF_SUFFIX;
+
+ /* }}} */
 
  /* OpenSMTPD. */
  /* Unsupported command when attempting to log in. */
@@ -376,6 +360,10 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }
+
+"\"" { BEGIN(quoted_string); }
+<quoted_string>[^"]*"\"" { BEGIN(INITIAL); return STRING; }
+
 [ \n\r\t]+            /* eat blanks */
  /* literals */
  /*\n                                                              { return NEWLINE; } */
