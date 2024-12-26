@@ -371,7 +371,10 @@ clfstatus: INTEGER {
             break;
         }
     } else if (yylval.num == 444) {
-        attack->service = SERVICES_CLF_PROBES; // TODO: Is this necessary?
+        // Some admins configure their web servers to return special status
+        // codes when they receive requests for spammy/proby paths. See
+        // https://bitbucket.org/sshguard/sshguard/issues/157
+        attack->service = SERVICES_CLF_PROBES;
     }
 };
 
