@@ -94,6 +94,11 @@ ENVIRONMENT
 SSHGUARD_DEBUG
     Set to enable verbose output from **sshg-blocker**.
 
+SSHGUARD_STATS_DIR
+    When set, write Prometheus-compatible statistics to .prom files in this
+    directory every minute. The STATS_DIR variable in *sshguard.conf* will set
+    and override this environment variable.
+
 FILES
 =====
 %PREFIX%/etc/sshguard.conf

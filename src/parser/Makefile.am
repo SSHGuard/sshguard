@@ -13,6 +13,7 @@ LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
 TESTS = test-sshg-parser
 
 sshg_parser_SOURCES = \
+	../common/metrics.c \
 	../common/sandbox.c \
 	attack.c \
 	attack_parser.y \

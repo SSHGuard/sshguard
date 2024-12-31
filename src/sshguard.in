@@ -114,6 +114,11 @@ if [ -n "$POST_PARSER" ]; then
     RUN_PARSER="$RUN_PARSER | $POST_PARSER"
 fi
 
+# Set environment
+if [ -n "$STATS_DIR" ]; then
+    export SSHGUARD_STATS_DIR="$STATS_DIR"
+fi
+
 # Make sure to kill entire process group (subshell) on exit/interrupts.
 trap "clean_and_exit" INT TERM
 trap "kill 0" EXIT

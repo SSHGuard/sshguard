@@ -1,5 +1,6 @@
 #include "config.h"
 #include <syslog.h>
+#include <unistd.h>
 #include "sandbox.h"
 
 #if defined(CAPSICUM)

@@ -58,3 +58,8 @@ IPV4_SUBNET=32
 # attacks from 1.2.3.4. Unlike whitelisting, attacks filtered by POST_PARSER
 # are not logged by SSHGuard.
 #POST_PARSER="grep -v 1.2.3.4"
+
+# When set, write Prometheus-compatible statistics to .prom files in this
+# directory every minute. These metrics can be exported using node_exporter's
+# textfile collector.
+#STATS_DIR="/var/metrics"
