@@ -61,7 +61,7 @@ list_t limbo;
 list_t offenders;
 
 /* handler for termination-related signals */
-static void sigfin_handler();
+static void sigfin_handler(int);
 /* called at exit(): flush blocked addresses and finalize subsystems */
 static void finishup(void);
 

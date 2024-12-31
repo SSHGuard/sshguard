@@ -27,7 +27,7 @@
 #define DEFAULT_ATTACKS_DANGEROUSNESS           10
 
  /* stuff exported by the scanner */
-extern void scanner_init();
+extern void scanner_init(char *);
 extern void scanner_fin();
 extern int yylex();
 
