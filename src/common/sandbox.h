@@ -13,4 +13,5 @@ extern cap_channel_t *capcas, *capnet;
 #define getaddrinfo(name, serv, hints, res) cap_getaddrinfo(capnet, name, serv, hints, res)
 #endif
 
+void init_log(void);
 void sandbox_init();

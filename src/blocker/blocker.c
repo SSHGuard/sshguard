@@ -70,26 +70,8 @@ static void report_address(attack_t attack);
 /* cleanup false-alarm attackers from limbo list (ones with too few attacks in too much time) */
 static void purge_limbo_stale(void);
 
-static void init_log(int debug) {
-    int flags = LOG_NDELAY | LOG_PID;
-    int dest = LOG_AUTH;
-
-    if (debug) {
-        flags |= LOG_PERROR;
-        dest = LOG_LOCAL6;
-    } else {
-        setlogmask(LOG_UPTO(LOG_INFO));
-    }
-
-    // Set local time zone and open log before entering sandbox.
-    tzset();
-    openlog("sshguard", flags, dest);
-}
-
 int main(int argc, char *argv[]) {
-    int sshg_debugging = (getenv("SSHGUARD_DEBUG") != NULL);
-    init_log(sshg_debugging);
-
+    init_log();
     srand(time(NULL));
 
     /* pending, blocked, and offender address lists */

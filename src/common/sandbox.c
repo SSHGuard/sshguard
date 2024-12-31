@@ -1,4 +1,5 @@
 #include "config.h"
+#include <syslog.h>
 #include "sandbox.h"
 
 #if defined(CAPSICUM)
@@ -6,6 +7,23 @@
 
 cap_channel_t *capcas, *capnet;
 #endif
+
+void init_log() {
+    int debug = (getenv("SSHGUARD_DEBUG") != NULL);
+    int flags = LOG_NDELAY | LOG_PID;
+    int dest = LOG_AUTH;
+
+    if (debug) {
+        flags |= LOG_PERROR;
+        dest = LOG_LOCAL6;
+    } else {
+        setlogmask(LOG_UPTO(LOG_INFO));
+    }
+
+    // Set local time zone and open log before entering sandbox.
+    tzset();
+    openlog("sshguard", flags, dest);
+}
 
 void sandbox_init() {
 #ifdef CAPSICUM
