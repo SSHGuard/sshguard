@@ -26,6 +26,7 @@
 
 enum service {
     SERVICES_ALL            = 0,    //< anything
+    SERVICES_LIBWRAP        = 10,   //< anything that uses TCP Wrapper
     SERVICES_SSH            = 100,  //< ssh
     SERVICES_SSHGUARD       = 110,  //< SSHGuard
     SERVICES_BIND           = 120,  //< BIND (named)

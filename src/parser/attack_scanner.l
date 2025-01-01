@@ -297,7 +297,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
     HTTP 200 OK responses via POST are failed requests */
 " \"POST "{HTTP_LOGIN_200OK_BAD}" "{HTTP_VERSION}"\"" { return CLF_CMS_LOGIN; }
 
-"("[0-9]+(.[0.-9]+)")" return CLF_SUFFIX;
+"("[0-9]+(.[0-9]+)")" return CLF_SUFFIX;
 
  /* }}} */
 
@@ -332,6 +332,9 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
  /* failed authentication */
 "authentication failure; rhost="  { BEGIN(proxmoxve_authfail); return PROXMOXVE_AUTHFAIL_PREF; }
 <proxmoxve_authfail>" "+"user=".+" "+"msg=".+                        { BEGIN(INITIAL); return PROXMOXVE_AUTHFAIL_SUFF; }
+
+ /* TCP Wrappers */
+"refused connect from " { return LIBWRAP_REFUSE; }
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
