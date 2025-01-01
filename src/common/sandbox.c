@@ -1,6 +1,7 @@
 #include "config.h"
 #include <syslog.h>
 #include <unistd.h>
+#include <pwd.h>
 #include "sandbox.h"
 
 #if defined(CAPSICUM)
@@ -26,7 +27,29 @@ void init_log() {
     openlog("sshguard", flags, dest);
 }
 
+void droproot(const char *user) {
+    struct passwd *pw = getpwnam(user);
+    if (!pw) {
+        perror("Could not find user");
+        return;
+    }
+    if (initgroups(user, pw->pw_gid) == -1) {
+        perror("Could not initialize supplementary groups");
+    }
+    if (setresgid(pw->pw_gid, pw->pw_gid, pw->pw_gid) == -1) {
+        perror("Could not set group");
+    }
+    if (setresuid(pw->pw_uid, pw->pw_uid, pw->pw_uid) == -1) {
+        perror("Could not set user");
+    }
+}
+
 void sandbox_init() {
+    char *user = getenv("SSHGUARD_USER");
+    if (user) {
+        droproot(user);
+    }
+
 #ifdef CAPSICUM
     capcas = cap_init();
     if (capcas == NULL) {

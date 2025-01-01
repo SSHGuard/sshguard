@@ -115,6 +115,10 @@ if [ -n "$POST_PARSER" ]; then
 fi
 
 # Set environment
+if [ -n "$SSHGUARD_USER" ]; then
+    export SSHGUARD_USER="$SSHGUARD_USER"
+fi
+
 if [ -n "$STATS_DIR" ]; then
     export SSHGUARD_STATS_DIR="$STATS_DIR"
 fi

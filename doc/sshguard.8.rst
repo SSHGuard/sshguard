@@ -91,6 +91,11 @@ OPTIONS
 
 ENVIRONMENT
 ===========
+SSHGUARD_USER
+    When set, sandboxed processes drop permissions by changing to this user.
+    Normally set and overridden in *sshguard.conf* using the SSHGUARD_USER
+    variable.
+
 SSHGUARD_DEBUG
     Set to enable verbose output from **sshg-blocker**.
 

@@ -36,6 +36,10 @@ IPV6_SUBNET=128
 # Size of IPv4 subnet to block. Defaults to a single address, CIDR notation. (optional, default to 32)
 IPV4_SUBNET=32
 
+# When set, sandboxed processes drop permissions by changing to this user.
+# (optional, no default)
+#SSHGUARD_USER=nobody
+
 #### EXTRAS ####
 # Full path to PID file (optional, no default)
 #PID_FILE=/run/sshguard.pid
