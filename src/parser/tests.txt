@@ -626,3 +626,17 @@ M
 May 05 00:12:11 deb12-pve pvedaemon[2352]: authentication failure; rhost=2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd user=root@pve msg=no such user ('root@pve')
 700 2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd 6 10
 M
+
+#### TCP Wrappers
+refused connect from 1.2.3.4 (1.2.3.4)
+10 1.2.3.4 4 10
+M
+refused connect from 1.2.3.4 (sample.com)
+10 1.2.3.4 4 10
+M
+refused connect from 2001:db8::a11:beef:7ac1 (2001:db8::a11:beef:7ac1)
+10 2001:db8::a11:beef:7ac1 6 10
+M
+refused connect from 2001:db8::a11:beef:7ac1 (sample.com)
+10 2001:db8::a11:beef:7ac1 6 10
+M

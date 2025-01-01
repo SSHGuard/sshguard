@@ -116,6 +116,8 @@ static void yyerror(attack_t *, const char *);
 %token MSSQL_AUTHFAIL_PREF
 /* Proxmox VE */
 %token PROXMOXVE_AUTHFAIL_PREF PROXMOXVE_AUTHFAIL_SUFF
+/* TCP Wrappers */
+%token LIBWRAP_REFUSE
 
 %%
 
@@ -191,6 +193,7 @@ msg_single:
   | openvpnpsmsg      { attack->service = SERVICES_OPENVPN_PS; }
   | sqlservrmsg       { attack->service = SERVICES_MSSQL; }
   | proxmoxvemsg      { attack->service = SERVICES_PROXMOXVE; }
+  | libwrapmsg        { attack->service = SERVICES_LIBWRAP; }
   ;
 
 /* an address */
@@ -422,6 +425,10 @@ openvpnpsmsg:
 proxmoxvemsg:
     PROXMOXVE_AUTHFAIL_PREF addr PROXMOXVE_AUTHFAIL_SUFF
   ;
+
+libwrapmsg: LIBWRAP_REFUSE addr '(' host ')'
+
+host: IPv4 | IPv6 | HOSTADDR
 
 %%
 
