@@ -201,11 +201,16 @@ M
 authentication failure XYZ 2001:db8::a11:beef:7ac0
 230 2001:db8::a11:beef:7ac0 6 10
 M
+# exim
 authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
 240 6.6.6.0 4 10
 M
 authenticator failed for XYZ [2001:db8::a11:beef:7ac0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
 240 2001:db8::a11:beef:7ac0 6 10
+M
+# with an authenticator (here named LOGIN)
+Oct 14 19:45:05 [exim] LOGIN authenticator failed for (localhost) [46.148.40.63]: 535 Incorrect authentication data (set_id=tun)
+240 46.148.40.63 4 10
 M
 SMTP protocol error in "AUTH LOGIN" H=(XYZ) [6.6.6.0] AUTH command used when not advertised
 240 6.6.6.0 4 10

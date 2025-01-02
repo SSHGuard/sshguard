@@ -222,7 +222,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 "authentication failure "[^0-9]+                                { return CUCIPOP_AUTHFAIL; }
 
  /* Exim */
-"authenticator failed for ".+" ["                               { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
+({WORD}" ")?"authenticator failed for ".+" ["                   { BEGIN(exim_esmtp_autherr); return EXIM_ESMTP_AUTHFAIL_PREF; }
 <exim_esmtp_autherr>"]"(:{NUMBER})?(" I=".+)?(" U=".+)?": 535 Incorrect authentication data"(" (set_id=".+")")?    { BEGIN(INITIAL); return EXIM_ESMTP_AUTHFAIL_SUFF; }
 
 "SMTP protocol error in \"AUTH LOGIN\" H="({HOSTNAME}" ")?"(".*") ["              { BEGIN(exim_esmtp_loginerr); return EXIM_ESMTP_LOGINFAIL_PREF; }
