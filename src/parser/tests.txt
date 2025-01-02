@@ -193,13 +193,16 @@ M
 # }}}
 
 #### Mail {{{
+# cucipop {{{
 authentication failure XYZ 6.6.6.0
 230 6.6.6.0 4 10
 M
 authentication failure XYZ 2001:db8::a11:beef:7ac0
 230 2001:db8::a11:beef:7ac0 6 10
 M
-# exim
+# }}}
+
+# exim {{{
 authenticator failed for XYZ [6.6.6.0]:14432 I=XYZ : 535 Incorrect authentication data (set_id=test)
 240 6.6.6.0 4 10
 M
@@ -225,50 +228,11 @@ M
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
 M
+2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
+240 123.24.161.123 4 10
+M
 2018-06-03 13:35:07 SMTP protocol error in "AUTH LOGIN" H=dynamic-186-31-81-98.dynamic.etb.net.co (mail.example.com) [186.31.81.98] AUTH command used when not advertised: 1 Time(s)
 240 186.31.81.98 4 10
-M
-Relaying denied. IP name lookup failed [6.6.6.0]
-250 6.6.6.0 4 10
-M
-Relaying denied. IP name lookup failed [2001:db8::a11:beef:7ac0]
-250 2001:db8::a11:beef:7ac0 6 10
-M
-imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=6.6.6.0, lip=127.0.0.1
-210 6.6.6.0 4 10
-M
-imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=2001:db8::a11:beef:7ac0, lip=127.0.0.1
-210 2001:db8::a11:beef:7ac0 6 10
-M
-2019-10-15 08:08:52 imap-login: Info: Disconnected (auth failed, 1 attempts in 2 secs): user=<test>, method=PLAIN, rip=172.21.0.1, lip=172.21.0.3, TLS, session=<1MyTfu0USIqsFQAB>
-210 172.21.0.1 4 10
-M
-submission-login: Disconnected: Aborted login by logging out (auth failed, 1 attempts in 2 secs): user=<sarah>, method=LOGIN, rip=1.2.3.4, lip=1.1.1.1, TLS, session=<cIMEtT/mtP8tfUIY>
-210 1.2.3.4 4 10
-M
-Login failed user=XYZ auth=XYZ host=XYZ [6.6.6.0]
-200 6.6.6.0 4 10
-M
-Login failed user=XYZ auth=XYZ host=XYZ [2001:db8::a11:beef:7ac0]
-200 2001:db8::a11:beef:7ac0 6 10
-M
-badlogin: XYZ [6.6.6.0] XYZ SASL XYZ checkpass failed
-220 6.6.6.0 4 10
-M
-badlogin: XYZ [2001:db8::a11:beef:7ac0] XYZ SASL XYZ checkpass failed
-220 2001:db8::a11:beef:7ac0 6 10
-M
-Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[199.19.110.207]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
-260 199.19.110.207 4 10
-M
-Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[2001:db8::a11:beef:7ac0]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
-260 2001:db8::a11:beef:7ac0 6 10
-M
-Jun 21 12:00:56 acme postfix/submission/smtpd[20201]: warning: non-SMTP command from unknown[1.2.3.4]: GET / HTTP/1.1
-260 1.2.3.4 4 10
-M
-warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: authentication failure
-260 1.2.3.4 4 10
 M
 2015-03-12 03:17:22 login authenticator failed for vps.o2c.net (User) [87.76.31.6]: 535 Incorrect authentication data (set_id=dog)
 240 87.76.31.6 4 10
@@ -281,6 +245,66 @@ M
 M
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [2001:db8::a11:beef:7ac0] U=CALLER: 535 Incorrect authentication data (set_id=userx)
 240 2001:db8::a11:beef:7ac0 6 10
+M
+# }}}
+
+# sendmail {{{
+Relaying denied. IP name lookup failed [6.6.6.0]
+250 6.6.6.0 4 10
+M
+Relaying denied. IP name lookup failed [2001:db8::a11:beef:7ac0]
+250 2001:db8::a11:beef:7ac0 6 10
+M
+# }}}
+
+# dovecot {{{
+imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=6.6.6.0, lip=127.0.0.1
+210 6.6.6.0 4 10
+M
+imap-login: Aborted login (auth failed, 6 attempts): XYZ rip=2001:db8::a11:beef:7ac0, lip=127.0.0.1
+210 2001:db8::a11:beef:7ac0 6 10
+M
+2019-10-15 08:08:52 imap-login: Info: Disconnected (auth failed, 1 attempts in 2 secs): user=<test>, method=PLAIN, rip=172.21.0.1, lip=172.21.0.3, TLS, session=<1MyTfu0USIqsFQAB>
+210 172.21.0.1 4 10
+M
+submission-login: Disconnected: Aborted login by logging out (auth failed, 1 attempts in 2 secs): user=<sarah>, method=LOGIN, rip=1.2.3.4, lip=1.1.1.1, TLS, session=<cIMEtT/mtP8tfUIY>
+210 1.2.3.4 4 10
+M
+# }}}
+
+# uwimap {{{
+Login failed user=XYZ auth=XYZ host=XYZ [6.6.6.0]
+200 6.6.6.0 4 10
+M
+Login failed user=XYZ auth=XYZ host=XYZ [2001:db8::a11:beef:7ac0]
+200 2001:db8::a11:beef:7ac0 6 10
+M
+# }}}
+
+# cyrus {{{
+badlogin: XYZ [6.6.6.0] XYZ SASL XYZ checkpass failed
+220 6.6.6.0 4 10
+M
+badlogin: XYZ [2001:db8::a11:beef:7ac0] XYZ SASL XYZ checkpass failed
+220 2001:db8::a11:beef:7ac0 6 10
+M
+Oct 29 18:51:24 mailsrv imaps[79980]: badlogin: [192.168.1.1] CRAM-MD5 (testbox@domain) [SASL(-13): authentication failure: incorrect digest response]
+220 192.168.1.1 4 10
+M
+# }}}
+
+# postfix {{{
+Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[199.19.110.207]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+260 199.19.110.207 4 10
+M
+Oct 19 19:56:07 longbeach postfix/smtpd[2309]: warning: unknown[2001:db8::a11:beef:7ac0]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+260 2001:db8::a11:beef:7ac0 6 10
+M
+Jun 21 12:00:56 acme postfix/submission/smtpd[20201]: warning: non-SMTP command from unknown[1.2.3.4]: GET / HTTP/1.1
+260 1.2.3.4 4 10
+M
+warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: authentication failure
+260 1.2.3.4 4 10
 M
 Dec 13 09:32:50 marcos postfix/smtpd[24754]: lost connection after AUTH from rrcs-24-213-217-114.nys.biz.rr.com[24.213.217.114]
 260 24.213.217.114 4 10
@@ -300,6 +324,7 @@ M
 Sep  6 11:47:43 poseidon postfix/postscreen[14766]: HANGUP after 0.07 from [1.2.3.4]:55868 in tests after SMTP handshake
 260 1.2.3.4 4 10
 M
+
 # postfix with smtpd_client_port_logging
 2022-04-14T00:36:03.150Z mailhub postfix/smtps/smtpd[30543]: warning: unknown[122.166.249.154]:48123: SASL LOGIN authentication failed: UGFzc3dvcmQ6
 260 122.166.249.154 4 10
@@ -307,24 +332,18 @@ M
 2022-04-14T00:16:57.566Z mailhub postfix/smtps/smtpd[90800]: lost connection after AUTH from 201.130.128.222.ded.telnor.net[201.130.128.222]:59123
 260 201.130.128.222 4 10
 M
+# }}}
 
-### Cyrus
-Oct 29 18:51:24 mailsrv imaps[79980]: badlogin: [192.168.1.1] CRAM-MD5 (testbox@domain) [SASL(-13): authentication failure: incorrect digest response]
-220 192.168.1.1 4 10
-M
-
-### OpenSMTPD
+# OpenSMTPD {{{
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
 270 185.236.202.133 4 10
 M
 45addba89269aeaa smtp event=failed-command address=128.237.183.69 host=zeta.wv.cc.cmu.edu command="AUTH PLAIN (...)" result="535 Authentication failed"
 270 128.237.183.69 4 10
 M
+# }}}
 
-### SMTP
-2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
-240 123.24.161.123 4 10
-M
+# cyrus {{{
 imaps TLS negotiation failed: [196.52.43.55]
 *
 M
@@ -337,6 +356,9 @@ M
 STARTTLS negotiation failed: [2001:470:df49:2:9df9:4e98:31e1:1720]
 *
 M
+# }}}
+
+# courier {{{
 Jun 24 15:34:21 mail imapd: LOGIN FAILED, user=fakeemail@example.com, ip=[1.2.3.4]
 280 1.2.3.4 4 10
 M
@@ -358,6 +380,7 @@ M
 Nov 20 04:12:45 mail imapd-ssl[20815]: LOGIN FAILED, method=PLAIN, ip=[::ffff:177.19.165.26]
 280 177.19.165.26 4 10
 M
+# }}}
 # }}}
 
 #### FTP {{{
