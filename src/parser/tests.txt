@@ -1,4 +1,4 @@
-#### SSH
+#### SSH {{{
 Invalid user inexu from 6.6.6.0
 100 6.6.6.0 4 10
 M
@@ -180,7 +180,13 @@ Dec  1 06:25:27 server sshd[19471]: Disconnected from 1.2.3.4 port 60058
 *
 M
 
-#### Remote SSHGuard
+# OpenSSH 7 (#81)
+Dec 29 16:48:56 xxx sshd[24924]: Did not receive identification string from 5.20.95.202 port 56452
+100 5.20.95.202 4 10
+M
+# }}}
+
+#### Remote SSHGuard {{{
 Attack from "2001:db8::a11:beef:456e" on service 100 with danger 10.
 110 2001:db8::a11:beef:456e 6 10
 M
@@ -193,8 +199,9 @@ M
 Blocking "2001:db8::a11:beef:456f/64" for 300 secs (3 attacks in 5 secs, after 1 abuses over 5 secs.)
 110 2001:db8::a11:beef:456f 6 10
 M
+# }}}
 
-#### Mail
+#### Mail {{{
 authentication failure XYZ 6.6.6.0
 230 6.6.6.0 4 10
 M
@@ -303,12 +310,12 @@ Sep  6 11:47:43 poseidon postfix/postscreen[14766]: HANGUP after 0.07 from [1.2.
 260 1.2.3.4 4 10
 M
 
-#### Cyrus
+### Cyrus
 Oct 29 18:51:24 mailsrv imaps[79980]: badlogin: [192.168.1.1] CRAM-MD5 (testbox@domain) [SASL(-13): authentication failure: incorrect digest response]
 220 192.168.1.1 4 10
 M
 
-#### OpenSMTPD
+### OpenSMTPD
 38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
 270 185.236.202.133 4 10
 M
@@ -316,7 +323,7 @@ M
 270 128.237.183.69 4 10
 M
 
-#### SMTP
+### SMTP
 2018-06-03 13:16:08 SMTP protocol error in "AUTH LOGIN" H=(mail.example.com) [123.24.161.123] AUTH command used when not advertised: 1 Time(s)
 240 123.24.161.123 4 10
 M
@@ -353,8 +360,9 @@ M
 Nov 20 04:12:45 mail imapd-ssl[20815]: LOGIN FAILED, method=PLAIN, ip=[::ffff:177.19.165.26]
 280 177.19.165.26 4 10
 M
+# }}}
 
-#### FTP
+#### FTP {{{
 FTP LOGIN FAILED FROM 6.6.6.0, XYZ
 300 6.6.6.0 4 10
 M
@@ -378,9 +386,9 @@ XYZ FAIL LOGIN: Client "6.6.6.0"
 M
 XYZ FAIL LOGIN: Client "2001:db8::a11:beef:7ac0"
 330 2001:db8::a11:beef:7ac0 6 10
-M
+M }}}
 
-#### Cockpit
+#### Cockpit {{{
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=172.22.10.15 user=jeff
 340 172.22.10.15 4 10
 M
@@ -399,16 +407,22 @@ M
 pam_unix(cockpit:auth): authentication failure; logname= uid=0 euid=0 tty= ruser= rhost=2001:db8::a11:beef:7ac1  user=jeff
 340 2001:db8::a11:beef:7ac1 6 10
 M
+# }}}
 
-#### OpenVPN
+#### OpenVPN {{{
 Sep 04 00:00:06 hostname openvpn[23718]: 54.183.149.10:34791 TLS Error: TLS handshake failed
 400 54.183.149.10 4 10
 M
 Sep 04 00:00:06 hostname openvpn[23718]: [2001:db8::a11:beef:7ac0]:34791 TLS Error: TLS handshake failed
 400 2001:db8::a11:beef:7ac0 6 10
 M
+# OpenVPN Portshare
+2019-10-21T23:07:09+0200 [stdout#info] [OVPN 0] OUT: 'Mon Oct 21 21:07:09 2019 192.168.0.1:28288 SIGTERM[soft,port-share-redirect] received, client-instance exiting'
+410 192.168.0.1 4 10
+M
+# }}}
 
-#### Web
+#### Web {{{
 10.42.42.39 - "jeff" [19/Apr/1943:03:14:13 +0000] "GET /secret-base HTTP/1.1" 401 356 "EvilAgent/2.0"
 350 10.42.42.39 4 10
 M
@@ -442,7 +456,7 @@ M
 1.2.3.4 - - [25/Dec/2024:20:12:51 +0200] "POST /?_task=login HTTP/2.0" 401 5449 "https://webmail.example.com/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15" (2.644)
 350 1.2.3.4 4 10
 M
-# False positives for roundcube/mail
+# False positives for roundcube/mail {{{
 1.2.3.4 - - [14/Dec/2024:19:26:59 +0200] "GET /legacy/cache/jsLanguage/EmailTemplates/en_us.js?v=wOT4aAGD9wl0AmTvsx-RxA HTTP/2.0" 404 20 "https://www.example.com/legacy/index.php?action=DetailView&module=EmailTemplates&record=78cc0f92-d2c6-673d-f4cd-675c2b2862f3&return_module=EmailTemplates&return_action=DetailView" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
 *
 M
@@ -536,11 +550,14 @@ M
 10.42.42.56 - - [19/Apr/1943:03:14:15 +0000] "GET /somewhere HTTP/1.1" 200 "https://example.com/wp-admin.php" "Mozilla/5.0"
 *
 M
+# }}}
 # generic 401 unauthorized
 1.2.3.4 - - [24/Apr/2023:10:22:25 +0300] "POST /?_task=login HTTP/2.0" 401 5440 "https://webmail.some.com/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15" (3.213)
 350 1.2.3.4 4 10
 M
+# }}}
 
+#### Banner formats {{{
 # Greedy SYSLOG_BANNER token (#93)
 2018-06-26 13:22:02.108781500 Failed password for woold from 10.10.10.76 port 34718 ssh2
 100 10.10.10.76 4 10
@@ -549,20 +566,6 @@ M
 # macOS log format (#106)
 2018-12-20 10:09:05.180218+0000 localhost sshd[67566]: Invalid user git from 185.52.1.9 port 35968
 100 185.52.1.9 4 10
-M
-
-# OpenSSH 7 (#81)
-Dec 29 16:48:56 xxx sshd[24924]: Did not receive identification string from 5.20.95.202 port 56452
-100 5.20.95.202 4 10
-M
-
-# Gitea
-Mar 07 08:34:31 myhost gitea[15884]: 2019/03/07 08:34:31 [I] Failed authentication attempt for blabla from [::1]
-500 ::1 6 10
-M
-
-Failed authentication attempt for blabla from 213.60.123.190
-500 213.60.123.190 4 10
 M
 
 # Rsyslog 8 (#128)
@@ -574,48 +577,48 @@ M
 May 9 11:11:17 sshd[30876]: Invalid user www from 139.59.34.17 port 51066
 100 139.59.34.17 4 10
 M
+# }}}
 
-# OpenVPN Portshare
-2019-10-21T23:07:09+0200 [stdout#info] [OVPN 0] OUT: 'Mon Oct 21 21:07:09 2019 192.168.0.1:28288 SIGTERM[soft,port-share-redirect] received, client-instance exiting'
-410 192.168.0.1 4 10
+#### Gitea {{{
+Mar 07 08:34:31 myhost gitea[15884]: 2019/03/07 08:34:31 [I] Failed authentication attempt for blabla from [::1]
+500 ::1 6 10
 M
-
-# BIND query denied
-Jul 28 08:45:16 router1 named[135105]: client @0x7f13c4158c00 1.2.3.4#3074 (example.com): query (cache) example.com/RRSIG/IN' denied
-120 1.2.3.4 4 10
+Failed authentication attempt for blabla from 213.60.123.190
+500 213.60.123.190 4 10
 M
-
 # Gitea 1.17.x FreeBSD
 2023/01/01 15:33:04 ...ers/web/auth/auth.go:200:SignInPost() [I] [63b199a0] Failed authentication attempt for test from 192.168.1.2:13798: user does not exist [uid: 0, name: test, keyid: 0]
 500 192.168.1.2 4 10
 M
-
 # Gitea 1.17 colored
 [36m2023/01/01 17:25:12 [0m[32m...ers/web/auth/auth.go:200:[32mSignInPost()[0m [1;32m[I][0m [[93m63b1b3e8[0m] Failed authentication attempt for [1mtest[0m from [1m1.2.3.4:0[0m: [1muser does not exist [uid: 0, name: test, keyid: 0][0m
 500 1.2.3.4 4 10
 M
+# }}}
 
-#MSSQL 
+#### BIND {{{
+# BIND query denied
+Jul 28 08:45:16 router1 named[135105]: client @0x7f13c4158c00 1.2.3.4#3074 (example.com): query (cache) example.com/RRSIG/IN' denied
+120 1.2.3.4 4 10
+M
+# }}}
+
+#### MSSQL {{{
 2023-04-21 23:17:02.54 Logon       Login failed for user 'sa'. Reason: Password did not match that for the login provided. [CLIENT: 87.251.75.20]
 600 87.251.75.20 4 10
 M
-
-#MSSQL
 2023-04-21 23:17:02.54 Logon       Login failed for user 'admin'. Reason: Could not find a login matching the name provided. [CLIENT: 80.66.76.21]
 600 80.66.76.21 4 10
 M
-
-#MSSQL
 2023-05-01 15:32:57.55 Logon       Login failed. The login is from an untrusted domain and cannot be used with Integrated authentication. [CLIENT: 87.236.176.168]
 600 87.236.176.168 4 10
 M
-
-#MSSQL
 2023-05-01 15:05:09.16 Logon       Length specified in network packet payload did not match number of bytes read; the connection has been closed. Please contact the vendor of the client library. [CLIENT: 198.199.105.106]
 600 198.199.105.106 4 10
 M
+# }}}
 
-#### Proxmox VE
+#### Proxmox VE {{{
 May 04 23:45:19 deb12-pve pvedaemon[2352]: authentication failure; rhost=::ffff:192.0.2.74 user=tester@pve msg=Authentication failure
 700 192.0.2.74 4 10
 M
@@ -631,3 +634,4 @@ M
 May 05 00:12:11 deb12-pve pvedaemon[2352]: authentication failure; rhost=2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd user=root@pve msg=no such user ('root@pve')
 700 2001:0DB8:72a:1936:2d49:83ed:d49a:6ffd 6 10
 M
+# }}}
