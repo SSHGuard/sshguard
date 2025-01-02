@@ -295,12 +295,16 @@ sendmailmsg:
  ;
 
 postfixmsg:
-    POSTFIX_SASL_LOGINERR_PREF addr POSTFIX_SASL_LOGINERR_SUFF
-  | POSTFIX_NO_AUTH_PREF addr ']'
+    POSTFIX_SASL_LOGINERR_PREF postfixsrc POSTFIX_SASL_LOGINERR_SUFF
+  | POSTFIX_NO_AUTH_PREF postfixsrc
   | POSTFIX_GREYLIST addr POSTFIX_GREYLIST_SUFF
-  | POSTFIX_NONSMTP addr POSTFIX_NONSMTP_SUFF
-  | POSTSCREEN_PREF addr POSTSCREEN_SUFF
+  | POSTFIX_NONSMTP postfixsrc POSTFIX_NONSMTP_SUFF
+  | POSTSCREEN_PREF postfixsrc POSTSCREEN_SUFF
   ;
+
+postfixsrc: addr ']' optport
+
+optport: /* empty */ | ':' INTEGER
 
 /* attack rules for FreeBSD's ftpd */
 freebsdftpdmsg:

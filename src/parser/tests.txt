@@ -300,6 +300,13 @@ M
 Sep  6 11:47:43 poseidon postfix/postscreen[14766]: HANGUP after 0.07 from [1.2.3.4]:55868 in tests after SMTP handshake
 260 1.2.3.4 4 10
 M
+# postfix with smtpd_client_port_logging
+2022-04-14T00:36:03.150Z mailhub postfix/smtps/smtpd[30543]: warning: unknown[122.166.249.154]:48123: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+260 122.166.249.154 4 10
+M
+2022-04-14T00:16:57.566Z mailhub postfix/smtps/smtpd[90800]: lost connection after AUTH from 201.130.128.222.ded.telnor.net[201.130.128.222]:59123
+260 201.130.128.222 4 10
+M
 
 ### Cyrus
 Oct 29 18:51:24 mailsrv imaps[79980]: badlogin: [192.168.1.1] CRAM-MD5 (testbox@domain) [SASL(-13): authentication failure: incorrect digest response]

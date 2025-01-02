@@ -41,7 +41,7 @@
 %s sshguard_attack sshguard_block
 %s bind
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_greylist opensmtpd_failedcmd postscreen
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_nonsmtp postfix_greylist opensmtpd_failedcmd postscreen
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for git services */
@@ -233,11 +233,11 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 
  /* postfix */
 "warning: "({SYSLOG_HOSTNAME})"["                               { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
-<postfix_loginerr>"]: SASL "[-A-Z0-9]+" authentication fail".*  { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
+<postfix_loginerr>": SASL "[-A-Z0-9]+" authentication fail".*   { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
 "lost connection after AUTH from ".*"["                         { return POSTFIX_NO_AUTH_PREF; }
  /* non-SMTP on an SMTP port suggests port-scanning activity */
-"warning: non-SMTP command from "({SYSLOG_HOSTNAME})"["         { BEGIN(postfix_loginerr); return POSTFIX_NONSMTP; }
-<postfix_loginerr>"]:".*                                        { BEGIN(INITIAL); return POSTFIX_NONSMTP_SUFF; }
+"warning: non-SMTP command from "({SYSLOG_HOSTNAME})"["         { BEGIN(postfix_nonsmtp); return POSTFIX_NONSMTP; }
+<postfix_nonsmtp>":".*                                          { BEGIN(INITIAL); return POSTFIX_NONSMTP_SUFF; }
 
 "action=greylist".*"client_address="                            { BEGIN(postfix_greylist); return POSTFIX_GREYLIST; }
 <postfix_greylist>",".*                                         { BEGIN(INITIAL); return POSTFIX_GREYLIST_SUFF; }
@@ -245,7 +245,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 "PREGREET".*"["                                                 { BEGIN(postscreen); return POSTSCREEN_PREF; }
 "DNSBL".*"["                                                    { BEGIN(postscreen); return POSTSCREEN_PREF; }
 "HANGUP".*"["                                                   { BEGIN(postscreen); return POSTSCREEN_PREF; }
-<postscreen>"]:".*                                              { BEGIN(INITIAL); return POSTSCREEN_SUFF; }
+<postscreen>":".*                                               { BEGIN(INITIAL); return POSTSCREEN_SUFF; }
 
  /* FreeBSD's ftpd login errors */
 "FTP LOGIN FAILED FROM "                                        { BEGIN(freebsdftpd_loginerr); return FREEBSDFTPD_LOGINERR_PREF; }
