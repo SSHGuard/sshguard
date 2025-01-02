@@ -47,10 +47,10 @@ static void yyerror(attack_t *, const char *);
 
 /* semantic values for tokens */
 %token <str> IPv4 IPv6 HOSTADDR WORD STRING
-%token <num> INTEGER SYSLOG_BANNER_PID SOCKLOG_BANNER_PID BUSYBOX_SYSLOG_BANNER_PID
+%token <num> INTEGER
 
 /* flat tokens */
-%token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 RFC_5234_BANNER METALOG_BANNER SOCKLOG_BANNER
+%token SYSLOG_BANNER TIMESTAMP_SYSLOG TIMESTAMP_ISO8601 TIMESTAMP_TAI64 AT_TIMESTAMP_TAI64 RFC_5234_BANNER METALOG_BANNER SOCKLOG_BANNER BUSYBOX_SYSLOG_BANNER 
 %token REPETITIONS
 /* ssh */
 %token SSH_INVALUSERPREF SSH_NOTALLOWEDPREF SSH_NOTALLOWEDSUFF
@@ -137,7 +137,6 @@ log_prefix:
 /* a syslog-generated log entry */
 syslogent:
     SYSLOG_BANNER
-  | SYSLOG_BANNER_PID      /* timestamp hostname procname[pid]: logmsg */
   | TIMESTAMP_ISO8601      /* some have different timestamps */
   | TIMESTAMP_ISO8601 WORD /* handle different timestamp with proc name */
   ;
@@ -152,15 +151,10 @@ metalogent:
   ;
 
 /* a socklog-generated log entry */
-socklogent:
-    SOCKLOG_BANNER
-  | SOCKLOG_BANNER_PID
-  ;
+socklogent: SOCKLOG_BANNER
 
 /* a busybox syslog log entry */
-busyboxent:
-    BUSYBOX_SYSLOG_BANNER_PID
-  ;
+busyboxent: BUSYBOX_SYSLOG_BANNER
 
 repetition_suffix:
     /* epsilon */

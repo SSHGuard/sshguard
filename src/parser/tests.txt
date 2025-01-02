@@ -125,12 +125,6 @@ M
 2015-05-27T04:31:27.46667 auth.info: Invalid user admin from 2001:db8::a11:beef:7ac0
 100 2001:db8::a11:beef:7ac0 6 10
 M
-Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 192.168.2.2
-100 192.168.2.2 4 10
-M
-Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 2001:db8::a11:beef:7ac0
-100 2001:db8::a11:beef:7ac0 6 10
-M
 May 29 14:44:30 epsilon sshd[4564]: error: Received disconnect from 192.168.2.200: 14: No supported authentication methods available [preauth]
 *
 M
@@ -165,9 +159,6 @@ Disconnected from invalid user support 1.2.3.4 port 56636 [preauth]
 100 1.2.3.4 4 10
 M
 Disconnected from 1.2.3.4 port 30761 [preauth]
-100 1.2.3.4 4 10
-M
-<35>1 2020-01-03T11:57:14.257387-05:00 1.2.3.4 sshd 86784 - - error: PAM: Authentication error for root from 1.2.3.4
 100 1.2.3.4 4 10
 M
 Dec  1 06:25:27 server sshd[19956]: Accepted publickey for User from 1.2.3.4 port 21563 ssh2: RSA SHA256:...
@@ -573,9 +564,36 @@ M
 100 10.11.12.13 4 10
 M
 
+# Busybox
+Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 192.168.2.2
+100 192.168.2.2 4 10
+M
+Jun 20 02:18:39 vps auth.info sshd[13482]: Invalid user admin from 2001:db8::a11:beef:7ac0
+100 2001:db8::a11:beef:7ac0 6 10
+M
+
 # Busybox 'syslog -S' hides host names (#115)
 May 9 11:11:17 sshd[30876]: Invalid user www from 139.59.34.17 port 51066
 100 139.59.34.17 4 10
+M
+
+# FreeBSD syslogd with -v (https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=197854)
+Jan  1 00:00:00 <10.5> foxtrot sshd[1234]: Invalid user admin from 1.2.3.4
+100 1.2.3.4 4 10
+M
+
+# socklog banner, eg
+2015-05-27T04:31:28.10040 auth.info: May 27 04:31:28 sshd[30993]: Invalid user admin from 1.2.3.4
+100 1.2.3.4 4 10
+M
+# Some strip the redundant timestamp, eg
+2015-05-27T04:31:28.10040 auth.info: sshd[30993]:  Invalid user admin from 1.2.3.4
+100 1.2.3.4 4 10
+M
+
+# RFC 5424 banner
+<35>1 2020-01-03T11:57:14.257387-05:00 1.2.3.4 sshd 86784 - - error: PAM: Authentication error for root from 1.2.3.4
+100 1.2.3.4 4 10
 M
 # }}}
 
