@@ -235,7 +235,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
  /* postfix */
 "warning: unknown["                                             { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
 <postfix_loginerr>": SASL "[-A-Z0-9]+" authentication fail".*   { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
-"lost connection after AUTH from ".*"["                         { return POSTFIX_NO_AUTH_PREF; }
+"lost connection after "("AUTH"|"CONNECT")" from ".*"["         { return POSTFIX_NO_AUTH_PREF; }
  /* non-SMTP on an SMTP port suggests port-scanning activity */
 "warning: non-SMTP command from unknown["                       { BEGIN(postfix_nonsmtp); return POSTFIX_NONSMTP; }
 <postfix_nonsmtp>":".*                                          { BEGIN(INITIAL); return POSTFIX_NONSMTP_SUFF; }
