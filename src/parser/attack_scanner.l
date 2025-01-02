@@ -89,8 +89,8 @@ IPV4MAPPED6 ((:(:0{1,4}){0,4}|0{1,4}:(:0{1,4}){1,3}|(0{1,4}:){2}(0{1,4}:0{0,4}:0
 KEY_ALGORITHM    (?i:(RSA|DSA|ECDSA|ED25519))
 KEY_FINGERPRINT  (?i:(MD5|SHA256)((:[a-f0-9]{2}){16}|:[0-9a-z+\/]{43}))
 
-HOSTNAME    ([-a-zA-Z0-9]+\.)*[-a-zA-Z0-9]+
-HOSTADDR    localhost|([-a-zA-Z0-9]+\.)+[a-zA-Z]+|{IPV4}|{IPV6}|{IPV4MAPPED6}
+HOSTNAME    ([-a-zA-Z0-9]+\.)+[-a-zA-Z0-9]+
+HOSTADDR    {HOSTNAME}|{IPV4}|{IPV6}|{IPV4MAPPED6}
 FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 
 HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
