@@ -96,7 +96,8 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
 HTTP_VERSION    HTTP"/"[0-9]("."[0-9])?
 
-SYSLOG_HOSTNAME   ({WORD}|{HOSTADDR})
+ // host part of a hostname (without any domain parts)
+SYSLOG_HOSTNAME   {WORD}
 
  // timestamp (optional PRI) hostname
 SYSLOG_HEADER     ({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+{FACLEVEL}?[ ]*{SYSLOG_HOSTNAME}[ ]+
@@ -232,11 +233,11 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 <cyrusimap_loginerr>"] ".*"SASL".*"fail".*$                     { BEGIN(INITIAL); return CYRUSIMAP_SASL_LOGINERR_SUFF; }
 
  /* postfix */
-"warning: "({SYSLOG_HOSTNAME})"["                               { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
+"warning: unknown["                                             { BEGIN(postfix_loginerr); return POSTFIX_SASL_LOGINERR_PREF; }
 <postfix_loginerr>": SASL "[-A-Z0-9]+" authentication fail".*   { BEGIN(INITIAL); return POSTFIX_SASL_LOGINERR_SUFF; }
 "lost connection after AUTH from ".*"["                         { return POSTFIX_NO_AUTH_PREF; }
  /* non-SMTP on an SMTP port suggests port-scanning activity */
-"warning: non-SMTP command from "({SYSLOG_HOSTNAME})"["         { BEGIN(postfix_nonsmtp); return POSTFIX_NONSMTP; }
+"warning: non-SMTP command from unknown["                       { BEGIN(postfix_nonsmtp); return POSTFIX_NONSMTP; }
 <postfix_nonsmtp>":".*                                          { BEGIN(INITIAL); return POSTFIX_NONSMTP_SUFF; }
 
 "action=greylist".*"client_address="                            { BEGIN(postfix_greylist); return POSTFIX_GREYLIST; }
