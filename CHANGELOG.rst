@@ -10,6 +10,31 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.5.0
+=====
+**Added**
+
+- Add attack signatures for Proxmox VE
+- Update signatures for:
+  - Cyrus
+  - Exim
+  - OpenSSH
+  - Postfix
+- Add option to write Prometheus-compatible metrics
+- Add option to change sandboxable-processes to an unprivileged user
+
+**Changed**
+
+- Any HTTP 401 response is now recognized as an attack
+- Code improvements in in log banner and web (CLF) parsers. If there are
+  regressions, please file a bug report with example attacks so that they can
+  be added to our tests.
+
+**Fixed**
+
+- Fix configure issues when the shell is not bash
+- Fix false positives in web (CLF) log detection with "mail" in the request
+
 2.4.3
 =====
 **Added**

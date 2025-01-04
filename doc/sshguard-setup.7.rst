@@ -6,10 +6,10 @@ sshguard-setup
 setting up SSHGuard on your system
 ----------------------------------
 
-:Date: August 27, 2020
+:Date: January 1, 2025
 :Manual group: SSHGuard Manual
 :Manual section: 7
-:Version: 2.4
+:Version: 2.5.0
 
 DESCRIPTION
 ===========
