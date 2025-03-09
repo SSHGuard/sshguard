@@ -74,7 +74,7 @@ static void unblock_expired() {
     pthread_testcancel();
 }
 
-static void *unblock_loop() {
+static void *unblock_loop(void *unused) {
     while (1) {
         /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
         sleep(1 + ((unsigned int)rand() % (1 + opts.pardon_threshold / 2)));
