@@ -4,6 +4,7 @@
 #include <syslog.h>
 #include <time.h>
 #include <unistd.h>
+#include <grp.h> // initgroups() on Linux
 #include <pwd.h>
 #include "sandbox.h"
 

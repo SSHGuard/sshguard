@@ -1,3 +1,4 @@
+#define _GNU_SOURCE // for asprintf on Linux
 #include <assert.h>
 #include <signal.h>
 #include <stdbool.h>
