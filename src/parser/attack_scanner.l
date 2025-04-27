@@ -34,7 +34,6 @@
 %array
 
  /* Start Conditions */
-%x quoted_string
  /* for Login services */
 %s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_invalid_format ssh_badkex cockpit_authfail proxmoxve_authfail
  /* for SSHGuard */
@@ -346,8 +345,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
 {WORD}                                                          { yylval.str = yytext; return WORD; }
 
-"\"" { BEGIN(quoted_string); }
-<quoted_string>[^"]*"\"" { BEGIN(INITIAL); return STRING; }
+"\""[^"]*"\"" { return STRING; }
 
 [ \n\r\t]+            /* eat blanks */
  /* literals */
