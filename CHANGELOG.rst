@@ -10,6 +10,13 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.5.1
+=====
+**Fixed**
+
+- Fix a denial of service issue in the quoted string parser
+- Fix build on systems without setresgid() or setresuid()
+
 2.5.0
 =====
 **Added**
