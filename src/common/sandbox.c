@@ -40,12 +40,27 @@ void droproot(const char *user) {
     if (initgroups(user, pw->pw_gid) == -1) {
         perror("Could not initialize supplementary groups");
     }
+
+#ifdef HAVE_SETRESGID
     if (setresgid(pw->pw_gid, pw->pw_gid, pw->pw_gid) == -1) {
         perror("Could not set group");
     }
+#else
+    if (setregid(pw->pw_gid, pw->pw_gid) == -1) {
+        perror("Could not set group");
+    }
+#endif
+
+#ifdef HAVE_SETRESUID
     if (setresuid(pw->pw_uid, pw->pw_uid, pw->pw_uid) == -1) {
         perror("Could not set user");
     }
+#else
+    if (setreuid(pw->pw_uid, pw->pw_uid) == -1) {
+        perror("Could not set user");
+    }
+#endif
+
 }
 
 void sandbox_init() {

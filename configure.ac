@@ -38,4 +38,7 @@ AC_SEARCH_LIBS([gethostbyname], [nsl])
 AC_SEARCH_LIBS([pthread_create], [pthread])
 AC_SEARCH_LIBS([socket], [socket])
 
+AC_CHECK_FUNC([setresgid], [AC_DEFINE([HAVE_SETRESGID], [1], [Have setresgid])])
+AC_CHECK_FUNC([setresuid], [AC_DEFINE([HAVE_SETRESUID], [1], [Have setresuid])])
+
 AC_OUTPUT([Makefile src/Makefile src/blocker/Makefile src/fw/Makefile src/parser/Makefile])
