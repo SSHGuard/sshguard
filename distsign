@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ -f $1 ]; then
     distname=`echo $1 | sed -e 's/.tar.*$//'`
-    sha256 $1 | gpg --clearsign > $distname.sha256
+    sha256 $1 > $distname.sha256
 else
     echo "distsign: $1: Not a file" >&2
     exit 1

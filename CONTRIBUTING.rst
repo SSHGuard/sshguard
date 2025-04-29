@@ -184,7 +184,7 @@ Before release, make sure that:
 
 Then:
 
-1. Tag release: ``git tag -s -m "Tag <version> release" v<version>``
+1. Tag release: ``git tag -m "Tag <version> release" v<version>``
 #. Source tarball should have been generated from ``make distcheck`` already
 #. Sign source tarball ``./distsign <tarball>``
 #. Push tags: ``git push --tags``
