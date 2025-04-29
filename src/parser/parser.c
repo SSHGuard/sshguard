@@ -13,7 +13,7 @@
 #include "parser.h"
 #include "sandbox.h"
 
-#define MAX_LEN 1000
+#define MAX_LEN 4096
 
 unsigned int test_counter = 0;
 
