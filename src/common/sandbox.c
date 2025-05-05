@@ -20,7 +20,10 @@ void init_log() {
     int dest = LOG_AUTH;
 
     if (debug) {
+#ifdef LOG_PERROR
+        // Some OS's (like OmniOS) don't have a LOG_PERROR flag to syslog().
         flags |= LOG_PERROR;
+#endif
         dest = LOG_LOCAL6;
     } else {
         setlogmask(LOG_UPTO(LOG_INFO));
