@@ -27,6 +27,7 @@ clean_and_exit() {
     if [ -n "$PID_FILE" ]; then
         rm -f "$PID_FILE"
     fi
+    trap - INT TERM
     exit
 }
 
