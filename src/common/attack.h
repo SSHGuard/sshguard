@@ -27,6 +27,7 @@
 enum service {
     SERVICES_ALL            = 0,    //< anything
     SERVICES_SSH            = 100,  //< ssh
+    SERVICES_DROPBEAR       = 101,  //< Dropbear SSH
     SERVICES_SSHGUARD       = 110,  //< SSHGuard
     SERVICES_BIND           = 120,  //< BIND (named)
     SERVICES_UWIMAP         = 200,  //< UWimap for imap and pop daemon

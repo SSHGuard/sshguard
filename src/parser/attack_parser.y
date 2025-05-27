@@ -62,6 +62,10 @@ static void yyerror(attack_t *, const char *);
 %token SSH_INVALIDFORMAT_PREF SSH_INVALIDFORMAT_SUFF
 %token SSH_BADKEX_PREF SSH_BADKEX_SUFF
 %token SSH_DISCONNECT_PREF SSH_CONNECTION_CLOSED SSH_PREAUTH_SUFF
+/* dropbear */
+%token DROPBEAR_BAD_PASSWORD
+%token DROPBEAR_BAD_USER
+%token DROPBEAR_EXIT_BEFORE_AUTH_PREF DROPBEAR_EXIT_BEFORE_AUTH_SUFF
 /* SSHGuard */
 %token SSHGUARD_ATTACK_PREF SSHGUARD_ATTACK_SUFF
 %token SSHGUARD_BLOCK_PREF SSHGUARD_BLOCK_SUFF
@@ -163,6 +167,7 @@ repetition_suffix:
 
 msg_single:
     sshmsg            { attack->service = SERVICES_SSH; }
+  | dropbearmsg       { attack->service = SERVICES_DROPBEAR; }
   | sshguardmsg       { attack->service = SERVICES_SSHGUARD; }
   | bindmsg           { attack->service = SERVICES_BIND; }
   | dovecotmsg        { attack->service = SERVICES_DOVECOT; }
@@ -253,6 +258,12 @@ ssh_invalid_format:
 ssh_badkex:
     SSH_BADKEX_PREF addr SSH_BADKEX_SUFF
   ;
+
+dropbearmsg:
+    DROPBEAR_BAD_PASSWORD addr ':' INTEGER
+  | DROPBEAR_BAD_USER addr ':' INTEGER
+  | DROPBEAR_EXIT_BEFORE_AUTH_PREF addr ':' INTEGER DROPBEAR_EXIT_BEFORE_AUTH_SUFF { attack->dangerousness = 2; }
+ ;
 
 /* attacks and blocks from SSHGuard */
 sshguardmsg:

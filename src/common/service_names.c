@@ -7,6 +7,7 @@ struct service_s {
 
 static const struct service_s services[] = {
     {SERVICES_SSH, "SSH"},
+    {SERVICES_DROPBEAR, "Dropbear"},
     {SERVICES_SSHGUARD, "SSHGuard"},
     {SERVICES_UWIMAP, "UW IMAP"},
     {SERVICES_DOVECOT, "Dovecot"},
