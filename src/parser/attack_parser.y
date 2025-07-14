@@ -72,7 +72,8 @@ static void yyerror(attack_t *, const char *);
 /* BIND */
 %token BIND_PREF BIND_QUERY_DENIED
 /* dovecot */
-%token DOVECOT_IMAP_LOGINERR_PREF DOVECOT_IMAP_LOGINERR_SUFF DOVECOT_IMAP_LOGINERR_BIS
+%token DOVECOT_IMAP_LOGINERR_PREF DOVECOT_IMAP_LOGINERR_SUFF
+%token DOVECOT_IMAP_LOGINERR_PAM
 /* uwimap */
 %token UWIMAP_LOGINERR
 /* cyrus-imap */
@@ -278,7 +279,7 @@ bindmsg:
 /* attack rules for dovecot imap */
 dovecotmsg:
     DOVECOT_IMAP_LOGINERR_PREF addr DOVECOT_IMAP_LOGINERR_SUFF
-  | DOVECOT_IMAP_LOGINERR_BIS addr
+  | DOVECOT_IMAP_LOGINERR_PAM addr
   ;
 
 /* attack rules for UWIMAP */

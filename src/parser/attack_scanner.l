@@ -231,7 +231,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 <dovecot_loginerr>", lip=".+                                        { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
 
  /* dovecot bis */
-"pam_unix(dovecot:auth): "?"authentication failure; logname= uid=0 euid=0 tty=".*" ruser=".*" rhost=" { return DOVECOT_IMAP_LOGINERR_BIS; }
+"pam_unix(dovecot:auth): "?"authentication failure; logname= uid=0 euid=0 tty=".*" ruser=".*" rhost=" { return DOVECOT_IMAP_LOGINERR_PAM; }
 
  /* UWimap login errors */
 "Login failed user="[^ ]+" auth="[^ ]*" host="[^ ]+" "          { return UWIMAP_LOGINERR; }
