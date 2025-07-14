@@ -39,7 +39,7 @@ See the "Troubleshooting" section in `sshguard-setup(7)
 
 Contributing
 ============
-See `<CONTRIBUTING.rst>`_>.
+See `<CONTRIBUTING.rst>`_.
 
 
 License
