@@ -291,6 +291,9 @@ M
 submission-login: Disconnected: Aborted login by logging out (auth failed, 1 attempts in 2 secs): user=<sarah>, method=LOGIN, rip=1.2.3.4, lip=1.1.1.1, TLS, session=<cIMEtT/mtP8tfUIY>
 210 1.2.3.4 4 10
 M
+pam_unix(dovecot:auth): authentication failure; logname= uid=0 euid=0 tty=dovecot ruser=webmaster@raffalli.eu rhost=80.94.95.229
+210 80.94.95.229 4 10
+M
 # }}}
 
 # uwimap {{{
