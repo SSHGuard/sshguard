@@ -1,5 +1,7 @@
 *.[ao]
+*.html
 *.log
+*.orig
 *.swp
 *.trs
 *~
