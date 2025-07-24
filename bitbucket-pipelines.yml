@@ -1,10 +1,10 @@
-image: gcc:8
+image: atlassian/default-image:5
 
 pipelines:
   default:
     - step:
         script:
-          - apt update && apt install -y flex bison python-docutils
+          - apt update && apt install -y flex bison docutils-common
           - autoreconf -i
           - ./configure
           - make distcheck
