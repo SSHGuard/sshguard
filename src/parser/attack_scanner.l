@@ -319,6 +319,11 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 "Login failed. The login is from an untrusted domain and cannot be used with Integrated authentication. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
 "Length specified in network packet payload did not match number of bytes read; the connection has been closed. Please contact the vendor of the client library. [CLIENT: " { return MSSQL_AUTHFAIL_PREF; }
 
+ /* MySQL */
+"["{WORD}"] [MY-"{NUMBER}"] ["{WORD}"]" { return MYSQL_PREF; }
+"Access denied for user '".*"'@'" { return MYSQL_ACCESS_DENIED_PREF; }
+"'".* { return MYSQL_ACCESS_DENIED_SUFF; }
+
  /* Proxmox VE */
  /* failed authentication */
 "authentication failure; rhost="  { BEGIN(proxmoxve_authfail); return PROXMOXVE_AUTHFAIL_PREF; }

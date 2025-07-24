@@ -697,6 +697,15 @@ M
 M
 # }}}
 
+#### MySQL {{{
+2025-07-24T14:49:49.398440Z 89 [Note] [MY-010926] [Server] Access denied for user 'test'@'91.99.222.37' (using password: YES)
+601 91.99.222.37 4 10
+M
+2025-07-24T14:49:24.746965Z 87 [Note] [MY-010926] [Server] Access denied for user 'test'@'91.99.222.37' (using password: NO)
+601 91.99.222.37 4 10
+M
+# }}}
+
 #### Proxmox VE {{{
 May 04 23:45:19 deb12-pve pvedaemon[2352]: authentication failure; rhost=::ffff:192.0.2.74 user=tester@pve msg=Authentication failure
 700 192.0.2.74 4 10

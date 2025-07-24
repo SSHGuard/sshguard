@@ -119,6 +119,8 @@ static void yyerror(attack_t *, const char *);
 %token OPENVPN_PS_TERM_SUFF
 /* MSSQL */
 %token MSSQL_AUTHFAIL_PREF
+/* MySQL */
+%token MYSQL_PREF MYSQL_ACCESS_DENIED_PREF MYSQL_ACCESS_DENIED_SUFF
 /* Proxmox VE */
 %token PROXMOXVE_AUTHFAIL_PREF PROXMOXVE_AUTHFAIL_SUFF
 
@@ -189,7 +191,7 @@ msg_single:
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
   | giteamsg          { attack->service = SERVICES_GITEA; }
   | openvpnpsmsg      { attack->service = SERVICES_OPENVPN_PS; }
-  | sqlservrmsg       { attack->service = SERVICES_MSSQL; }
+  | sqlservrmsg
   | proxmoxvemsg      { attack->service = SERVICES_PROXMOXVE; }
   ;
 
@@ -420,7 +422,8 @@ giteamsg:
 
 /* attack rules for mssql */
 sqlservrmsg:
-    MSSQL_AUTHFAIL_PREF addr ']' 
+    MSSQL_AUTHFAIL_PREF addr ']' { attack->service = SERVICES_MSSQL; }
+  | INTEGER MYSQL_PREF MYSQL_ACCESS_DENIED_PREF addr MYSQL_ACCESS_DENIED_SUFF { attack->service = SERVICES_MYSQL; }
   ;
 
 /* attack rules for openvpn portshare */

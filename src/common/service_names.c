@@ -30,6 +30,7 @@ static const struct service_s services[] = {
     {SERVICES_GITEA, "Gitea"},
     {SERVICES_OPENVPN_PS, "OpenVPN Portshare"},
     {SERVICES_MSSQL, "MSSQL"},
+    {SERVICES_MYSQL, "MYSQL"},
     {SERVICES_PROXMOXVE, "Proxmox VE"},
 };
 
