@@ -40,7 +40,7 @@
 %s sshguard_attack sshguard_block
 %s bind
  /* for Mail services */
-%s dovecot_loginerr dovecot_loginerr_bis cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_nonsmtp postfix_greylist opensmtpd_failedcmd postscreen
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_nonsmtp postfix_greylist opensmtpd_failedcmd postscreen
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for git services */
@@ -229,8 +229,6 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
  /* dovecot */
 ("(libdovecot."[0-9\.]+".dylib) ")?(imap|pop3|submission)"-login: ""Info: "?("Aborted login"|Disconnected).*" (auth failed, "{NUMBER}" attempts".*"): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
 <dovecot_loginerr>", lip=".+                                        { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
-
- /* dovecot bis */
 "pam_unix(dovecot:auth): "?"authentication failure; logname= uid=0 euid=0 tty=".*" ruser=".*" rhost=" { return DOVECOT_IMAP_LOGINERR_PAM; }
 
  /* UWimap login errors */
