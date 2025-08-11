@@ -78,6 +78,9 @@ If you are adding a new service, changes are also needed in:
    *attack_parser.y*, where the ``%token`` lines are.
 
 #. Add regular expressions for matching your new tokens in *attack_scanner.l*.
+   Avoid wildcard matches at the beginning of rules; this causes the number of
+   lex DFA states to balloon, leading to slower compilation and larger code
+   size.
 
 #. Add grammar rules for your attack in *attack_parser.y*. A good starting
    point is to look at how the existing signatures are matached from the
