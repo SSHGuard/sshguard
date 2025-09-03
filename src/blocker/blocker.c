@@ -21,6 +21,7 @@
 #include "config.h"
 
 #include <assert.h>
+#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,8 +72,17 @@ static void report_address(attack_t attack);
 static void purge_limbo_stale(void);
 
 int main(int argc, char *argv[]) {
+    sigset_t set;
+
     init_log();
     srand(time(NULL));
+
+    /* block signals to child threads */
+    sigemptyset(&set);
+    sigaddset(&set, SIGTERM);
+    sigaddset(&set, SIGHUP);
+    sigaddset(&set, SIGINT);
+    pthread_sigmask(SIG_BLOCK, &set, NULL);
 
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
@@ -97,11 +107,13 @@ int main(int argc, char *argv[]) {
         blacklist_load_and_block();
     }
 
+    /* unblock signals to main thread */
+    pthread_sigmask(SIG_UNBLOCK, &set, NULL);
+
     /* termination signals */
     signal(SIGTERM, sigfin_handler);
     signal(SIGHUP, sigfin_handler);
     signal(SIGINT, sigfin_handler);
-    atexit(finishup);
 
     sandbox_init();
 
@@ -128,7 +140,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (feof(stdin)) {
+    if (exit_sig) {
+	finishup();
+    } else if (feof(stdin)) {
         sshguard_log(LOG_DEBUG, "Received EOF from stdin.");
     }
 }
@@ -273,12 +287,13 @@ static void purge_limbo_stale(void) {
 
 static void finishup(void) {
     sshguard_log(LOG_INFO, "Exiting on %s.",
-            exit_sig == SIGHUP ? "SIGHUP" : "signal");
+            exit_sig == SIGHUP ? "SIGHUP" :
+            exit_sig == SIGINT ? "SIGINT" :
+            exit_sig == SIGTERM ? "SIGTERM" : "signal");
     whitelist_fin();
     closelog();
 }
 
 static void sigfin_handler(int sig) {
     exit_sig = sig;
-    exit(0);
 }
