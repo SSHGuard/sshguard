@@ -300,7 +300,7 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 <opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"AUTH ".+"\" result=\"535 Authentication failed\"" { BEGIN(INITIAL); return OPENSMTPD_AUTHFAIL_SUFF; }
 
  /* pfSense web configurator */
-.+": webConfigurator authentication error for user '".+"' from: " { return PFSENSE_AUTH_FAIL; }
+": webConfigurator authentication error for user '".+"' from: " { return PFSENSE_AUTH_FAIL; }
 
  /* Courier IMAP/POP */
 "LOGIN FAILED, "(user|method)=[^ ,]+", ip="                     { return COURIER_AUTHFAIL_PREF; }
