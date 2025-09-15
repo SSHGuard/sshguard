@@ -129,22 +129,26 @@ int main(int argc, char *argv[]) {
 
     char buf[1024];
     attack_t parsed_attack;
-    while (fgets(buf, sizeof(buf), stdin) != NULL) {
+    while (!exit_sig && fgets(buf, sizeof(buf), stdin) != NULL) {
         if (sscanf(buf, "%d %46s %d %d\n", (int*)&parsed_attack.service,
                   parsed_attack.address.value, &parsed_attack.address.kind,
                   &parsed_attack.dangerousness) == 4) {
             report_address(parsed_attack);
         } else {
             sshguard_log(LOG_ERR, "Could not parse attack data.");
-            exit(65);
+            break;
         }
     }
 
     if (exit_sig) {
-        finishup();
+        sshguard_log(LOG_INFO, "Exiting on %s.",
+                exit_sig == SIGHUP ? "SIGHUP" :
+                exit_sig == SIGINT ? "SIGINT" :
+                exit_sig == SIGTERM ? "SIGTERM" : "signal");
     } else if (feof(stdin)) {
         sshguard_log(LOG_DEBUG, "Received EOF from stdin.");
     }
+    finishup();
 }
 
 void log_block(attacker_t *tmpent, attacker_t *offenderent) {
@@ -286,10 +290,6 @@ static void purge_limbo_stale(void) {
 }
 
 static void finishup(void) {
-    sshguard_log(LOG_INFO, "Exiting on %s.",
-            exit_sig == SIGHUP ? "SIGHUP" :
-            exit_sig == SIGINT ? "SIGINT" :
-            exit_sig == SIGTERM ? "SIGTERM" : "signal");
     whitelist_fin();
     closelog();
 }
