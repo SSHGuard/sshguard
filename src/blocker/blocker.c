@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (exit_sig) {
-	finishup();
+        finishup();
     } else if (feof(stdin)) {
         sshguard_log(LOG_DEBUG, "Received EOF from stdin.");
     }
