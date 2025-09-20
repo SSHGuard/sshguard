@@ -115,6 +115,13 @@ int main(int argc, char *argv[]) {
     signal(SIGHUP, sigfin_handler);
     signal(SIGINT, sigfin_handler);
 
+    // On BSD, signal handlers installed with signal() are restartable by
+    // default, which means that fgets() won't return immediately after a
+    // signal. We need to change this here.
+    siginterrupt(SIGTERM, 1);
+    siginterrupt(SIGHUP, 1);
+    siginterrupt(SIGINT, 1);
+
     sandbox_init();
 
     /* whitelist localhost */
