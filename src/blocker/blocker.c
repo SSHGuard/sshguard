@@ -21,6 +21,7 @@
 #include "config.h"
 
 #include <assert.h>
+#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,8 +72,17 @@ static void report_address(attack_t attack);
 static void purge_limbo_stale(void);
 
 int main(int argc, char *argv[]) {
+    sigset_t set;
+
     init_log();
     srand(time(NULL));
+
+    /* block signals to child threads */
+    sigemptyset(&set);
+    sigaddset(&set, SIGTERM);
+    sigaddset(&set, SIGHUP);
+    sigaddset(&set, SIGINT);
+    pthread_sigmask(SIG_BLOCK, &set, NULL);
 
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
@@ -97,11 +107,20 @@ int main(int argc, char *argv[]) {
         blacklist_load_and_block();
     }
 
+    /* unblock signals to main thread */
+    pthread_sigmask(SIG_UNBLOCK, &set, NULL);
+
     /* termination signals */
     signal(SIGTERM, sigfin_handler);
     signal(SIGHUP, sigfin_handler);
     signal(SIGINT, sigfin_handler);
-    atexit(finishup);
+
+    // On BSD, signal handlers installed with signal() are restartable by
+    // default, which means that fgets() won't return immediately after a
+    // signal. We need to change this here.
+    siginterrupt(SIGTERM, 1);
+    siginterrupt(SIGHUP, 1);
+    siginterrupt(SIGINT, 1);
 
     sandbox_init();
 
@@ -117,20 +136,26 @@ int main(int argc, char *argv[]) {
 
     char buf[1024];
     attack_t parsed_attack;
-    while (fgets(buf, sizeof(buf), stdin) != NULL) {
+    while (!exit_sig && fgets(buf, sizeof(buf), stdin) != NULL) {
         if (sscanf(buf, "%d %46s %d %d\n", (int*)&parsed_attack.service,
                   parsed_attack.address.value, &parsed_attack.address.kind,
                   &parsed_attack.dangerousness) == 4) {
             report_address(parsed_attack);
         } else {
             sshguard_log(LOG_ERR, "Could not parse attack data.");
-            exit(65);
+            break;
         }
     }
 
-    if (feof(stdin)) {
+    if (exit_sig) {
+        sshguard_log(LOG_INFO, "Exiting on %s.",
+                exit_sig == SIGHUP ? "SIGHUP" :
+                exit_sig == SIGINT ? "SIGINT" :
+                exit_sig == SIGTERM ? "SIGTERM" : "signal");
+    } else if (feof(stdin)) {
         sshguard_log(LOG_DEBUG, "Received EOF from stdin.");
     }
+    finishup();
 }
 
 void log_block(attacker_t *tmpent, attacker_t *offenderent) {
@@ -272,13 +297,10 @@ static void purge_limbo_stale(void) {
 }
 
 static void finishup(void) {
-    sshguard_log(LOG_INFO, "Exiting on %s.",
-            exit_sig == SIGHUP ? "SIGHUP" : "signal");
     whitelist_fin();
     closelog();
 }
 
 static void sigfin_handler(int sig) {
     exit_sig = sig;
-    exit(0);
 }

@@ -34,6 +34,7 @@
 #include <sys/stat.h>   /* for open()'s access modes S_IRUSR etc */
 #include <limits.h>
 #include <stdint.h>
+#include <signal.h>
 
 
 /* work around lack of inttypes.h support in broken Microsoft Visual Studio compilers */
@@ -904,6 +905,7 @@ static void list_sort_quicksort(list_t *restrict l, int versus,
     if (pivotid > 0) {
         /* prepare wrapped args, then start thread */
         if (l->threadcount < SIMCLIST_MAXTHREADS-1) {
+            sigset_t set, oset;
             struct list_sort_wrappedparams *wp = (struct list_sort_wrappedparams *)malloc(sizeof(struct list_sort_wrappedparams));
             l->threadcount++;
             traised = 1;
@@ -913,11 +915,14 @@ static void list_sort_quicksort(list_t *restrict l, int versus,
             wp->fel = fel;
             wp->last = first+pivotid-1;
             wp->lel = pivot->prev;
+            sigfillset(&set);
+            pthread_sigmask(SIG_BLOCK, &set, &oset);
             if (pthread_create(&tid, NULL, list_sort_quicksort_threadwrapper, wp) != 0) {
                 free(wp);
                 traised = 0;
                 list_sort_quicksort(l, versus, first, fel, first+pivotid-1, pivot->prev);
             }
+            pthread_sigmask(SIG_SETMASK, &oset, NULL);
         } else {
             list_sort_quicksort(l, versus, first, fel, first+pivotid-1, pivot->prev);
         }
