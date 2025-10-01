@@ -23,7 +23,7 @@
 THRESHOLD=30
 
 # Block attackers for initially BLOCK_TIME seconds after exceeding THRESHOLD.
-# Subsequent blocks increase by a factor of 1.5. (optional, default 120)
+# Subsequent blocks increase by a factor of 2. (optional, default 120)
 BLOCK_TIME=120
 
 # Remember potential attackers for up to DETECTION_TIME seconds before
