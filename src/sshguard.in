@@ -18,9 +18,8 @@ usage() {
     cat << EOF
 Usage: sshguard [-v] [-h]
 [-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE]
-[-i PID-FILE] [-p BLOCK_TIME]
+[-f INCREASING_FACTOR] [-i PID-FILE] [-p BLOCK_TIME]
 [-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]
-[-f INCREASING_FACTOR]
 EOF
 }
 

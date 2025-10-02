@@ -268,7 +268,7 @@ static void report_address(attack_t attack) {
         if (opts.blacklist_filename != NULL) {
             blacklist_add(offenderent);
         }
-    } else {
+    } else if (opts.increasing_factor > 1) {
         /* compute blocking time wrt the "offensiveness" */
         for (unsigned int i = 0; i < offenderent->numhits - 1; i++) {
             tmpent->pardontime *= opts.increasing_factor;
