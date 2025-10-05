@@ -663,6 +663,11 @@ M
 <35>1 2020-01-03T11:57:14.257387-05:00 1.2.3.4 sshd 86784 - - error: PAM: Authentication error for root from 1.2.3.4
 100 1.2.3.4 4 10
 M
+
+# sysklogd omits the <PRI> field
+2022-02-24T21:00:42.021457+00:00 evse dropbear 6052 - - Bad password attempt for 'root' from 1.2.3.4:50532
+101 1.2.3.4 4 10
+M
 # }}}
 
 #### Gitea {{{
