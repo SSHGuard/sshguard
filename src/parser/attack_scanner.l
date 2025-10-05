@@ -119,6 +119,9 @@ WORDPRESS_LOGIN            "/wp-login"(\.php)?
 TYPO3_LOGIN                "/typo3/?loginProvider="
 CONTAO_LOGIN               "/contao/login?_hash="
 HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
+
+/* any string without spaces that begins with /, not matching any of the above */
+HTTP_PATH                  "/"[^ ]+
 %%
 
 
@@ -298,6 +301,9 @@ HTTP_LOGIN_200OK_BAD       .*({WORDPRESS_LOGIN}|{TYPO3_LOGIN}|{CONTAO_LOGIN}).*
 <opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"".+"\" result=\"503 5.5.1 Invalid command: Command not supported\"" { BEGIN(INITIAL); return OPENSMTPD_UNSUPPORTED_CMD_SUFF; }
  /* Bad credentials */
 <opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"AUTH ".+"\" result=\"535 Authentication failed\"" { BEGIN(INITIAL); return OPENSMTPD_AUTHFAIL_SUFF; }
+
+ /* pfSense web configurator */
+{HTTP_PATH}": webConfigurator authentication error for user '".+"' from: " { return PFSENSE_AUTH_FAIL; }
 
  /* Courier IMAP/POP */
 "LOGIN FAILED, "(user|method)=[^ ,]+", ip="                     { return COURIER_AUTHFAIL_PREF; }

@@ -114,6 +114,8 @@ static void yyerror(attack_t *, const char *);
 %token OPENVPN_TLS_ERR_SUFF
 /* Gitea */
 %token GITEA_ERR_PREF GITEA_ERR_SUFF
+/* pfSense web configurator authentication failures */
+%token PFSENSE_AUTH_FAIL
 /* OpenVPN Portshare */
 %token OPENVPN_PS_TERM_PREF
 %token OPENVPN_PS_TERM_SUFF
@@ -190,6 +192,7 @@ msg_single:
   | couriermsg        { attack->service = SERVICES_COURIER; }
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
   | giteamsg          { attack->service = SERVICES_GITEA; }
+  | pfsenseauthfail   { attack->service = SERVICES_PFSENSE; }
   | openvpnpsmsg      { attack->service = SERVICES_OPENVPN_PS; }
   | sqlservrmsg
   | proxmoxvemsg      { attack->service = SERVICES_PROXMOXVE; }
@@ -418,6 +421,11 @@ giteamsg:
   | GITEA_ERR_PREF addr GITEA_ERR_SUFF
   | GITEA_ERR_PREF '[' addr ']'
   | GITEA_ERR_PREF '[' addr ']' GITEA_ERR_SUFF
+  ;
+
+/* attack rules against pfSense */
+pfsenseauthfail:
+    PFSENSE_AUTH_FAIL addr
   ;
 
 /* attack rules for mssql */
