@@ -22,8 +22,7 @@
 # Most attacks have a score of 10. (optional, default 30)
 THRESHOLD=30
 
-# Block attackers for initially BLOCK_TIME seconds after exceeding THRESHOLD.
-# Subsequent blocks increase by a factor of 2. (optional, default 120)
+# Block attackers for initially BLOCK_TIME seconds after exceeding THRESHOLD. (optional, default 120)
 BLOCK_TIME=120
 
 # Remember potential attackers for up to DETECTION_TIME seconds before
@@ -35,6 +34,9 @@ IPV6_SUBNET=128
 
 # Size of IPv4 subnet to block. Defaults to a single address, CIDR notation. (optional, default to 32)
 IPV4_SUBNET=32
+
+# Subsequent blocks increase by this factor. (optional, default 2)
+INCREASING_FACTOR=2
 
 # When set, sandboxed processes drop permissions by changing to this user.
 # (optional, no default)
