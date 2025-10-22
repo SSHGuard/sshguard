@@ -175,6 +175,15 @@ M
 Dec 29 16:48:56 xxx sshd[24924]: Did not receive identification string from 5.20.95.202 port 56452
 100 5.20.95.202 4 10
 M
+
+# less critical login timeouts
+Oct 20 08:54:36 quasar sshd[59756]: Timeout before authentication for connection from 1.2.3.4 to 192.168.0.2, pid = 35557
+100 1.2.3.4 4 1
+M
+
+Oct 20 08:54:36 quasar sshd[59756]: drop connection #0 from [1.2.3.4]:48602 on [1.1.1.1]:22 penalty: exceeded LoginGraceTime
+100 1.2.3.4 4 1
+M
 # }}}
 
 # Dropbear {{{

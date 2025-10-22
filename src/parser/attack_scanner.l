@@ -195,6 +195,11 @@ HTTP_PATH                  "/"[^ ]+
 "fatal: "?"Unable to negotiate with "                                     { BEGIN(ssh_badkex); return SSH_BADKEX_PREF; }
 <ssh_badkex>(" port ".*)?[: ].*"no matching ".*" found".*       { BEGIN(INITIAL); return SSH_BADKEX_SUFF; }
 
+"Timeout before authentication for connection from"             return SSH_PREAUTH_TIMEOUT;
+"drop connection #0 from ["                                     return SSH_PREAUTH_TIMEOUT;
+"to "{HOSTADDR}", pid = "{NUMBER}                               return SSH_PREAUTH_SUFF;
+"]:"{NUMBER}" on ["{HOSTADDR}"]:"{NUMBER}" penalty: ".*         return SSH_PREAUTH_SUFF;
+
 [Bb]"ad "("PAM ")?"password attempt for "[^ ]+" from "                      { return DROPBEAR_BAD_PASSWORD; }
 [Ll]"ogin attempt for nonexistent user from"                     { return DROPBEAR_BAD_USER; }
 [Ee]"xit before auth from <"                                     { return DROPBEAR_EXIT_BEFORE_AUTH_PREF; }

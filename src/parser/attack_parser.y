@@ -62,6 +62,7 @@ static void yyerror(attack_t *, const char *);
 %token SSH_INVALIDFORMAT_PREF SSH_INVALIDFORMAT_SUFF
 %token SSH_BADKEX_PREF SSH_BADKEX_SUFF
 %token SSH_DISCONNECT_PREF SSH_CONNECTION_CLOSED SSH_PREAUTH_SUFF
+%token SSH_PREAUTH_TIMEOUT
 /* dropbear */
 %token DROPBEAR_BAD_PASSWORD
 %token DROPBEAR_BAD_USER
@@ -229,6 +230,7 @@ sshmsg:
   | ssh_badprotocol
   | ssh_invalid_format
   | ssh_badkex
+  | ssh_timeout { attack->dangerousness = 1; }
   ;
 
 ssh_illegaluser:
@@ -264,6 +266,9 @@ ssh_invalid_format:
 ssh_badkex:
     SSH_BADKEX_PREF addr SSH_BADKEX_SUFF
   ;
+
+ssh_timeout:
+    SSH_PREAUTH_TIMEOUT addr SSH_PREAUTH_SUFF;
 
 dropbearmsg:
     DROPBEAR_BAD_PASSWORD addr ':' INTEGER
