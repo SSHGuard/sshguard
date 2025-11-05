@@ -9,18 +9,15 @@
 #BACKEND="/usr/local/libexec/sshg-fw-iptables"
 
 # Space-separated list of log files to monitor. (optional, no default)
-# debian-style systems
-#FILES="/var/log/mail.log /var/log/auth.log"
-# slackware and redhat-style systems
-#FILES="/var/log/maillog /var/log/secure"
+#FILES="/var/log/auth.log /var/log/authlog /var/log/maillog"
 
 # Shell command that provides logs on standard output. (optional, no default)
-# ssh and sendmail from systemd journal
+# Example 1: ssh and sendmail from systemd journal:
 #LOGREADER="LANG=C /usr/bin/journalctl -afb -p info -n1 -t sshd -t sendmail -o cat"
-# mail, auth and authpriv facilities from systemd journal (https://en.wikipedia.org/wiki/Syslog#Facility)
-#LOGREADER="LANG=C journalctl -afb -p info -n1 -o cat SYSLOG_FACILITY=2 SYSLOG_FACILITY=4 SYSLOG_FACILITY=10"
-# ssh from os_log (macOS 10.12+)
+# Example 2: ssh from os_log (macOS 10.12+)
 #LOGREADER="/usr/bin/log stream --style syslog --predicate '(processImagePath contains \"sshd\")'"
+# Example 3: mail, auth and authpriv facilities from systemd journal
+#LOGREADER="LANG=C journalctl -afb -p info -n1 -o cat SYSLOG_FACILITY=2 SYSLOG_FACILITY=4 SYSLOG_FACILITY=10"
 
 #### OPTIONS ####
 # Block attackers when their cumulative attack score exceeds THRESHOLD.
