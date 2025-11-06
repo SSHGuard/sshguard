@@ -18,7 +18,7 @@ usage() {
     cat << EOF
 Usage: sshguard [-v] [-h]
 [-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE]
-[-f INCREASING_FACTOR] [-i PID-FILE] [-p BLOCK_TIME]
+[-m BLOCK_TIME_MULTIPLIER] [-i PID-FILE] [-p BLOCK_TIME]
 [-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]
 EOF
 }
@@ -42,7 +42,7 @@ fi
 . $config
 
 # Runtime arguments override configuration options
-while getopts "b:l:p:s:a:w:i:f:hv" opt; do
+while getopts "b:l:p:s:a:w:i:m:hv" opt; do
     case $opt in
         a) THRESHOLD=$OPTARG;;
         b) BLACKLIST_FILE=$OPTARG;;
@@ -51,7 +51,7 @@ while getopts "b:l:p:s:a:w:i:f:hv" opt; do
         p) BLOCK_TIME=$OPTARG;;
         s) DETECTION_TIME=$OPTARG;;
         w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
-        f) INCREASING_FACTOR="$OPTARG";;
+        m) BLOCK_TIME_MULTIPLIER="$OPTARG";;
         h) usage; exit;;
         v) echo "SSHGuard $version"; exit;;
         *) echo "Try 'sshguard -h' for help"; exit 1;;
@@ -74,7 +74,7 @@ setflag 'p' "$BLOCK_TIME"
 setflag 's' "$DETECTION_TIME"
 setflag 'N' "$IPV6_SUBNET"
 setflag 'n' "$IPV4_SUBNET"
-setflag 'f' "$INCREASING_FACTOR"
+setflag 'm' "$BLOCK_TIME_MULTIPLIER"
 if [ -n "$WHITELIST_ARG" ]; then
     for arg in $WHITELIST_ARG; do
       flags="$flags -w $arg"
