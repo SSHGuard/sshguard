@@ -49,6 +49,7 @@ static void options_init(sshg_opts *opt) {
     opt->blacklist_filename = NULL;
     opt->subnet_ipv6 = 128;
     opt->subnet_ipv4 = 32;
+    opt->block_time_multiplier = 2;
 }
 
 int get_options_cmdline(int argc, char *argv[]) {
@@ -56,7 +57,7 @@ int get_options_cmdline(int argc, char *argv[]) {
 
     options_init(&opts);
 
-    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:N:n:")) != -1) {
+    while ((optch = getopt(argc, argv, "b:p:s:a:w:i:N:n:m:")) != -1) {
         switch (optch) {
             case 'b':
                 opts.blacklist_filename = (char *)malloc(strlen(optarg) + 1);
@@ -113,6 +114,15 @@ int get_options_cmdline(int argc, char *argv[]) {
 
             case 'n':   /* IPv4 subnet size */
                 opts.subnet_ipv4 = strtol(optarg, (char **)NULL, 10);
+                break;
+
+            case 'm':   /* block time multiplier */
+                opts.block_time_multiplier = strtof(optarg, (char **)NULL);
+                if (opts.block_time_multiplier < 1) {
+                    fprintf(stderr, "Doesn't make sense to have a block time multiplier lower than 1. Terminating.\n");
+                    usage();
+                    return -1;
+                }
                 break;
 
             default:    /* or anything else: print help */

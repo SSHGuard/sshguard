@@ -22,9 +22,15 @@
 # Most attacks have a score of 10. (optional, default 30)
 THRESHOLD=30
 
-# Block attackers for initially BLOCK_TIME seconds after exceeding THRESHOLD.
-# Subsequent blocks increase by a factor of 2. (optional, default 120)
+# Block attackers for initially BLOCK_TIME seconds after exceeding THRESHOLD. (optional, default 120)
 BLOCK_TIME=120
+
+# For repeat attackers, multiply BLOCK_TIME by BLOCK_TIME_MULTIPLIER for each
+# subsequent block. For example, setting BLOCK_TIME=120 and
+# BLOCK_TIME_MULTIPLIER=2 means that the first block is 2 minutes, the second
+# is 4, the third is 8, and so on. Floating point values are parsed by
+# strtof(). (optional, default 2)
+BLOCK_TIME_MULTIPLIER=2
 
 # Remember potential attackers for up to DETECTION_TIME seconds before
 # resetting their score. (optional, default 1800)
