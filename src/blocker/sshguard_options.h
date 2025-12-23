@@ -20,6 +20,11 @@
 
 #pragma once
 
+enum subnet_mask_method {
+    MASK_NONE,
+    MASK_SUBNET_SIZE,
+};
+
 /* dynamic configuration options */
 typedef struct {
     time_t pardon_threshold;            /* minimal time before releasing an address */
@@ -29,6 +34,7 @@ typedef struct {
     char *blacklist_filename;           /* NULL to disable blacklist, or path of the blacklist file */
     unsigned int subnet_ipv6;           /* size of subnets to block, CIDR notation */
     unsigned int subnet_ipv4;           /* size of subnets to block, CIDR notation */
+    enum subnet_mask_method mask_method;
     float block_time_multiplier;        /* determines how much the block time increases */
 } sshg_opts;
 

@@ -44,6 +44,11 @@ IPV6_SUBNET=128
 # Size of IPv4 subnet to block. Defaults to a single address, CIDR notation. (optional, default to 32)
 IPV4_SUBNET=32
 
+# If uncommented, attacking addresses are grouped by the subnet size set in
+# IPV4_SUBNET and IPV6_SUBNET. Attackers in the same group are aggregated
+# together for blocking purposes. (optional, default none)
+#MASK_SUBNET_BY=subnet
+
 # When set, sandboxed processes drop permissions by changing to this user.
 # (optional, no default)
 #SSHGUARD_USER=nobody

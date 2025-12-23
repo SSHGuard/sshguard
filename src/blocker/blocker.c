@@ -29,6 +29,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "address.h"
+#include "attack.h"
 #include "blocklist.h"
 #include "sandbox.h"
 #include "simclist.h"
@@ -183,6 +185,8 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
  *      --OR-- create them if first sight.
  * 2) block the attacker, if attacks > threshold (abuse)
  * 3) blacklist the address, if the number of abuses is excessive
+ *
+ * @param attack The attack structure with normalized address
  */
 static void report_address(attack_t attack) {
     attacker_t *tmpent = NULL;
@@ -190,6 +194,17 @@ static void report_address(attack_t attack) {
 
     assert(attack.address.value != NULL);
     assert(memchr(attack.address.value, '\0', sizeof(attack.address.value)) != NULL);
+
+    /* Save original address before normalization */
+    char original_address[ADDRLEN];
+    strncpy(original_address, attack.address.value, sizeof(original_address));
+    original_address[sizeof(original_address) - 1] = '\0';
+
+    /* Normalize address by subnet for aggregation */
+    if (normalize_address_by_subnet(&attack.address) != 0) {
+        sshguard_log(LOG_WARNING, "Could not normalize address %s, using as-is",
+                    attack.address.value);
+    }
 
     /* clean list from stale entries */
     purge_limbo_stale();
@@ -207,10 +222,19 @@ static void report_address(attack_t attack) {
         return;
     }
 
-    sshguard_log(LOG_NOTICE,
-                 "Attack from \"%s\" on service %s with danger %u.",
-                 attack.address.value, service_to_name(attack.service),
-                 attack.dangerousness);
+    if (opts.mask_method != MASK_NONE) {
+        /* Address was normalized - show both original and normalized */
+        sshguard_log(LOG_NOTICE,
+                     "Attack from \"%s\" (aggregated to subnet %s) on service %s with danger %u.",
+                     original_address, attack.address.value,
+                     service_to_name(attack.service), attack.dangerousness);
+    } else {
+        /* Single address matching - no subnet aggregation, or address wasn't normalized */
+        sshguard_log(LOG_NOTICE,
+                     "Attack from \"%s\" on service %s with danger %u.",
+                     attack.address.value, service_to_name(attack.service),
+                     attack.dangerousness);
+    }
 
     /* search entry in list */
     tmpent = list_seek(& limbo, & attack.address);
