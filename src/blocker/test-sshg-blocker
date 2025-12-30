@@ -1,0 +1,43 @@
+#!/usr/local/bin/expect -f
+log_user 0
+set timeout 1
+set test_counter 0
+
+proc test-expect {line name} {
+    global test_counter
+    incr test_counter
+    expect timeout {
+        send_user "not ok $test_counter # expected: $line\n"
+    } "$line\r" {
+        send_user "ok $test_counter # $name\n"
+    }
+}
+
+spawn ./sshg-blocker -p 1
+test-expect "flushonexit" "flushonexit appears at the beginning"
+send "100 192.168.2.1 4 10\r"
+send "100 192.168.2.1 4 10\r"
+send "100 192.168.2.1 4 10\r"
+send "100 2001:db8::a11:beef:7ac1 6 30\r"
+test-expect "block 192.168.2.1 4 32" "basic block"
+test-expect "block 2001:db8::a11:beef:7ac1 6 128" "basic ipv6 block"
+sleep 1
+test-expect "release 192.168.2.1 4 32" "block gets released"
+test-expect "release 2001:db8::a11:beef:7ac1 6 128" "ipv6 block gets released"
+close
+wait
+
+spawn ./sshg-blocker -p 1 -n 24 -N 115
+send "100 192.168.2.1 4 10\r"
+send "100 192.168.2.1 4 10\r"
+send "100 192.168.2.1 4 10\r"
+send "100 2001:db8::a11:beef:7ac1 6 30\r"
+test-expect "block 192.168.2.1 4 24" "subnet block"
+test-expect "block 2001:db8::a11:beef:7ac1 6 115" "subnet ipv6 block"
+sleep 1
+test-expect "release 192.168.2.1 4 24" "subnet gets released"
+test-expect "release 2001:db8::a11:beef:7ac1 6 115" "subnet ipv6 gets released"
+close
+wait
+
+send_user "1..$test_counter\n"

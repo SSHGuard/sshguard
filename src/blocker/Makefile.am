@@ -19,3 +19,9 @@ sshg_blocker_SOURCES = \
 	sshguard_options.h \
 	sshguard_whitelist.c \
 	sshguard_whitelist.h
+
+LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
+			 $(top_srcdir)/tap-driver.sh
+
+TESTS = test-sshg-blocker
+EXTRA_DIST = $(TESTS)
