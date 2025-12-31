@@ -1,4 +1,4 @@
-#!/usr/local/bin/expect -f
+#!/usr/bin/env -S expect -f
 log_user 0
 set timeout 1
 set test_counter 0
