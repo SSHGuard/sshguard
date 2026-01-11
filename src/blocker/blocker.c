@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
                   &parsed_attack.dangerousness) == 4) {
             report_address(parsed_attack);
         } else {
-            sshguard_log(LOG_DEBUG, "Could not parse attack data.");
+            sshguard_log(LOG_ERR, "Could not parse attack data.");
             break;
         }
     }
@@ -202,7 +202,7 @@ static void report_address(attack_t attack) {
 
     /* Normalize address by subnet for aggregation */
     if (normalize_address_by_subnet(&attack.address) != 0) {
-        sshguard_log(LOG_DEBUG, "Could not normalize address %s, using as-is",
+        sshguard_log(LOG_WARNING, "Could not normalize address %s, using as-is",
                     attack.address.value);
     }
 
