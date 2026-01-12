@@ -170,7 +170,7 @@ void log_block(attacker_t *tmpent, attacker_t *offenderent) {
             abort();
         }
     }
-    sshguard_log(LOG_INFO, "Blocking \"%s/%u\" %s (%u attacks in %lld "
+    sshguard_log(LOG_NOTICE, "Blocking \"%s/%u\" %s (%u attacks in %lld "
                               "secs, after %d abuses over %lld secs.)",
                  tmpent->attack.address.value, subnet_size, time_msg, tmpent->numhits,
                  (long long)(tmpent->whenlast - tmpent->whenfirst),
@@ -224,13 +224,13 @@ static void report_address(attack_t attack) {
 
     if (opts.mask_method != MASK_NONE) {
         /* Address was normalized - show both original and normalized */
-        sshguard_log(LOG_NOTICE,
+        sshguard_log(LOG_INFO,
                      "Attack from \"%s\" (aggregated to subnet %s) on service %s with danger %u.",
                      original_address, attack.address.value,
                      service_to_name(attack.service), attack.dangerousness);
     } else {
         /* Single address matching - no subnet aggregation, or address wasn't normalized */
-        sshguard_log(LOG_NOTICE,
+        sshguard_log(LOG_INFO,
                      "Attack from \"%s\" on service %s with danger %u.",
                      attack.address.value, service_to_name(attack.service),
                      attack.dangerousness);
