@@ -384,10 +384,7 @@ clfstatus: INTEGER {
         }
     } else if (attack->service == SERVICES_CLF_PROBES) {
         // Probes with good status codes aren't probes, just legitimate requests
-        switch (yylval.num) { // fall through all good response codes
-        case 200: // OK
-        case 301: // permanent redirect
-        case 302: // redirect
+        if (yylval.num < 400) {
             attack->service = -1;
             break;
         }
