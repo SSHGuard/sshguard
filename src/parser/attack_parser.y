@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "parser.h"
+#include "mem_tracker.h"
 
 #define DEFAULT_ATTACKS_DANGEROUSNESS           10
 
@@ -458,6 +459,7 @@ int parse_line(char *str, attack_t *attack) {
 
     scanner_init(str);
     int ret = yyparse(attack);
+    free_all_tracked();
     scanner_fin();
     if (attack->service == -1)
         return 1; // successful parse but no service (e.g. successful CLF)

@@ -19,4 +19,6 @@ sshg_parser_SOURCES = \
 	attack_parser.y \
 	attack_scanner.l \
 	parser.c \
-	parser.h
+	parser.h \
+	mem_tracker.c \
+	mem_tracker.h

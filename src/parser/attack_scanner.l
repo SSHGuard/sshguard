@@ -24,6 +24,7 @@
 
 #include "attack.h"
 #include "attack_parser.h"
+#include "mem_tracker.h"
 %}
 
 %option debug
@@ -347,7 +348,7 @@ HTTP_PATH                  "/"[^ ]+
 
  /* an IPv6 address */
  /* standard | clouds implied | embedded IPv4 */
-{IPV6}                                                          { yylval.str = strdup(yytext); return IPv6; }
+{IPV6}                                                          { yylval.str = track_strdup(yytext); return IPv6; }
 
  /* an host address (PTR) */
 {HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }
