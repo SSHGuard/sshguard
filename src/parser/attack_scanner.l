@@ -32,8 +32,6 @@
 %option nounput
 %option noyywrap
 
-%array
-
  /* Start Conditions */
  /* for Login services */
 %s ssh_notallowed ssh_reversemap ssh_disconnect ssh_badproto ssh_invalid_format ssh_badkex cockpit_authfail proxmoxve_authfail
@@ -343,15 +341,15 @@ HTTP_PATH                  "/"[^ ]+
 
  /**         COMMON-USE TOKENS       do not touch these          **/
  /* an IPv4 address */
-{IPV4}                                                          { yylval.str = yytext; return IPv4; }
-{IPV4MAPPED6}                                                   { yylval.str = strrchr(yytext, ':')+1; return IPv4; }
+{IPV4}                                                          { yylval.str = track_strdup(yytext); return IPv4; }
+{IPV4MAPPED6}                                                   { yylval.str = track_strdup(strrchr(yytext, ':') + 1); return IPv4; }
 
  /* an IPv6 address */
  /* standard | clouds implied | embedded IPv4 */
 {IPV6}                                                          { yylval.str = track_strdup(yytext); return IPv6; }
 
  /* an host address (PTR) */
-{HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }
+{HOSTADDR}                                                      { yylval.str = track_strdup(yytext); return HOSTADDR; }
 {NUMBER}                                                        { yylval.num = (int)strtol(yytext, (char **)NULL, 10); return INTEGER; }
  /* syslog timestamp */
  /*{MONTH}\ +{DAYNO}\ +{HOUR}:{MINPS}:{MINPS}                      { return TIMESTAMP_SYSLOG; }*/
@@ -367,7 +365,7 @@ HTTP_PATH                  "/"[^ ]+
 ": "[0-9]+" Time(s)"                                              return REPETITIONS;
 
  /*[^ :]+:[^ ]+                                                    { return FACILITYPRIORITY; } */
-{WORD}                                                          { yylval.str = yytext; return WORD; }
+{WORD}                                                          { yylval.str = track_strdup(yytext); return WORD; }
 
 "\""[^"]*"\"" { return STRING; }
 
