@@ -209,10 +209,6 @@ addr:
                         attack->address.kind = ADDRKIND_IPv6;
                         strcpy(attack->address.value, $1);
                     }
-  | IPv6 '%' WORD   {   /* IPv6 address with interface name */
-                        attack->address.kind = ADDRKIND_IPv6;
-                        strcpy(attack->address.value, $1);
-                    }
   | HOSTADDR        {
                         if (!attack_from_hostname(attack, $1)) {
                             YYABORT;

@@ -81,7 +81,7 @@ PROCESSNAME ([-_a-zA-Z0-9]{2,7})|([-_a-zA-Z0-9]{9,})|([-_a-rt-zA-RT-Z0-9][-_a-zA
  /* IPv4 address (used in IPv6 address too, for IPv4 encapsulation) */
 IPV4        ((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?|0)){3})
  /* IPv6 addresses including compressed variants (RFC 2373) */
-IPV6        (::|:(:[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:([0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,5}|(:[0-9a-fA-F]{1,4}){1,6})|([0-9a-fA-F]{1,4}:){3}([0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,3}|(:[0-9a-fA-F]{1,4}){1,4})|([0-9a-fA-F]{1,4}:){5}([0-9a-fA-F]{1,4}:[0-9a-fA-F]{0,4}:[0-9a-fA-F]{1,4}|(:[0-9a-fA-F]{1,4}){1,2})|([0-9a-fA-F]{1,4}:){1,7}:)
+IPV6        (::|:(:[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:([0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,5}|(:[0-9a-fA-F]{1,4}){1,6})|([0-9a-fA-F]{1,4}:){3}([0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,3}|(:[0-9a-fA-F]{1,4}){1,4})|([0-9a-fA-F]{1,4}:){5}([0-9a-fA-F]{1,4}:[0-9a-fA-F]{0,4}:[0-9a-fA-F]{1,4}|(:[0-9a-fA-F]{1,4}){1,2})|([0-9a-fA-F]{1,4}:){1,7}:)("%"{WORD})?
  /* an IPv4 packed in IPv6 as IPv4-mapped IPv6 address */
 IPV4MAPPED6 ((:(:0{1,4}){0,4}|0{1,4}:(:0{1,4}){1,3}|(0{1,4}:){2}(0{1,4}:0{0,4}:0{1,4}|(:0{1,4}){1,2})|(0{1,4}:){1,4}):[fF]{4}:(((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5])\.){3}((2[0-4]|1[0-9]|[1-9])?[0-9]|25[0-5]))
 
@@ -345,9 +345,8 @@ HTTP_PATH                  "/"[^ ]+
 {IPV4}                                                          { yylval.str = yytext; return IPv4; }
 {IPV4MAPPED6}                                                   { yylval.str = strrchr(yytext, ':')+1; return IPv4; }
 
- /* an IPv6 address */
- /* standard | clouds implied | embedded IPv4 */
-{IPV6}                                                          { yylval.str = strdup(yytext); return IPv6; }
+ /* an IPv6 address, stripping an optional interface identifier, e.g. %eth0 */
+{IPV6}                                                          { yylval.str = strtok(yytext, "%"); return IPv6; }
 
  /* an host address (PTR) */
 {HOSTADDR}                                                      { yylval.str = yytext; return HOSTADDR; }
