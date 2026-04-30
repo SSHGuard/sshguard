@@ -1,11 +1,10 @@
 #include <assert.h>
 #include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 #include "blocklist.h"
 #include "simclist.h"
+#include "monotime.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
 #include "sshguard_options.h"
@@ -42,8 +41,8 @@ static void fw_release(const attack_t *attack) {
 
 static void unblock_expired() {
     attacker_t *tmpel;
+    time_t elapsed_time;
     int ret;
-    time_t now = time(NULL);
 
     pthread_testcancel();
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
@@ -55,11 +54,12 @@ static void unblock_expired() {
         if (tmpel->pardontime == 0)
             continue;
         /* process hosts with finite pardon time */
-        if (now - tmpel->whenlast > tmpel->pardontime) {
+        elapsed_time = monotime_since(tmpel->whenlast);
+        if (elapsed_time > tmpel->pardontime) {
             /* pardon time passed, release block */
             sshguard_log(LOG_NOTICE, "%s: unblocking after %lld secs",
                          tmpel->attack.address.value,
-                         (long long)(now - tmpel->whenlast));
+                         (long long)(elapsed_time));
             fw_release(&tmpel->attack);
             list_delete_at(&hell, pos);
             free(tmpel);
