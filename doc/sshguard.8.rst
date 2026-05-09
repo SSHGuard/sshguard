@@ -31,6 +31,7 @@ SYNOPSIS
 [**-a** *threshold*]
 [**-b** *threshold*:*blacklist_file*]
 [**-i** *pidfile*]
+[**-m** *block_time_multiplier*]
 [**-p** *blocktime*]
 [**-s** *detection_time*]
 [**-w** *address* | *whitelist_file*]
@@ -66,10 +67,15 @@ OPTIONS
     Write the PID of **sshguard** to *pidfile*. *pidfile* is removed when
     **sshguard** exits.
 
+**-m** *block_time_multiplier* (default 2)
+    For repeat attackers, multiply *blocktime* by *block_time_multiplier* for
+    each subsequent block.
+
 **-p** *blocktime* (default 120)
     Block first-time attackers for *blocktime* seconds. Subsequent blocks
-    increase in duration by a factor of 2. Since **sshguard** unblocks
-    attackers at random intervals, actual block times may be somewhat longer.
+    increase in duration by a configurable factor. (See the **-m** option.)
+    Since **sshguard** unblocks attackers at random intervals, actual block times
+    may be somewhat longer.
 
 **-s** *detection_time* (default 1800)
     Reset an attacker's attack score after *detection_time* seconds since the
