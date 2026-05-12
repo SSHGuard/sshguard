@@ -425,6 +425,36 @@ M
 beefcafebeefcafe smtp failed-command command="AUTH LOGIN (password)" result="535 Authentication failed"
 *
 M
+# 503 Command not supported - AUTH probe on server without AUTH advertised
+ad40ee0f12345678 smtp connected address=185.236.202.133 host=no-mans-land.m247.com
+*
+M
+ad40ee0f12345678 smtp failed-command command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
+270 185.236.202.133 4 10
+M
+ad40ee0f12345678 smtp disconnected reason=quit
+*
+M
+# 503 Command not supported - STARTTLS probe on non-TLS server
+fedcba9876543210 smtp connected address=10.0.0.99 host=foo.example
+*
+M
+fedcba9876543210 smtp failed-command command="STARTTLS" result="503 5.5.1 Invalid command: Command not supported"
+270 10.0.0.99 4 10
+M
+fedcba9876543210 smtp disconnected reason=quit
+*
+M
+# Negative: other 503 variants must NOT trigger
+1234567890abcdef smtp connected address=10.0.0.50 host=bar.example
+*
+M
+1234567890abcdef smtp failed-command command="RCPT TO:<a@b.c>" result="503 5.5.1 Invalid command: Command not allowed at this point."
+*
+M
+1234567890abcdef smtp disconnected reason=quit
+*
+M
 # }}}
 
 # cyrus {{{

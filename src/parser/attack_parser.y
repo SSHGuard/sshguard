@@ -113,9 +113,9 @@ static void yyerror(attack_t *, const char *);
  * it when the production aborts before its action runs free($1). Each
  * action also assigns $1 = NULL after free to prevent the destructor from
  * double-freeing if YYABORT fires from inside the action itself. */
-%token <str> OPENSMTPD_CONNECT_PREF OPENSMTPD_DISCONNECT_PREF OPENSMTPD_AUTHFAIL_PREF
-%token OPENSMTPD_CONNECT_SUFF OPENSMTPD_DISCONNECT_SUFF OPENSMTPD_AUTHFAIL_SUFF
-%destructor { free($$); } OPENSMTPD_CONNECT_PREF OPENSMTPD_DISCONNECT_PREF OPENSMTPD_AUTHFAIL_PREF
+%token <str> OPENSMTPD_CONNECT_PREF OPENSMTPD_DISCONNECT_PREF OPENSMTPD_FAILED_CMD_PREF
+%token OPENSMTPD_CONNECT_SUFF OPENSMTPD_DISCONNECT_SUFF OPENSMTPD_AUTHFAIL_SUFF OPENSMTPD_UNSUPPORTED_CMD_SUFF
+%destructor { free($$); } OPENSMTPD_CONNECT_PREF OPENSMTPD_DISCONNECT_PREF OPENSMTPD_FAILED_CMD_PREF
 /* courier */
 %token COURIER_AUTHFAIL_PREF
 /* OpenVPN */
@@ -415,7 +415,15 @@ opensmtpdmsg:
         { sessmap_put(SERVICES_OPENSMTPD, $1, &attack->address); free($1); $1 = NULL; }
   | OPENSMTPD_DISCONNECT_PREF OPENSMTPD_DISCONNECT_SUFF
         { sessmap_del(SERVICES_OPENSMTPD, $1); free($1); $1 = NULL; }
-  | OPENSMTPD_AUTHFAIL_PREF OPENSMTPD_AUTHFAIL_SUFF
+  | OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_AUTHFAIL_SUFF
+        {
+            bool found = sessmap_get(SERVICES_OPENSMTPD, $1, &attack->address);
+            free($1);
+            $1 = NULL;
+            if (!found) YYABORT;
+            attack->service = SERVICES_OPENSMTPD;
+        }
+  | OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_UNSUPPORTED_CMD_SUFF
         {
             bool found = sessmap_get(SERVICES_OPENSMTPD, $1, &attack->address);
             free($1);
