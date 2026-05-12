@@ -40,7 +40,7 @@
 %s sshguard_attack sshguard_block
 %s bind
  /* for Mail services */
-%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_nonsmtp postfix_greylist opensmtpd_failedcmd postscreen
+%s dovecot_loginerr cyrusimap_loginerr exim_esmtp_autherr exim_esmtp_loginerr sendmail_relaydenied sendmail_authfailure postfix_loginerr postfix_nonsmtp postfix_greylist opensmtpd_connected opensmtpd_disconnected opensmtpd_failedauth postscreen
  /* for FTP services */
 %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
  /* for git services */
@@ -300,12 +300,19 @@ HTTP_PATH                  "/"[^ ]+
 
  /* }}} */
 
- /* OpenSMTPD. */
- /* Unsupported command when attempting to log in. */
-[a-z0-9]+" smtp event=failed-command address="                  { BEGIN(opensmtpd_failedcmd); return OPENSMTPD_FAILED_CMD_PREF; }
-<opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"".+"\" result=\"503 5.5.1 Invalid command: Command not supported\"" { BEGIN(INITIAL); return OPENSMTPD_UNSUPPORTED_CMD_SUFF; }
- /* Bad credentials */
-<opensmtpd_failedcmd>"host="{HOSTNAME}" command=\"AUTH ".+"\" result=\"535 Authentication failed\"" { BEGIN(INITIAL); return OPENSMTPD_AUTHFAIL_SUFF; }
+ /* OpenSMTPD.
+  * Modern OpenSMTPD (>= late 2018) does not log the source IP on the
+  * failed-command line. The IP only appears once per session on the
+  * 'smtp connected' line; subsequent events reference the same session id.
+  * We track sid -> address in a small in-process map (see sessmap.[ch])
+  * and resolve the address at the moment of an AUTH 535 failure.
+  */
+[0-9a-f]{16}" smtp connected address="                          { yylval.str = strndup(yytext, 16); BEGIN(opensmtpd_connected); return OPENSMTPD_CONNECT_PREF; }
+<opensmtpd_connected>" host=".+                                 { BEGIN(INITIAL); return OPENSMTPD_CONNECT_SUFF; }
+[0-9a-f]{16}" smtp disconnected"                                { yylval.str = strndup(yytext, 16); BEGIN(opensmtpd_disconnected); return OPENSMTPD_DISCONNECT_PREF; }
+<opensmtpd_disconnected>" reason=".+                            { BEGIN(INITIAL); return OPENSMTPD_DISCONNECT_SUFF; }
+[0-9a-f]{16}" smtp failed-command command=\"AUTH "              { yylval.str = strndup(yytext, 16); BEGIN(opensmtpd_failedauth); return OPENSMTPD_AUTHFAIL_PREF; }
+<opensmtpd_failedauth>[^\"]*"\" result=\"535 "[^\"]*"\""        { BEGIN(INITIAL); return OPENSMTPD_AUTHFAIL_SUFF; }
 
  /* pfSense web configurator */
 {HTTP_PATH}": webConfigurator authentication error for user '".+"' from: " { return PFSENSE_AUTH_FAIL; }

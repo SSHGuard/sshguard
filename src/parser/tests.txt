@@ -371,11 +371,59 @@ M
 # }}}
 
 # OpenSMTPD {{{
-38dd06274cde1fd7 smtp event=failed-command address=185.236.202.133 host=no-mans-land.m247.com command="AUTH LOGIN" result="503 5.5.1 Invalid command: Command not supported"
-270 185.236.202.133 4 10
+# Modern (>= late 2018) format: the IP is only logged on the per-session
+# 'connected' line. AUTH 535 failures cite the session id, and the parser
+# resolves the IP via an in-process session map.
+#
+# Real fixture: probing 'Mail from' before STARTTLS (530, not an attack)
+May 12 08:41:24 ruby smtpd[70918]: ad40ed229a392cee smtp connected address=158.94.210.138 host=<unknown>
+*
 M
-45addba89269aeaa smtp event=failed-command address=128.237.183.69 host=zeta.wv.cc.cmu.edu command="AUTH PLAIN (...)" result="535 Authentication failed"
-270 128.237.183.69 4 10
+May 12 08:41:26 ruby smtpd[70918]: ad40ed229a392cee smtp failed-command command="Mail from:<spameri@tiscali.it>" result="530 5.5.1 Invalid command: Must issue a STARTTLS command first"
+*
+M
+May 12 08:41:28 ruby smtpd[70918]: ad40ed229a392cee smtp disconnected reason=quit
+*
+M
+# Real fixture: AUTH LOGIN 535 attack with intermediate tls/authentication chatter
+May 12 08:41:59 ruby smtpd[70918]: ad40ed23873926e3 smtp connected address=81.30.98.207 host=<unknown>
+*
+M
+May 12 08:41:59 ruby smtpd[70918]: ad40ed23873926e3 smtp tls ciphers=TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256
+*
+M
+May 12 08:41:59 ruby smtpd[70918]: ad40ed23873926e3 smtp authentication user=newlife result=permfail
+*
+M
+May 12 08:42:00 ruby smtpd[70918]: ad40ed23873926e3 smtp failed-command command="AUTH LOGIN (password)" result="535 Authentication failed"
+270 81.30.98.207 4 10
+M
+May 12 08:42:00 ruby smtpd[70918]: ad40ed23873926e3 smtp disconnected reason=disconnect
+*
+M
+# AUTH PLAIN variant + IPv6
+1111222233334444 smtp connected address=2001:db8::1 host=v6.example
+*
+M
+1111222233334444 smtp failed-command command="AUTH PLAIN (...)" result="535 Authentication failed"
+270 2001:db8::1 6 10
+M
+1111222233334444 smtp disconnected reason=quit
+*
+M
+# AUTH LOGIN (username) phase
+abcdefabcdefabcd smtp connected address=10.0.0.5 host=foo.example
+*
+M
+abcdefabcdefabcd smtp failed-command command="AUTH LOGIN (username)" result="535 Authentication failed"
+270 10.0.0.5 4 10
+M
+abcdefabcdefabcd smtp disconnected reason=quit
+*
+M
+# AUTH 535 without preceding 'connected' (parser started mid-stream) -> no attack
+beefcafebeefcafe smtp failed-command command="AUTH LOGIN (password)" result="535 Authentication failed"
+*
 M
 # }}}
 
