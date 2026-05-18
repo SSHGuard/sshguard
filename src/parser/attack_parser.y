@@ -20,9 +20,11 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "parser.h"
+#include "sessmap.h"
 
 #define DEFAULT_ATTACKS_DANGEROUSNESS           10
 
@@ -107,8 +109,13 @@ static void yyerror(attack_t *, const char *);
 %token CLF_WEB_PROBE
 /* CLF, common CMS frameworks brute-force attacks */
 %token CLF_CMS_LOGIN
-/* OpenSMTPD */
-%token OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_AUTHFAIL_SUFF OPENSMTPD_UNSUPPORTED_CMD_SUFF
+/* OpenSMTPD: PREF tokens carry a strdup'd session id. The destructor frees
+ * it when the production aborts before its action runs free($1). Each
+ * action also assigns $1 = NULL after free to prevent the destructor from
+ * double-freeing if YYABORT fires from inside the action itself. */
+%token <str> OPENSMTPD_CONNECT_PREF OPENSMTPD_DISCONNECT_PREF OPENSMTPD_FAILED_CMD_PREF
+%token OPENSMTPD_CONNECT_SUFF OPENSMTPD_DISCONNECT_SUFF OPENSMTPD_AUTHFAIL_SUFF OPENSMTPD_UNSUPPORTED_CMD_SUFF
+%destructor { free($$); } OPENSMTPD_CONNECT_PREF OPENSMTPD_DISCONNECT_PREF OPENSMTPD_FAILED_CMD_PREF
 /* courier */
 %token COURIER_AUTHFAIL_PREF
 /* OpenVPN */
@@ -189,7 +196,7 @@ msg_single:
   | vsftpdmsg         { attack->service = SERVICES_VSFTPD; }
   | cockpitmsg        { attack->service = SERVICES_COCKPIT; }
   | clfmsg
-  | opensmtpdmsg      { attack->service = SERVICES_OPENSMTPD; }
+  | opensmtpdmsg      /* service is set inside the rule only for AUTH failures */
   | couriermsg        { attack->service = SERVICES_COURIER; }
   | openvpnmsg        { attack->service = SERVICES_OPENVPN; }
   | giteamsg          { attack->service = SERVICES_GITEA; }
@@ -396,10 +403,34 @@ clfbytes: INTEGER | clffield;
 
 // }}}
 
-/* opensmtpd */
+/* opensmtpd
+ *
+ * OpenSMTPD logs only carry the source IP on the per-session 'connected'
+ * line. We index addresses by session id; the AUTH 535 production then
+ * looks the address up. Lines whose session was never seen (parser started
+ * mid-stream) are silently dropped via YYABORT.
+ */
 opensmtpdmsg:
-    OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_AUTHFAIL_SUFF
-  | OPENSMTPD_FAILED_CMD_PREF addr OPENSMTPD_UNSUPPORTED_CMD_SUFF
+    OPENSMTPD_CONNECT_PREF addr OPENSMTPD_CONNECT_SUFF
+        { sessmap_put(SERVICES_OPENSMTPD, $1, &attack->address); free($1); $1 = NULL; }
+  | OPENSMTPD_DISCONNECT_PREF OPENSMTPD_DISCONNECT_SUFF
+        { sessmap_del(SERVICES_OPENSMTPD, $1); free($1); $1 = NULL; }
+  | OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_AUTHFAIL_SUFF
+        {
+            bool found = sessmap_get(SERVICES_OPENSMTPD, $1, &attack->address);
+            free($1);
+            $1 = NULL;
+            if (!found) YYABORT;
+            attack->service = SERVICES_OPENSMTPD;
+        }
+  | OPENSMTPD_FAILED_CMD_PREF OPENSMTPD_UNSUPPORTED_CMD_SUFF
+        {
+            bool found = sessmap_get(SERVICES_OPENSMTPD, $1, &attack->address);
+            free($1);
+            $1 = NULL;
+            if (!found) YYABORT;
+            attack->service = SERVICES_OPENSMTPD;
+        }
   ;
 
 /* attack rules for courier imap/pop */

@@ -19,4 +19,6 @@ sshg_parser_SOURCES = \
 	attack_parser.y \
 	attack_scanner.l \
 	parser.c \
-	parser.h
+	parser.h \
+	sessmap.c \
+	sessmap.h
