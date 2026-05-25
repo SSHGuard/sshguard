@@ -40,7 +40,7 @@ test-expect "release 2001:db8::a11:beef:7ac1 6 115" "subnet ipv6 gets released"
 close
 wait
 
-spawn ./sshg-blocker -p 1 -n 24 -N 115 -S subnet
+spawn ./sshg-blocker -p 1 -n 24 -N 115 -S
 send "100 192.168.2.1 4 10\r"
 send "100 192.168.2.2 4 10\r"
 send "100 192.168.2.3 4 10\r"

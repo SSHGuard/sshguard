@@ -191,12 +191,7 @@ int get_options_cmdline(int argc, char *argv[]) {
                 break;
 
             case 'S':   /* subnet masking method */
-                if (strcmp(optarg, "subnet") == 0) {
-                    opts.mask_method = MASK_SUBNET_SIZE;
-                } else {
-                    cmdline_error("Invalid subnet masking method '%s'", optarg);
-                    return -1;
-                }
+                opts.mask_method = MASK_SUBNET_SIZE;
                 break;
 
             default:
