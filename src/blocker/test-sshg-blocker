@@ -53,4 +53,14 @@ test-expect "release 2001:db8::a11:beef:6000 6 115" "mask by subnet ipv6 block g
 close
 wait
 
+# Check invalid option arguments
+spawn ./sshg-blocker -p 1.5
+test-expect "Not a valid number for -p option" "invalid -p option"
+wait
+
+spawn ./sshg-blocker -s 12a
+test-expect "Not a valid number for -s option" "invalid -s option"
+close
+wait
+
 send_user "1..$test_counter\n"
