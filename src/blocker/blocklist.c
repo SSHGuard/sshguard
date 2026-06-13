@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,12 +8,10 @@
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
 #include "sshguard_options.h"
+#include "heap.h"
 
-/* list of addresses currently blocked (offenders) */
-static list_t hell;
-
-/* mutex against races between insertions and pruning of lists */
-static pthread_mutex_t list_mutex;
+/* Contains addresses currently blocked, not including blacklisted ones */
+static min_heap_t block_store;
 
 unsigned int fw_block_subnet_size(int inet_family) {
     if (inet_family == 6) {
@@ -40,78 +37,70 @@ static void fw_release(const attack_t *attack) {
     fflush(stdout);
 }
 
-static void unblock_expired() {
-    attacker_t *tmpel;
-    int ret;
-    time_t now = time(NULL);
+static void *release_thread_loop(void *unused) {
+    const attacker_t *expired_attacker;
+    struct timespec ts;
+    time_t now;
+    int rc;
 
-    pthread_testcancel();
-    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &ret);
-    pthread_mutex_lock(&list_mutex);
+    if (pthread_mutex_lock(&block_store.lock) != 0) {
+        sshguard_log(LOG_ERR, "Could not lock mutex");
+        exit(1);
+    }
 
-    for (unsigned int pos = 0; pos < list_size(&hell); pos++) {
-        tmpel = list_get_at(&hell, pos);
-        /* skip blacklisted hosts (pardontime = infinite/0) */
-        if (tmpel->pardontime == 0)
-            continue;
-        /* process hosts with finite pardon time */
-        if (now - tmpel->whenlast > tmpel->pardontime) {
-            /* pardon time passed, release block */
-            sshguard_log(LOG_NOTICE, "%s: unblocking after %lld secs",
-                         tmpel->attack.address.value,
-                         (long long)(now - tmpel->whenlast));
-            fw_release(&tmpel->attack);
-            list_delete_at(&hell, pos);
-            free(tmpel);
-            /* element removed, next element is at current index (don't step
-             * pos) */
-            pos--;
+    while (true) {
+        while (block_store.size == 0)
+            pthread_cond_wait(&block_store.cond, &block_store.lock);
+
+        ts.tv_sec = block_store.array[0].expire_time;
+        ts.tv_nsec = 0;
+
+        rc = pthread_cond_timedwait(&block_store.cond, &block_store.lock, &ts);
+        if (rc == ETIMEDOUT) {
+            now = time(NULL);
+            while (block_store.size > 0 && block_store.array[0].expire_time <= now) {
+                expired_attacker = heap_extract_min(&block_store);
+                sshguard_log(LOG_NOTICE, "%s: unblocking after %lld secs",
+                             expired_attacker->attack.address.value,
+                             (long long)(now - expired_attacker->whenlast));
+                fw_release(&expired_attacker->attack);
+            }
         }
     }
 
-    pthread_mutex_unlock(&list_mutex);
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &ret);
-    pthread_testcancel();
-}
-
-static void *unblock_loop(void *unused) {
-    while (1) {
-        /* wait some time, at most opts.pardon_threshold/3 + 1 sec */
-        sleep(1 + ((unsigned int)rand() % (1 + opts.pardon_threshold / 2)));
-        unblock_expired();
-    }
-
-    pthread_exit(NULL);
+    pthread_mutex_unlock(&block_store.lock);
     return NULL;
 }
 
-void blocklist_init() {
+void block_manager_start(void) {
     pthread_t tid;
-    list_init(&hell);
-    list_attributes_seeker(&hell, attack_addr_seeker);
 
-    /* start thread for purging stale blocked addresses */
-    pthread_mutex_init(&list_mutex, NULL);
-    if (pthread_create(&tid, NULL, unblock_loop, NULL) != 0) {
+    heap_init(&block_store);
+
+    if (pthread_create(&tid, NULL, release_thread_loop, NULL) != 0) {
         perror("pthread_create()");
         exit(2);
     }
+
+    pthread_detach(tid);
 }
 
-bool blocklist_contains(attack_t attack) {
-    attacker_t *tmpent = NULL;
-    pthread_mutex_lock(&list_mutex);
-    tmpent = list_seek(&hell, &attack.address);
-    pthread_mutex_unlock(&list_mutex);
-    return tmpent != NULL;
+bool block_store_contains(const sshg_address_t *target) {
+    pthread_mutex_lock(&block_store.lock);
+    bool ret = heap_contains(&block_store, target);
+    pthread_mutex_unlock(&block_store.lock);
+    return ret;
 }
 
-void blocklist_add(attacker_t *tmpent) {
-    fw_block(&tmpent->attack);
+void block_store_add(const attacker_t *attacker) {
+    fw_block(&attacker->attack);
 
-    pthread_mutex_lock(&list_mutex);
-    list_append(&hell, tmpent);
-    pthread_mutex_unlock(&list_mutex);
+    if (attacker->pardontime == INFINITE_PARDON)
+        return;
+
+    pthread_mutex_lock(&block_store.lock);
+    heap_insert(&block_store, attacker);
+    pthread_mutex_unlock(&block_store.lock);
 }
 
 static void block_list(list_t *list) {
