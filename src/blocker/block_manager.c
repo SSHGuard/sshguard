@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "blocklist.h"
+#include "block_manager.h"
 #include "simclist.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"

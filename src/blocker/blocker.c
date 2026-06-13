@@ -31,7 +31,7 @@
 
 #include "address.h"
 #include "attack.h"
-#include "blocklist.h"
+#include "block_manager.h"
 #include "sandbox.h"
 #include "simclist.h"
 #include "sshguard_blacklist.h"
