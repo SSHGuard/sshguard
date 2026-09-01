@@ -95,8 +95,8 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
 HTTP_VERSION    HTTP"/"[0-9]("."[0-9])?
 
- // host part of a hostname (without any domain parts)
-SYSLOG_HOSTNAME   {WORD}
+ // RFC 3164 says there should be no domain part, but FreeBSD's syslogd sometimes(?) includes it
+SYSLOG_HOSTNAME   {WORD}|{HOSTADDR}
 
  // timestamp (optional PRI) hostname
 SYSLOG_HEADER     ({TIMESTAMP_SYSLOG}|{TIMESTAMP_ISO8601})[ ]+{FACLEVEL}?[ ]*{SYSLOG_HOSTNAME}[ ]+

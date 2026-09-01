@@ -688,6 +688,16 @@ M
 2022-02-24T21:00:42.021457+00:00 evse dropbear 6052 - - Bad password attempt for 'root' from 1.2.3.4:50532
 101 1.2.3.4 4 10
 M
+
+# FreeBSD syslogd with FQDN as hostname
+Jul 17 10:59:00 nobody.knows.net postfix/smtpd[35460]: warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: authentication failure, sasl_username=admin
+260 1.2.3.4 4 10
+M
+
+# syslogd with IPv4 address
+Jul 17 10:59:00 1.1.1.1 postfix/smtpd[35460]: warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: authentication failure, sasl_username=admin
+260 1.2.3.4 4 10
+M
 # }}}
 
 #### Gitea {{{
