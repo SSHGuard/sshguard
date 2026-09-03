@@ -18,7 +18,7 @@ sshg-fw-ipset:     sshg-fw.in sshg-fw-ipset.sh
 sshg-fw-iptables:  sshg-fw.in sshg-fw-iptables.sh
 sshg-fw-nft-sets:  sshg-fw.in sshg-fw-nft-sets.sh
 sshg-fw-null:      sshg-fw.in sshg-fw-null.sh
-Sshg-fw-pf:        sshg-fw.in sshg-fw-pf.sh
+sshg-fw-pf:        sshg-fw.in sshg-fw-pf.sh
 
 
 CLEANFILES=$(libexec_SCRIPTS)
