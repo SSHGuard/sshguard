@@ -46,8 +46,8 @@ IPV4_SUBNET=32
 
 # If uncommented, attacking addresses are grouped by the subnet size set in
 # IPV4_SUBNET and IPV6_SUBNET. Attackers in the same group are aggregated
-# together for blocking purposes. (optional, default none)
-#MASK_SUBNET_BY=subnet
+# together for blocking purposes. (optional, default no)
+#USE_SUBNET_MASK=yes
 
 # When set, sandboxed processes drop permissions by changing to this user.
 # (optional, no default)
