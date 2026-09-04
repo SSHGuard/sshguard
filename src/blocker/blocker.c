@@ -31,7 +31,7 @@
 
 #include "address.h"
 #include "attack.h"
-#include "blocklist.h"
+#include "block_manager.h"
 #include "sandbox.h"
 #include "simclist.h"
 #include "sshguard_blacklist.h"
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     /* pending, blocked, and offender address lists */
     list_init(&limbo);
     list_attributes_seeker(& limbo, attack_addr_seeker);
-    blocklist_init();
+    block_manager_start();
     list_init(&offenders);
     list_attributes_seeker(& offenders, attack_addr_seeker);
     list_attributes_comparator(& offenders, attackt_whenlast_comparator);
@@ -210,7 +210,7 @@ static void report_address(attack_t attack) {
     purge_limbo_stale();
 
     /* address already blocked? (can happen for 100 reasons) */
-    if (blocklist_contains(attack)) {
+    if (block_store_contains(&attack.address)) {
         sshguard_log(LOG_DEBUG, "%s has already been blocked.",
                 attack.address.value);
         return;
@@ -286,7 +286,7 @@ static void report_address(attack_t attack) {
     if (opts.blacklist_filename != NULL &&
         offenderent->cumulated_danger >= opts.blacklist_threshold) {
         /* this host must be blacklisted -- blocked and never unblocked */
-        tmpent->pardontime = 0;
+        tmpent->pardontime = INFINITE_PARDON;
 
         /* insert in the blacklisted db iff enabled */
         if (opts.blacklist_filename != NULL) {
@@ -301,8 +301,8 @@ static void report_address(attack_t attack) {
     list_sort(& offenders, -1);
     log_block(tmpent, offenderent);
 
-    /* append blocked attacker to the blocked list, and remove it from the pending list */
-    blocklist_add(tmpent);
+    /* append blocked attacker to the block store, and remove it from the pending list */
+    block_store_add(tmpent);
     assert(list_locate(& limbo, tmpent) >= 0);
     list_delete_at(& limbo, list_locate(& limbo, tmpent));
 }
