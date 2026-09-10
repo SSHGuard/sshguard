@@ -23,10 +23,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "address.h"
@@ -34,6 +31,7 @@
 #include "blocklist.h"
 #include "sandbox.h"
 #include "simclist.h"
+#include "monotime.h"
 #include "sshguard_blacklist.h"
 #include "sshguard_log.h"
 #include "sshguard_options.h"
@@ -245,7 +243,7 @@ static void report_address(attack_t attack) {
         list_append(&limbo, tmpent);
     } else {
         /* otherwise, the entry was already existing, update with new data */
-        tmpent->whenlast = time(NULL);
+        tmpent->whenlast = monotime();
         tmpent->numhits++;
         tmpent->cumulated_danger += attack.dangerousness;
     }
@@ -309,10 +307,9 @@ static void report_address(attack_t attack) {
 
 static void purge_limbo_stale(void) {
     sshguard_log(LOG_DEBUG, "Purging old attackers.");
-    time_t now = time(NULL);
     for (unsigned int pos = 0; pos < list_size(&limbo); pos++) {
         attacker_t *tmpent = list_get_at(&limbo, pos);
-        if (now - tmpent->whenfirst > opts.stale_threshold) {
+        if (monotime_since(tmpent->whenfirst) > opts.stale_threshold) {
             list_delete_at(&limbo, pos);
             free(tmpent);
             pos--;

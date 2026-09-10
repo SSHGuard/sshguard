@@ -1,13 +1,12 @@
 #include <assert.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
 #include "attack.h"
+#include "monotime.h"
 #include "sshguard_options.h"
 
 int attackt_whenlast_comparator(const void *a, const void *b) {
@@ -22,7 +21,7 @@ void attackerinit(attacker_t *restrict ipe,
     strcpy(ipe->attack.address.value, attack->address.value);
     ipe->attack.address.kind = attack->address.kind;
     ipe->attack.service = attack->service;
-    ipe->whenfirst = ipe->whenlast = time(NULL);
+    ipe->whenfirst = ipe->whenlast = monotime();
     ipe->numhits = 1;
     ipe->cumulated_danger = attack->dangerousness;
 }
