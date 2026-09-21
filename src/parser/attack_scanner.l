@@ -95,8 +95,8 @@ FACLEVEL    (<[a-zA-Z0-9]+\.[a-zA-Z0-9]+>)
 HTTP_REQUEST    (GET|HEAD|PUT|POST|DELETE)
 HTTP_VERSION    HTTP"/"[0-9]("."[0-9])?
 
-// RFC 5424 says HOSTNAME header field SHOULD contain the FQDN.
-// IP addresss and hostname may also be present in HOSTNAME.
+ // RFC 5424 says HOSTNAME header field SHOULD contain the FQDN.
+ // IP addresss and hostname may also be present in HOSTNAME.
 SYSLOG_HOSTNAME   {WORD}|{HOSTADDR}
 
  // timestamp (optional PRI) hostname
