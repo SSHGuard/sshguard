@@ -10,6 +10,15 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+Unreleased
+==========
+**Fixed**
+
+- Restore OpenSMTPD attack detection. Modern OpenSMTPD (>= late 2018)
+  no longer logs the source IP on the ``failed-command`` line; the
+  parser now correlates ``smtp connected`` and AUTH 535 ``failed-command``
+  lines by session id.
+
 2.5.1
 =====
 **Fixed**
