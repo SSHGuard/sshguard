@@ -10,6 +10,32 @@ un-deprecated, contact the project mailing list.
 
 .. contents::
 
+2.6.0
+=====
+**Added**
+
+- Add attack signatures for:
+
+  - Dropbear SSH
+  - MySQL
+  - SSH preauth timeouts
+  - pfSense Web Configurator
+
+- Add configuration option for block time multiplier
+- Add option to group attacks by subnet
+
+**Changed**
+
+- Recognize fully-qualified hostnames in the syslog header
+- Improve status code check for CLF probes
+- Update attack signatures for Dovecot
+
+**Fixed**
+
+- Fix exit return code and occasional hang when exiting on signal
+- Fix memory leak parsing IPv6 addresses
+- Fix RFC 5424 banner for sysklogd
+
 2.5.1
 =====
 **Fixed**
@@ -23,10 +49,12 @@ un-deprecated, contact the project mailing list.
 
 - Add attack signatures for Proxmox VE
 - Update signatures for:
+
   - Cyrus
   - Exim
   - OpenSSH
   - Postfix
+
 - Add option to write Prometheus-compatible metrics
 - Add option to change sandboxable-processes to an unprivileged user
 
