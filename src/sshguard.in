@@ -16,10 +16,10 @@ setflag() {
 
 usage() {
     cat << EOF
-Usage: sshguard [-v] [-h]
-[-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE]
-[-m BLOCK_TIME_MULTIPLIER] [-i PID-FILE] [-p BLOCK_TIME]
-[-s DETECTION_TIME] [-w IP-ADDRESS | WHITELIST-FILE]
+Usage: sshguard [-hSv]
+[-a BLACKLIST-THRESHOLD] [-b BLACKLIST-FILE] [-i PID-FILE]
+[-m BLOCK-TIME-MULTIPLIER] [-N IPV6-SUBNET] [-n IPV4-SUBNET]
+[-p BLOCK-TIME] [-s DETECTION-TIME] [-w IP-ADDRESS | WHITELIST-FILE]
 EOF
 }
 
@@ -42,7 +42,7 @@ fi
 . $config
 
 # Runtime arguments override configuration options
-while getopts "b:l:p:s:a:w:i:m:hv" opt; do
+while getopts "b:l:p:s:a:w:i:n:N:m:Shv" opt; do
     case $opt in
         a) THRESHOLD=$OPTARG;;
         b) BLACKLIST_FILE=$OPTARG;;
@@ -51,6 +51,9 @@ while getopts "b:l:p:s:a:w:i:m:hv" opt; do
         p) BLOCK_TIME=$OPTARG;;
         s) DETECTION_TIME=$OPTARG;;
         w) WHITELIST_ARG="$WHITELIST_ARG $OPTARG";;
+        n) IPV4_SUBNET=$OPTARG;;
+        N) IPV6_SUBNET=$OPTARG;;
+        S) USE_SUBNET_MASK=yes;;
         m) BLOCK_TIME_MULTIPLIER="$OPTARG";;
         h) usage; exit;;
         v) echo "SSHGuard $version"; exit;;
@@ -74,8 +77,13 @@ setflag 'p' "$BLOCK_TIME"
 setflag 's' "$DETECTION_TIME"
 setflag 'N' "$IPV6_SUBNET"
 setflag 'n' "$IPV4_SUBNET"
-setflag 'S' "$MASK_SUBNET_BY"
 setflag 'm' "$BLOCK_TIME_MULTIPLIER"
+if [ "$USE_SUBNET_MASK"="yes" ]; then
+    flags="$flags -S"
+elif [ "$USE_SUBNET_MASK"!="no" ]; then
+    err "Invalid option arg '$USE_SUBNET_MASK' in '$config'"
+    exit 1
+fi
 if [ -n "$WHITELIST_ARG" ]; then
     for arg in $WHITELIST_ARG; do
       flags="$flags -w $arg"

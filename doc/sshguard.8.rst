@@ -27,11 +27,13 @@ block brute-force attacks by aggregating system logs
 
 SYNOPSIS
 ========
-**sshguard** [**-hv**]
+**sshguard** [**-hSv**]
 [**-a** *threshold*]
 [**-b** *threshold*:*blacklist_file*]
 [**-i** *pidfile*]
 [**-m** *block_time_multiplier*]
+[**-N** *IPv6_subnet*]
+[**-n** *IPv4_subnet*]
 [**-p** *blocktime*]
 [**-s** *detection_time*]
 [**-w** *address* | *whitelist_file*]
@@ -71,6 +73,12 @@ OPTIONS
     For repeat attackers, multiply *blocktime* by *block_time_multiplier* for
     each subsequent block.
 
+**-N** *IPv6_subnet* (default 128)
+    Size of IPv6 subnet to block.
+
+**-n** *IPv4_subnet* (default 32)
+    Size of IPv4 subnet to block.
+
 **-p** *blocktime* (default 120)
     Block first-time attackers for *blocktime* seconds. Subsequent blocks
     increase in duration by a configurable factor (see the **-m** option).
@@ -91,6 +99,10 @@ OPTIONS
 
 **-h**
     Print usage information and exit.
+
+**-S**
+    Group attacking addresses by the subnet size set in **IPv4_subnet** and **IPv6_subnet**.
+    Attackers in the same group are aggregated together for blocking purposes.
 
 **-v**
     Print version information and exit.
