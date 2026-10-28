@@ -6,10 +6,12 @@ sshg_blocker_SOURCES = \
 	../common/sandbox.c \
 	../common/service_names.c \
 	../common/simclist.c \
+	../common/heap.c \
+	../common/heap.h \
 	attack.c \
 	blocker.c \
-	blocklist.c \
-	blocklist.h \
+	block_manager.c \
+	block_manager.h \
 	fnv.h \
 	hash_32a.c \
 	sshguard_blacklist.c \
