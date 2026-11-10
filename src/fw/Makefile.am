@@ -28,3 +28,7 @@ sshg_fw_hosts_SOURCES = fw.h hosts.c ../common/simclist.c
 SUFFIXES=.sh
 .sh:
 	cat $< $(srcdir)/sshg-fw.in > $@
+
+check_PROGRAMS = test-fw-hosts
+TESTS = $(check_PROGRAMS)
+test_fw_hosts_SOURCES = test-fw-hosts.c ../common/simclist.c
