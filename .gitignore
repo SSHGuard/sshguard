@@ -46,3 +46,5 @@ tags
 tap-driver.sh
 test-driver
 ylwrap
+
+src/fw/test-fw-hosts

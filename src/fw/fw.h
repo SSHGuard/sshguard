@@ -38,12 +38,12 @@ int fw_fin(void);
 /**
  * Block an address associated with an attack.
  */
-int fw_block(const attack_t *attack);
+int fw_block(const attack_t *attack, unsigned int subnet);
 
 /**
  * Release an address associated with an attack.
  */
-int fw_release(const attack_t *attack);
+int fw_release(const attack_t *attack, unsigned int subnet);
 
 /**
  * Release all blocked addresses.
