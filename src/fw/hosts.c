@@ -18,6 +18,7 @@
  * SSHGuard. See http://www.sshguard.net
  */
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -44,6 +45,7 @@
 typedef struct {
     char addr[ADDRLEN];
     int addrkind;
+    unsigned int subnet;
 } addr_service_t;
 
 int hosts_updatelist();
@@ -60,7 +62,8 @@ size_t addr_service_meter(const void *el) { return sizeof(addr_service_t); }
 int addr_service_comparator(const void *a, const void *b) {
     addr_service_t *A = (addr_service_t *)a;
     addr_service_t *B = (addr_service_t *)b;
-    return !((strcmp(A->addr, B->addr) == 0) && (A->addrkind == B->addrkind));
+    return !((strcmp(A->addr, B->addr) == 0) && (A->addrkind == B->addrkind) &&
+             (A->subnet == B->subnet));
 }
 
 static FILE *make_temporary_conffile(void) {
@@ -142,20 +145,26 @@ int fw_fin() {
     return FWALL_OK;
 }
 
-int fw_block(const attack_t *attack) {
+int fw_block(const attack_t *attack, unsigned int subnet) {
     addr_service_t ads;
 
     strcpy(ads.addr, attack->address.value);
     ads.addrkind = attack->address.kind;
+    ads.subnet = subnet;
     list_append(&hosts_blockedaddrs, &ads);
 
     return hosts_updatelist();
 }
 
-int fw_release(const attack_t *attack) {
+int fw_release(const attack_t *attack, unsigned int subnet) {
     int pos;
+    addr_service_t ads;
 
-    if ((pos = list_locate(&hosts_blockedaddrs, attack->address.value)) < 0) {
+    strcpy(ads.addr, attack->address.value);
+    ads.addrkind = attack->address.kind;
+    ads.subnet = subnet;
+
+    if ((pos = list_locate(&hosts_blockedaddrs, &ads)) < 0) {
         return FWALL_ERR;
     }
 
@@ -213,10 +222,21 @@ int hosts_updatelist() {
             switch (curr->addrkind) {
                 case ADDRKIND_IPv4:
                     fprintf(tmp, " %s", curr->addr);
+                    if (curr->subnet != 32) {
+                        struct in_addr mask;
+                        char maskbuf[INET_ADDRSTRLEN];
+                        mask.s_addr = htonl(curr->subnet == 0 ? 0 :
+                                           0xffffffffU << (32 - curr->subnet));
+                        inet_ntop(AF_INET, &mask, maskbuf, sizeof(maskbuf));
+                        fprintf(tmp, "/%s", maskbuf);
+                    }
                     break;
 
                 case ADDRKIND_IPv6:
                     fprintf(tmp, " [%s]", curr->addr);
+                    if (curr->subnet != 128) {
+                        fprintf(tmp, "/%u", curr->subnet);
+                    }
                     break;
             }
 
@@ -324,20 +344,46 @@ int hosts_clearsshguardblocks(void) {
     return FWALL_OK;
 }
 
-static bool fill_attack(attack_t *attack, const char *addr, const char *type) {
-    if (addr == NULL || type == NULL) {
+static bool fill_attack(attack_t *attack, unsigned int *subnet,
+                        const char *addr, const char *type, const char *size) {
+    unsigned char bytes[16];
+    char *end;
+    long prefix;
+    int family, maxbits;
+
+    if (addr == NULL || type == NULL || size == NULL) {
+        return false;
+    }
+    if (strcmp(type, "4") == 0) {
+        family = AF_INET;
+        maxbits = 32;
+        attack->address.kind = ADDRKIND_IPv4;
+    } else if (strcmp(type, "6") == 0) {
+        family = AF_INET6;
+        maxbits = 128;
+        attack->address.kind = ADDRKIND_IPv6;
+    } else {
+        return false;
+    }
+    if (*size < '0' || *size > '9') {
+        return false;
+    }
+    errno = 0;
+    prefix = strtol(size, &end, 10);
+    if (errno != 0 || *end != '\0' || prefix < 0 || prefix > maxbits ||
+        inet_pton(family, addr, bytes) != 1) {
         return false;
     }
 
-    long long addrtype = strtoll(type, NULL, 10);
-    if (addrtype != 4 && addrtype != 6) {
+    /* hosts_access requires the network, not a host within it. */
+    for (int bit = (int)prefix; bit < maxbits; bit++) {
+        bytes[bit / 8] &= ~(1U << (7 - bit % 8));
+    }
+    if (inet_ntop(family, bytes, attack->address.value,
+                  sizeof(attack->address.value)) == NULL) {
         return false;
     }
-
-    static sshg_address_t address;
-    strncpy(address.value, addr, ADDRLEN);
-    address.kind = addrtype;
-    attack->address = address;
+    *subnet = (unsigned int)prefix;
     return true;
 }
 
@@ -354,20 +400,24 @@ void backend_main(const char *name) {
         char *cmd = strtok(buf, sep);
         char *address = strtok(NULL, sep);
         char *type = strtok(NULL, sep);
+        char *size = strtok(NULL, sep);
+        if (cmd == NULL) continue;
         if (strcmp(cmd, "block") == 0) {
             attack_t attack;
-            if (!fill_attack(&attack, address, type)) {
+            unsigned int subnet;
+            if (!fill_attack(&attack, &subnet, address, type, size)) {
                 fprintf(stderr, "%s: Invalid arguments to block\n", name);
                 exit(65);
             }
-            fw_block(&attack);
+            fw_block(&attack, subnet);
         } else if (strcmp(cmd, "release") == 0) {
             attack_t attack;
-            if (!fill_attack(&attack, address, type)) {
+            unsigned int subnet;
+            if (!fill_attack(&attack, &subnet, address, type, size)) {
                 fprintf(stderr, "%s: Invalid arguments to release\n", name);
                 exit(65);
             }
-            fw_release(&attack);
+            fw_release(&attack, subnet);
         } else if (strcmp(cmd, "flush") == 0) {
             fw_flush();
         } else if (strcmp(cmd, "flushonexit") == 0) {
@@ -381,4 +431,5 @@ void backend_main(const char *name) {
 
 int main() {
     backend_main("sshg-fw-hosts");
+    return 0;
 }
